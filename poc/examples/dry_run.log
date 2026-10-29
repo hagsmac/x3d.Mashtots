@@ -1,0 +1,263 @@
+
+=== cell 1: # 1. What machine did we get?
+No GPU found. In Colab: Runtime > Change runtime type > G4 GPU, then run this cell again.
+--- cell 1 ok (0.0s)
+
+=== cell 2: #@title 2. Configuration { display-mode: "form" }
+build v1 3297217c | profile smoke | run run1 | downloads approved: False | workers 2 | data /tmp/mp_nb_dry/local
+--- cell 2 ok (0.0s)
+
+=== cell 3: # 3. Google Drive for results. A pop-up asks for access: choose the account that owns this
+results folder: None
+--- cell 3 ok (0.0s)
+
+=== cell 4: #@title 4. Write the source files (code, PREREG.md and the UDHR texts are embedded in this
+wrote 12 files; sha256 prefixes:
+  df30d6d95a27 PREREG.md
+  1ef1f80656e3 mp_analyze.py
+  14926ea5e72e mp_common.py
+  866aae7f4f44 mp_data.py
+  cc89b2882d8a mp_eval.py
+  bfc0c4abdab2 mp_export.py
+  e5b48d65fe5b mp_model.py
+  6a23aa046598 mp_tok.py
+  696db1c153f1 mp_train.py
+  384956230120 nb_helpers.py
+  df7327582144 udhr/udhr_eng.xml
+  a12927bfa39c udhr/udhr_hye.xml
+--- cell 4 ok (0.0s)
+
+=== cell 5: # 5. Install what is missing (tokenizers, tiktoken, pyarrow, ...; torch is Colab's own and
+local dry run: no pip
+python 3.13.2 | macOS-26.0.1-arm64-arm-64bit-Mach-O
+cpus 8 | disk free GB 58.3
+torch 2.10.0
+tokenizers 0.22.2
+tiktoken 0.12.0
+pyarrow 23.0.1
+huggingface_hub 1.4.1
+numpy 2.4.2
+scipy 1.15.2
+GPU: none visible to torch
+--- cell 5 ok (1.7s)
+
+=== cell 6: # 6. Doctor: GPU, the model code, the tokenizers, the network, disk and Drive. Continue on
+✅ local dry run: GPU checks skipped (CPU, tiny model)
+✅ model: forward, backward, SDPA, torch.compile, explicit attention: loss 4.05 -> 1.11 in 30 steps, compile False, attention rows sum to 1
+✅ tokenizers: 4 arms train and round-trip exactly (Armenian, Western, Grabar, digits, rare characters): round-trip failures 0
+✅ network: skipped in the local dry run
+✅ disk: 58 GB free, about 2 GB needed for this profile
+
+ALL GOOD
+--- cell 6 ok (3.1s)
+
+=== cell 7: # 7. What would be downloaded for this profile: names, sources, licences, sizes (DATA-CARD
+Downloads for profile 'local' (nothing has been fetched yet):
+id                   MB  licence                              name
+ud_armtdp          14.0  CC BY-SA 4.0                         UD Armenian ArmTDP (Eastern)
+ud_bsut             6.1  CC BY-SA 4.0                         UD Armenian BSUT (Eastern)
+ud_hyw             16.1  CC BY-SA 4.0                         UD Western Armenian ArmTDP
+ud_caval           12.5  CC BY-NC-SA 4.0 (non-commercial)     UD Classical Armenian CAVaL (Grabar Gospels)
+udhr                0.0  UN text, free to reproduce           UDHR, Armenian and English (embedded in the notebook)
+armweb_val         14.6  ODC-By 1.0                           ArmWeb validation split
+armweb_test        14.7  ODC-By 1.0                           ArmWeb test_iid split
+wiki_hyw           27.5  CC BY-SA 3.0 / GFDL                  Western Armenian Wikipedia (20231101.hyw)
+fw2_hyw_test        2.5  ODC-By 1.0 (+ Common Crawl terms)    FineWeb-2 hyw_Armn test split
+multiblimp          4.8  CC BY 4.0                            MultiBLiMP hye + hyw (minimal pairs)
+total             112.8 MB  (0.11 GB)
+
+NVIDIA: no Armenian text data exists in the Nemotron datasets (checked 2026-10-28); Nemotron is measured through its tokenizer only.
+To go on, tick I_APPROVE_DOWNLOADS in cell 2, run cell 2 again, then cell 8.
+--- cell 7 ok (0.0s)
+
+=== cell 8: # 8. Fetch (resume-safe), then build: evaluation sets first, then cleaned, decontaminated,
+local dry run: no downloads; UD text from /Users/handshake/Projects/x3d/work/armenian-tokenizer-census/data
+variety classifier on single UD test sentences: accuracy {'E': 0.9901, 'W': 0.9924, 'G': 1.0}
+eval sets: {'E_ud_armtdp_test': 25, 'E_ud_bsut_test': 13, 'W_ud_hyw_test': 13, 'G_ud_caval_test': 11}
+decontamination keys: 35,813 13-grams, 18,140 8-grams
+  240 documents kept, 9 s
+annotation batch b001: 209 sentences, 120 words, 24 QC sentences; key kept apart
+pools (MB): {'E': 1.2, 'W': 1.0, 'G': 0.5} | 8.8 s
+classifier (single UD test sentences): {'E': 0.9901, 'W': 0.9924, 'G': 1.0}
+pools MB: {'E': 1.2, 'W': 1.0, 'G': 0.5}
+dialect x spelling (MB): {'E|reformed': 1.2, 'E|unclear': 0.0, 'G|classical': 0.5, 'W|classical': 1.0}
+--- cell 8 ok (9.2s)
+
+=== cell 9: # 9. The token bill: eight big-lab tokenizers on the UDHR (Armenian / English) and on four
+  o200k (GPT-4o, gpt-oss)                                    UDHR hy/en  1.52  (deck 1.51)  E 2.85 tok/word
+  Mistral Tekken (= Nemotron Nano 9B v2, Nemotron 3 Nano)    UDHR hy/en  1.76  (deck 1.74)  E 3.23 tok/word
+  Nemotron Nano 9B v2                                        UDHR hy/en  1.76  (deck None)  E 3.23 tok/word
+  Gemma 3                                                    UDHR hy/en  2.80  (deck 2.67)  E 4.29 tok/word
+  DeepSeek V3                                                UDHR hy/en  2.94  (deck 2.87)  E 4.59 tok/word
+  Qwen 2.5                                                   UDHR hy/en  5.63  (deck 5.41)  E 7.66 tok/word
+  Llama 3.2 (= Llama 3.1 vocabulary)                         UDHR hy/en  9.05  (deck 8.73)  E 12.37 tok/word
+  cl100k (GPT-4)                                             UDHR hy/en 10.54  (deck 10.15)  E 14.04 tok/word
+--- cell 9 ok (3.3s)
+
+=== cell 10: # 10. Our tokenizers: learn the suffix inventory from the UD lemmas, train bpe / mashtots 
+tokenizer sample 2.7 MB (E:W:G = 45:45:10), 332 suffixes (321 learned + hand list)
+  bpe                vocab   2000      1 s  first Armenian merges: ['ու', 'ան', 'ին', 'եր', 'ակ']
+  mashtots           vocab   2000      1 s  first Armenian merges: ['ու', 'ան', 'եր', 'ար', 'ին']
+  bpe_morph          vocab   2000      1 s  first Armenian merges: ['ու', 'ան', 'եր', 'ին', 'ակ']
+  mashtots_nomorph   vocab   2000      0 s  first Armenian merges: ['ու', 'ան', 'ար', 'եր', 'այ']
+tokenizers trained in 3 s
+  bytes              E 14.15  W 12.92  G 10.31 tok/word | UDHR hy/en 1.95 | stem-boundary recall E 1.00/0.06 W 1.00/0.07 (recall/precision) | roundtrip failures 0
+  bpe                E 2.99  W 2.52  G 2.15 tok/word | UDHR hy/en 0.31 | stem-boundary recall E 0.52/0.23 W 0.50/0.26 (recall/precision) | roundtrip failures 0
+  mashtots           E 3.33  W 2.87  G 2.42 tok/word | UDHR hy/en 0.37 | stem-boundary recall E 0.67/0.24 W 0.68/0.29 (recall/precision) | roundtrip failures 0
+  bpe_morph          E 3.30  W 2.85  G 2.41 tok/word | UDHR hy/en 0.37 | stem-boundary recall E 0.67/0.25 W 0.68/0.29 (recall/precision) | roundtrip failures 0
+  mashtots_nomorph   E 2.98  W 2.54  G 2.16 tok/word | UDHR hy/en 0.30 | stem-boundary recall E 0.52/0.23 W 0.53/0.27 (recall/precision) | roundtrip failures 0
+  bytes     E:     1,162,145 tokens   1.00 bytes/token       0 s
+  bytes     W:     1,025,148 tokens   1.00 bytes/token       0 s
+  bytes     G:       514,340 tokens   1.00 bytes/token       0 s
+  bpe       E:       226,038 tokens   5.14 bytes/token       0 s
+  bpe       W:       194,442 tokens   5.27 bytes/token       0 s
+  bpe       G:       104,021 tokens   4.94 bytes/token       0 s
+  mashtots  E:       257,384 tokens   4.51 bytes/token       0 s
+  mashtots  W:       221,948 tokens   4.62 bytes/token       0 s
+  mashtots  G:       117,170 tokens   4.39 bytes/token       0 s
+--- cell 10 ok (7.2s)
+
+=== cell 11: # 11. FREEZE the pre-registration and the code before any model trains (sha256 of PREREG.m
+FROZEN 2026-10-29 15:41:39 UTC
+  df30d6d95a27  PREREG.md
+  14926ea5e72e  mp_common.py
+  866aae7f4f44  mp_data.py
+  6a23aa046598  mp_tok.py
+  e5b48d65fe5b  mp_model.py
+  696db1c153f1  mp_train.py
+  cc89b2882d8a  mp_eval.py
+  1ef1f80656e3  mp_analyze.py
+  bfc0c4abdab2  mp_export.py
+  384956230120  nb_helpers.py
+--- cell 11 ok (0.0s)
+
+=== cell 12: # 12. What will training cost? Measures this GPU's speed for every (tokenizer, size) of th
+bpe-tiny: 0.1M non-embedding params, 1M tokens, 271 steps x 4096 tokens, lr 2.00e-03, mixture {'E': 0.5, 'W': 0.5}, epochs {'E': 2.457, 'W': 2.856}
+  step 6/271  loss 7.587  74k tok/s  0 TFLOP/s  ETA 0 min
+bench bpe-tiny: 74k tokens/s, 0 TFLOP/s
+bytes-tiny: 0.1M non-embedding params, 1M tokens, 271 steps x 4096 tokens, lr 2.00e-03, mixture {'E': 0.5, 'W': 0.5}, epochs {'E': 0.478, 'W': 0.542}
+  step 6/271  loss 5.185  117k tok/s  0 TFLOP/s  ETA 0 min
+bench bytes-tiny: 117k tokens/s, 0 TFLOP/s
+mashtots-tiny: 0.1M non-embedding params, 1M tokens, 271 steps x 4096 tokens, lr 2.00e-03, mixture {'E': 0.5, 'W': 0.5}, epochs {'E': 2.158, 'W': 2.502}
+  step 6/271  loss 7.562  86k tok/s  0 TFLOP/s  ETA 0 min
+bench mashtots-tiny: 85k tokens/s, 0 TFLOP/s
+run                 tokens     tok/s   hours
+bpe-tiny                0M       74k    0.05
+mashtots-tiny           0M       85k    0.05
+bytes-tiny              0M      117k    0.05
+bpe-tiny-G              0M       74k    0.05
+total                                   0.20 h  (enter UNITS_PER_HOUR in cell 2 for the cost in units)
+Estimate: measured throughput x planned tokens, plus about 3 minutes of scoring per run. Data and tokenizer cells are extra.
+--- cell 12 ok (6.6s)
+
+=== cell 13: # 13. Train the grid, smallest first (resume-safe; each run checkpoints to Drive every 15 
+bpe-tiny: 0.1M non-embedding params, 0M tokens, 14 steps x 4096 tokens, lr 2.00e-03, mixture {'E': 0.5, 'W': 0.5}, epochs {'E': 0.133, 'W': 0.154}
+  step 14/14  loss 7.281  50k tok/s  0 TFLOP/s  ETA 0 min
+done bpe-tiny: bpb E 2.0767559180276507, W 2.0018072681882564, G 2.154751699765148, E+W equal 2.0392815931079538  (0.0 min training)
+mashtots-tiny: 0.1M non-embedding params, 0M tokens, 14 steps x 4096 tokens, lr 2.00e-03, mixture {'E': 0.5, 'W': 0.5}, epochs {'E': 0.117, 'W': 0.135}
+  step 14/14  loss 7.096  82k tok/s  0 TFLOP/s  ETA 0 min
+done mashtots-tiny: bpb E 2.283706721704519, W 2.233452416021888, G 2.372620946143085, E+W equal 2.2585795688632033  (0.0 min training)
+bytes-tiny: 0.1M non-embedding params, 0M tokens, 14 steps x 4096 tokens, lr 2.00e-03, mixture {'E': 0.5, 'W': 0.5}, epochs {'E': 0.026, 'W': 0.029}
+  step 14/14  loss 4.313  106k tok/s  0 TFLOP/s  ETA 0 min
+done bytes-tiny: bpb E 6.179708234078258, W 6.161684121418671, G 6.172825680359891, E+W equal 6.170696177748464  (0.0 min training)
+bpe-tiny-G: 0.1M non-embedding params, 0M tokens, 14 steps x 4096 tokens, lr 2.00e-03, mixture {'E': 0.25, 'W': 0.5, 'G': 0.25}, epochs {'E': 0.066, 'W': 0.154, 'G': 0.144}
+  step 14/14  loss 7.322  82k tok/s  0 TFLOP/s  ETA 0 min
+done bpe-tiny-G: bpb E 2.09419215377672, W 2.0094668049663693, G 2.1020909588310213, E+W equal 2.051829479371545  (0.0 min training)
+
+finished: 4 of 4 runs
+--- cell 13 ok (14.7s)
+
+=== cell 14: # 14. Analyze exactly as pre-registered; the verdicts, the tables and the figures
+# Mashtots PoC results (DRY RUN)
+
+Built 2026-10-29 15:42:00 UTC. Every number below is **DRY RUN** unless its row says otherwise. Rules: `PREREG.md`.
+
+> **DRY RUN.** A tiny model on a few MB of UD text on a Mac: these numbers test the plumbing and mean nothing about Armenian.
+
+## H1 The token bill (UDHR, Armenian tokens / English tokens)
+
+| tokenizer | ours | deck (its grade: Measured) | gap | within 5 % |
+|---|---|---|---|---|
+| o200k (GPT-4o, gpt-oss) | 1.52 | 1.51 | +0.7 % | yes |
+| Mistral Tekken (= Nemotron Nano 9B v2, Nemotron 3 Nano) | 1.76 | 1.74 | +1.1 % | yes |
+| Gemma 3 | 2.80 | 2.67 | +4.9 % | yes |
+| DeepSeek V3 | 2.94 | 2.87 | +2.4 % | yes |
+| Qwen 2.5 | 5.63 | 5.41 | +4.1 % | yes |
+| Llama 3.2 (= Llama 3.1 vocabulary) | 9.05 | 8.73 | +3.7 % | yes |
+| cl100k (GPT-4) | 10.54 | 10.15 | +3.8 % | yes |
+
+## Our tokenizers (tokens per word on UD test sentences; stem-boundary recall / precision against UD lemmas)
+
+| arm | vocab | Eastern | Western | Grabar | UDHR hy/en | boundary E (R/P) | boundary W (R/P) | round-trip failures |
+|---|---|---|---|---|---|---|---|---|
+| bytes | 257 | 14.15 | 12.92 | 10.31 | 1.95 | 1.00 / 0.06 | 1.00 / 0.07 | 0 |
+| bpe | 2000 | 2.99 | 2.52 | 2.15 | 0.31 | 0.52 / 0.23 | 0.50 / 0.26 | 0 |
+| mashtots | 2000 | 3.33 | 2.87 | 2.42 | 0.37 | 0.67 / 0.24 | 0.68 / 0.29 | 0 |
+| bpe_morph | 2000 | 3.30 | 2.85 | 2.41 | 0.37 | 0.67 / 0.25 | 0.68 / 0.29 | 0 |
+| mashtots_nomorph | 2000 | 2.98 | 2.54 | 2.16 | 0.30 | 0.52 / 0.23 | 0.53 / 0.27 | 0 |
+
+Our tokenizers are trained on Armenian only, so their UDHR ratio says what an Armenian-first vocabulary costs English, not a like-for-like bill.
+
+## The runs
+
+| run | N (non-emb.) | tokens | bpb E | bpb W | bpb G | **bpb E+W** | ArmWeb test | W - E | MultiBLiMP hye / hyw | minutes |
+|---|---|---|---|---|---|---|---|---|---|---|
+| bpe-tiny | 0.1M | 0M | 2.077 | 2.002 | 2.155 | **2.039** | - | -0.075 | - / - | 0.0 |
+| bpe-tiny-G | 0.1M | 0M | 2.094 | 2.009 | 2.102 | **2.052** | - | -0.085 | - / - | 0.0 |
+| bytes-tiny | 0.1M | 0M | 6.180 | 6.162 | 6.173 | **6.171** | - | -0.018 | - / - | 0.0 |
+| mashtots-tiny | 0.1M | 0M | 2.284 | 2.233 | 2.373 | **2.259** | - | -0.050 | - / - | 0.0 |
+
+## H2 Does the script-aware tokenizer help? **FAIL**
+
+Rule: mashtots better at the largest size with both arms and worse at none. Delta = bpb(bpe) - bpb(other), E+W equal; positive = the other arm is better.
+
+| size | mashtots vs bpe | 95 % CI | verdict | bytes vs bpe | 95 % CI |
+|---|---|---|---|---|---|
+| tiny | -0.2193 | [-0.2297, -0.2097] | worse | -4.1314 | [-4.1877, -4.0854] |
+
+## H4 Does Grabar text help Grabar? **inconclusive**
+
+* tiny: Delta bpb_G = 0.0527 (95 % CI [0.0479, 0.0557]), better; cost on E+W +0.0125 bpb
+
+The `-G` models were trained on CC BY-NC-SA text (UD CAVaL): they carry a non-commercial condition.
+
+## H6 Grammar (MultiBLiMP)
+
+
+## Data (counts of the dry-run data)
+
+| pool | MB | documents |
+|---|---|---|
+| E | 1.2 | 153 |
+| W | 1.0 | 70 |
+| G | 0.5 | 80 |
+
+Variety classifier on single UD test sentences: {'E': 0.9901, 'W': 0.9924, 'G': 1.0}.
+Dialect x spelling, bytes kept: E|reformed 1.2 MB, E|unclear 0.0 MB, G|classical 0.5 MB, W|classical 1.0 MB
+
+## Grades of the deck's figures used here
+
+* token_bill_udhr_hy_over_en: Measured (deck)
+* word_shapes: Measured (deck)
+* data_law: Established (published fit); its plotted points are placeholders
+* armenian_floor: Established within 70M-1B parameters, Estimate beyond
+* closing: Conjecture
+
+fertility.png
+<IPython.core.display.Image object>
+token_bill.png
+<IPython.core.display.Image object>
+--- cell 14 ok (1.8s)
+
+=== cell 15: # 15. Export the real model for the X3D scene: letter attention (36 x 36 per layer and hea
+export: /tmp/mp_nb_dry/local/results/mashtots_model_export.json (1.99 MB); letters model bytes-tiny, token model mashtots-tiny; heads [{'layer': 0, 'head': 1, 'structure': 0.0452}, {'layer': 1, 'head': 1, 'structure': 0.0079}, {'layer': 0, 'head': 0, 'structure': 0.0229}]
+export_preview.png
+<IPython.core.display.Image object>
+--- cell 15 ok (5.2s)
+
+=== cell 16: # 16. Package: run record and a last copy of everything small to Drive
+DONE. Results are in None
+Tell Claude the results are in Drive. If you are finished: Runtime > Disconnect and delete runtime (an idle G4 still spends units).
+--- cell 16 ok (0.0s)
+
+DRY RUN COMPLETE in 53 s

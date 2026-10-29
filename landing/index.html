@@ -1,0 +1,130 @@
+<!doctype html><meta charset="utf-8"><title>Mashtots System 2 (X3D)</title>
+<link rel="icon" href="data:,">
+<style>
+html,body{margin:0;height:100%;background:#0b0a0a;display:flex;align-items:center;justify-content:center;font-family:Georgia,serif}
+#stage{position:relative;width:min(100vw,177.78vh);height:min(56.25vw,100vh);overflow:hidden}
+x3d-canvas{width:100%;height:100%;display:block}
+/* section tabs: the major sections of the piece; click, or use the left and right arrow keys */
+#nav{position:absolute;left:0;right:0;top:0;display:flex;justify-content:center;gap:.25vmin;padding:.7vmin 1vmin 0;background:linear-gradient(rgba(11,10,10,.88),rgba(11,10,10,0));z-index:3;opacity:.92}
+#nav button{all:unset;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:.15vmin;padding:.55vmin 1.15vmin .5vmin;border-bottom:2px solid transparent;color:#8b8784;font:clamp(8px,1.28vmin,18px)/1.15 Georgia,serif;white-space:nowrap;text-align:center}
+#nav button .hy{font-size:1.18em;color:#b9b3ad}
+#nav button:hover{color:#f0cd96;background:rgba(205,150,70,.08)}
+#nav button:hover .hy{color:#f0cd96}
+#nav button.on{border-bottom-color:#cd9646;color:#cd9646}
+#nav button.on .hy{color:#e8b86a}
+#bar{position:absolute;left:0;top:0;height:2px;width:0;background:#cd9646;z-index:4;opacity:.8}
+#audiobar{position:absolute;left:7.5%;bottom:2.4%;display:flex;align-items:center;gap:1.1vmin;z-index:3}
+#listen,#mode{cursor:pointer;color:#cd9646;background:rgba(20,18,18,.6);border:1px solid rgba(205,150,70,.5);padding:.6vmin 1.4vmin;font:600 clamp(11px,1.5vmin,20px) Georgia,serif;letter-spacing:.04em;white-space:nowrap;user-select:none}
+#mode{font-weight:400;font-size:clamp(10px,1.3vmin,18px)}
+#listen:hover,#mode:hover{color:#f0cd96;border-color:#f0cd96}
+#note{color:#7d7a78;font:clamp(10px,1.35vmin,17px) Georgia,serif;pointer-events:none;white-space:nowrap}
+#hint{position:absolute;right:2.2%;bottom:2.9%;color:#6b6865;font:clamp(9px,1.2vmin,15px) Georgia,serif;pointer-events:none;z-index:3;letter-spacing:.03em}
+#credit{position:absolute;left:0;right:0;bottom:.5%;text-align:center;color:#59564f;font:clamp(7px,.95vmin,13px) Georgia,serif;pointer-events:none;z-index:3;padding:0 3%}
+#loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#cd9646;font:clamp(14px,2.2vmin,30px) Georgia,serif;letter-spacing:.06em;background:#0b0a0a;z-index:5;transition:opacity .8s}
+#loading.done{opacity:0;pointer-events:none}
+/* cinema mode (key c, or ?cinema): the tabs, hints and progress bar fade; Listen shows on hover; the mural credit stays */
+#nav,#bar,#hint,#audiobar{transition:opacity .6s}
+.cinema #nav,.cinema #bar,.cinema #hint{opacity:0;pointer-events:none}
+.cinema #audiobar{opacity:0}.cinema #audiobar:hover{opacity:1}
+</style>
+<script src="vendor/x_ite/x_ite.min.js"></script>
+<div id="stage">
+<x3d-canvas splashScreen="false" contextMenu="false" notifications="false"></x3d-canvas>
+<div id="bar"></div>
+<div id="nav"></div>
+<div id="audiobar"><div id="listen" title="the score: a duduk, a dam, a kanun note per letter, the stone ringing; a groove in the modern half">Լսել · Listen</div><div id="mode" title="switch the music: the full score (the groove in the modern half) / the same music without drums, bass and saws (the kanun, the duduk, the dam) / the previous, sparer mix">Լրիվ · full score</div><div id="note"></div></div>
+<div id="hint">← → sections · 1–4 cameras · f orbit · c cinema</div>
+<div id="credit">Որմնանկարը՝ Վան Խաչատուր, Մատենադարանի աստիճանավանդակի եռամաս որմնանկար, 1959–60 · Mural: Van Khachatur, the three-part staircase fresco of the Matenadaran, 1959–60 · photograph via Wikimedia Commons</div>
+<div id="loading">Բեռնվում է · loading…</div>
+</div>
+<audio id="score" src="landing_score.mp3" preload="auto" loop></audio>
+<script>
+// default = the full Landing; ?slide1 = the approved slide-1 port; ?classic = its shader-free fallback; ?src=FILE.x3d = any file here (inspection stills)
+const q = new URLSearchParams(location.search), canvas = document.querySelector("x3d-canvas");
+const isLanding = !q.has("slide1") && !q.has("classic") && !q.get("src");
+canvas.setAttribute("src", q.get("src") || (q.has("slide1") ? "mashtots-reveal.x3d" : q.has("classic") ? "mashtots-reveal-classic.x3d" : "mashtots-landing.x3d"));
+if (!isLanding && !q.has("nav")) for (const id of ["nav", "bar", "audiobar", "credit", "hint"]) document.getElementById(id).style.display = "none";
+// keys: 1 slide camera, 2 the helix from the side, 3 the ring up close, 4 the painted stone, f = free navigation (drag to orbit), left/right = previous/next section
+addEventListener("keydown", e => {
+  const s = canvas.browser.currentScene, vp = { 1: "Cam", 2: "CamHelix", 3: "CamRing", 4: "CamStone" }[e.key];
+  try { if (vp) s.getNamedNode(vp).set_bind = true;
+        if (e.key === "f") { const n = s.getNamedNode("Nav"); n.type = n.type[0] === "NONE" ? ["EXAMINE", "ANY"] : ["NONE"]; } } catch (_) {}
+  if (e.key === "ArrowRight") step(1); if (e.key === "ArrowLeft") step(-1);
+  if (e.key === "c") setCinema(!cinema);
+});
+// cinema mode: the page's chrome fades, and the scene shows its title block only in the opening and the return (a TimeSensor ROUTEd to the label shader)
+let cinema = false;
+function setCinema(on) { cinema = on; document.getElementById("stage").classList.toggle("cinema", on); try { canvas.browser.currentScene.getNamedNode("Cinema").cycleInterval = on ? 2 : 1; } catch (_) {} }
+
+// ---------- section tabs, seeking, the score ----------
+let SEC = null, toff = 0, nodes = {}, clock = null, activeIdx = -1, on = false;
+const nav = document.getElementById("nav"), bar = document.getElementById("bar"), audio = document.getElementById("score"), loading = document.getElementById("loading");
+const T = () => SEC ? (((clock.elapsedTime + toff) % SEC.cycle) + SEC.cycle) % SEC.cycle : 0;
+function seek(t) {
+  toff = ((t - clock.elapsedTime) % SEC.cycle + SEC.cycle) % SEC.cycle;
+  try { canvas.browser.currentScene.getNamedNode("Seek").cycleInterval = toff + 0.001; } catch (_) {}      // ROUTEd to every shader's toff
+  if (on) { try { audio.currentTime = t; } catch (_) {} }
+  mark();
+}
+function secIndex(t) { let k = 0; SEC.sections.forEach((s, i) => { if (t >= s.t - 0.05) k = i; }); return k; }
+function step(d) { if (!SEC || !clock) return; const i = Math.max(0, Math.min(SEC.sections.length - 1, secIndex(T()) + d)); seek(SEC.sections[i].t); }
+function mark() {
+  const i = secIndex(T()); if (i !== activeIdx) { activeIdx = i; [...nav.children].forEach((b, j) => b.classList.toggle("on", j === i)); }
+  bar.style.width = (100 * T() / SEC.cycle).toFixed(2) + "%";
+}
+function span(cls, text) { const e = document.createElement("span"); e.className = cls; e.textContent = text; return e; }
+async function boot() {
+  SEC = await (await fetch("sections.json")).json();
+  for (const s of SEC.sections) {
+    const b = document.createElement("button"); b.append(span("hy", s.hy), span("en", s.en)); b.title = s.en;
+    b.onclick = () => seek(s.t); nav.appendChild(b);
+  }
+  // wait for the scene (the file is 2.5 MB and compiles 60 shaders), then start at the requested section
+  const t0 = performance.now();
+  const wait = setInterval(() => {
+    let ok = false; try { const sc = canvas.browser.currentScene; ok = sc.rootNodes.length > 10 && (clock = sc.getNamedNode("Clock")); } catch (_) {}
+    if (ok) {
+      clearInterval(wait); setTimeout(() => loading.classList.add("done"), 400);
+      const h = location.hash.slice(1), s = SEC.sections.find(x => x.id === h); seek(s ? s.t : 0);
+      if (q.has("cinema")) setCinema(true);
+      setInterval(() => { mark(); syncAudio(); }, 250);
+    } else if (performance.now() - t0 > 90000) { loading.textContent = "the scene did not load · reload"; clearInterval(wait); }
+  }, 300);
+}
+// the score is a separate audio element kept in step with the clock (the X3D file can carry its own Sound node: X3D_SOUND=1 python3 make_landing.py)
+const btn = document.getElementById("listen"), note = document.getElementById("note"), modeBtn = document.getElementById("mode");
+const NEXT = { full: "harp", harp: "prev", prev: "full" };
+const LABELS = { full: "Լրիվ · full score", harp: "Քանոն · harp + duduk", prev: "Նախորդ · v4 (approved)" }; let mode = "full";
+const VAR = ["", "_b", "_c"]; let variant = 0, lastT = 0, busy = false;      // three seeded variants of the score (another improvisation, arpeggio patterns, fills): one is drawn at random on each Listen and at each loop
+function fileFor(m, v) { return m === "prev" ? "landing_score_v4.mp3" : (m === "harp" ? "landing_score_harp" : "landing_score") + VAR[v] + ".mp3"; }
+audio.preservesPitch = true;
+function ready() {   // resolves when the file is fully buffered (a server without byte ranges can only seek inside what it has), or after 6 s
+  return new Promise(res => { if (audio.readyState >= 4) return res(); const done = () => { audio.removeEventListener("canplaythrough", done); res(); }; audio.addEventListener("canplaythrough", done); setTimeout(res, 6000); });
+}
+function label() { note.textContent = on ? "Դուդուկ, դամ, ամեն տառի նոտան · duduk, dam, a note per letter" + (mode === "prev" ? "" : " · variant " + "ABC"[variant]) : ""; }
+async function loadVariant(v, t) {
+  busy = true; variant = v; audio.src = fileFor(mode, v); audio.load(); audio.playbackRate = 1; await ready();
+  try { audio.currentTime = t; if (on) await audio.play(); } catch (_) {}
+  busy = false; label();
+}
+btn.addEventListener("click", async () => {
+  on = !on; audio.playbackRate = 1;
+  if (on) { try { if (mode !== "prev") { variant = Math.floor(Math.random() * 3); audio.src = fileFor(mode, variant); audio.load(); } await ready(); audio.currentTime = SEC && clock ? T() : 0; await audio.play(); } catch (e) { on = false; } } else audio.pause();
+  btn.textContent = on ? "Լռել · Silence" : "Լսել · Listen"; label();
+});
+modeBtn.addEventListener("click", async () => {
+  mode = NEXT[mode]; modeBtn.textContent = LABELS[mode]; await loadVariant(variant, SEC && clock ? T() : 0);
+});
+const LAG = 0.04;   // the sound a hair behind the picture reads as in sync; ahead of it does not
+function syncAudio() {
+  if (!on || busy || !SEC) return;
+  const tt = T();
+  if (tt < lastT - 60 && mode !== "prev") { lastT = tt; let v; do { v = Math.floor(Math.random() * 3); } while (v === variant); loadVariant(v, tt); return; }   // the loop wrapped: a different variant
+  lastT = tt;
+  if (audio.paused || audio.seeking || audio.readyState < 3) return;
+  let e = audio.currentTime - tt + LAG; if (e > SEC.cycle / 2) e -= SEC.cycle; if (e < -SEC.cycle / 2) e += SEC.cycle;
+  if (Math.abs(e) > 0.6) { try { audio.currentTime = tt - LAG; } catch (_) {} audio.playbackRate = 1; }      // lost it (a stalled tab): jump
+  else audio.playbackRate = Math.abs(e) < 0.05 ? 1 : (e > 0 ? 0.95 : 1.05);                                      // slightly off: nudge the rate, no seek, no click
+}
+if (isLanding || q.has("nav")) boot(); else loading.style.display = "none";
+</script>

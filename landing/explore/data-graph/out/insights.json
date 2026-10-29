@@ -1,0 +1,82 @@
+{
+ "grade": "Measured",
+ "eras": {
+  "Grabar (CAVaL)": {
+   "words": 73445,
+   "letters": 342533,
+   "outside_36": {},
+   "fast_mode_eigenvalue": -0.644,
+   "vowel_side": "ԱԵԷԸԻՈ",
+   "agree_with_vowel_flags": 0.972,
+   "top5": "ԱՆԵԻՈ"
+  },
+  "Eastern (ArmTDP)": {
+   "words": 82056,
+   "letters": 525907,
+   "outside_36": {
+    "Օ": 995,
+    "Ֆ": 545
+   },
+   "fast_mode_eigenvalue": -0.672,
+   "vowel_side": "ԱԵԷԸԹԻՈ",
+   "agree_with_vowel_flags": 0.944,
+   "top5": "ԱՆՐՈԵ"
+  },
+  "Western (ArmTDP-hyw)": {
+   "words": 100396,
+   "letters": 580726,
+   "outside_36": {
+    "Օ": 2710,
+    "Ֆ": 311
+   },
+   "fast_mode_eigenvalue": -0.688,
+   "vowel_side": "ԱԵԷԸԻՈ",
+   "agree_with_vowel_flags": 0.972,
+   "top5": "ԱՆՐՈԵ"
+  }
+ },
+ "across_eras": {
+  "Grabar (CAVaL) vs Eastern (ArmTDP)": {
+   "letter_frequency_spearman": 0.841,
+   "bigram_rows_correlation": 0.863
+  },
+  "Grabar (CAVaL) vs Western (ArmTDP-hyw)": {
+   "letter_frequency_spearman": 0.829,
+   "bigram_rows_correlation": 0.89
+  },
+  "Eastern (ArmTDP) vs Western (ArmTDP-hyw)": {
+   "letter_frequency_spearman": 0.943,
+   "bigram_rows_correlation": 0.892
+  }
+ },
+ "alphabet_order": {
+  "spearman_neighbourliness": -0.109,
+  "permutation_p": 0.9665,
+  "null_mean": -0.0,
+  "null_sd": 0.058,
+  "within_row_vs_across": {
+   "mean_cooccurrence_same_row": 0.000568271140827129,
+   "mean_cooccurrence_other_rows": 0.0008604299500429907
+  }
+ },
+ "tokens_per_word": {
+  "Mistral Nemo (Tekken)": {
+   "Grabar (CAVaL)": 3.1,
+   "Eastern (ArmTDP)": 3.15,
+   "Western (ArmTDP-hyw)": 3.39,
+   "English (UDHR)": 1.15
+  },
+  "DeepSeek V3": {
+   "Grabar (CAVaL)": 3.89,
+   "Eastern (ArmTDP)": 4.5,
+   "Western (ArmTDP-hyw)": 4.34,
+   "English (UDHR)": 1.12
+  },
+  "gpt-oss (o200k-based)": {
+   "Grabar (CAVaL)": 2.68,
+   "Eastern (ArmTDP)": 2.73,
+   "Western (ArmTDP-hyw)": 2.77,
+   "English (UDHR)": 1.13
+  }
+ }
+}

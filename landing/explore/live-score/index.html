@@ -1,0 +1,72 @@
+<!doctype html><meta charset="utf-8"><title>Mashtots Landing · live score (explore)</title>
+<link rel="icon" href="data:,">
+<!-- The v4/v5 score, synthesised live in WebAudio from the same tables, following any timeline (approved or a re-timed preset).
+     Play: choose a timeline and a seed, click a section.  Measure: renders a whole loop offline and reports speed, the harmony audit,
+     and (approved timeline) how closely its loudness by second follows the approved mp3. Nothing is listened to by the measurement. -->
+<style>
+body{margin:0;padding:1.2em 1.6em;background:#0b0a0a;color:#b9b3ad;font:15px/1.5 Georgia,serif}
+h1{font-weight:400;color:#e8b86a;font-size:20px;margin:0 0 .4em}
+button,select{cursor:pointer;color:#cd9646;background:#141212;border:1px solid rgba(205,150,70,.5);padding:.3em .7em;font:14px Georgia,serif;margin:.15em}
+button:focus-visible,select:focus-visible{outline:2px solid #f0cd96}
+#secs button .hy{color:#e8b86a;margin-right:.4em}
+pre{white-space:pre-wrap;color:#d8d2cc;font:13px/1.45 ui-monospace,Menlo,monospace;background:#141212;padding:.8em;border:1px solid #2c2723;max-width:70em}
+canvas{background:#141212;border:1px solid #2c2723;display:block;margin:.6em 0;max-width:100%}
+.note{color:#7d7a78;font-size:13px;max-width:70em}
+</style>
+<h1>Լսել · the live score</h1>
+<div class="note">The v4/v5 harmony table and voices, computed in the browser from a timeline: a re-timed Landing gets a score that fits it. Simplified against the mp3 (no tour styles, saw stabs, risers or stem balancing; one reverb). Nobody has listened to this yet: the checks below are measurements.</div>
+<p><label>timeline <select id="tl"></select></label> <label>seed <select id="seed"><option>0</option><option>1</option><option>2</option></select></label>
+<button id="stop">stop</button> <button id="measure">measure a whole loop offline</button></p>
+<div id="secs"></div>
+<pre id="out">loading…</pre>
+<canvas id="cv" width="1200" height="260" aria-label="loudness by second: the live score against the approved mp3"></canvas>
+<script type="module">
+import { Timeline, buildScore, Voices, Player, renderOffline, rmsDb } from "./score.js";
+const $ = id => document.getElementById(id), out = $("out");
+const [data, TL, SEC] = await Promise.all(["score_data.json", "../retime/timelines.json", "../../sections.json"].map(u => fetch(u).then(r => r.json())));
+for (const k of Object.keys(TL)) $("tl").append(new Option(`${k} (${TL[k].cycle.toFixed(1)} s)`, k));
+let ctx = null, player = null, score = null, tl = null;
+const FIRST = { stone: "flight", helix: "lift", tour: "tour", writing: "write", prayer: "prayer", numbers: "numerals", embedding: "space", graph: "web", pretraining: "finale", return: "line2" };
+function rebuild() {
+  tl = new Timeline(TL[$("tl").value].segs, TL[$("tl").value].cycle); score = buildScore(data, tl, +$("seed").value);
+  const kinds = {}; for (const e of score.events) kinds[e.v] = (kinds[e.v] || 0) + 1;
+  out.textContent = `timeline ${$("tl").value}: loop ${tl.cycle.toFixed(2)} s · ${score.events.length} events · groove from bar ${score.groove.startBar} (build ${score.groove.buildBars} bars, gates stretched x${score.groove.stretch.toFixed(2)})\n` +
+    `harmony audit (make_music's rules): ${score.audit.checked} pitched notes, ${score.audit.outside} outside the table${score.audit.bad.length ? "\n  " + score.audit.bad.join("\n  ") : ""}\n` +
+    `events by voice: ${Object.entries(kinds).map(([k, v]) => k + " " + v).join(", ")}`;
+  $("secs").replaceChildren(...SEC.sections.map(s => { const b = document.createElement("button"), sp = tl.span(FIRST[s.id]); const hy = document.createElement("span"); hy.className = "hy"; hy.textContent = s.hy; b.append(hy, s.en); b.onclick = () => play(sp ? sp[0] : 0); return b; }));
+}
+async function play(t) {
+  if (!ctx) ctx = new AudioContext(); await ctx.resume();
+  if (player) player.stop(); player = new Player(ctx, score, new Voices(ctx)); player.start(t, 1);
+  out.textContent = out.textContent.split("\n▶")[0] + `\n▶ playing from ${t.toFixed(2)} s (${ctx.sampleRate} Hz, base latency ${(ctx.baseLatency * 1000).toFixed(1)} ms)`;
+}
+$("tl").onchange = $("seed").onchange = () => { if (player) player.stop(); rebuild(); };
+$("stop").onclick = () => player && player.stop();
+$("measure").onclick = async () => {
+  if (player) player.stop();
+  out.textContent += `\n… rendering ${tl.cycle.toFixed(0)} s offline at 32 kHz`;
+  const r = await renderOffline(score, 0, tl.cycle, 32000), live = rmsDb(r.buffer, 1.0);
+  let peak = 0; for (let c = 0; c < 2; c++) for (const v of r.buffer.getChannelData(c)) peak = Math.max(peak, Math.abs(v));
+  let txt = `\nOFFLINE RENDER: ${r.seconds.toFixed(1)} s of music in ${((r.prepMs + r.renderMs) / 1000).toFixed(2)} s (scheduling ${(r.prepMs / 1000).toFixed(2)} s + rendering ${(r.renderMs / 1000).toFixed(2)} s) = ${(r.seconds / ((r.prepMs + r.renderMs) / 1000)).toFixed(1)}x real time · peak ${(20 * Math.log10(peak)).toFixed(1)} dBFS`;
+  let ref = null;
+  if ($("tl").value === "approved") {
+    const ac = new AudioContext({ sampleRate: 32000 }), mp3 = await ac.decodeAudioData(await (await fetch("../../landing_score.mp3")).arrayBuffer()); ref = rmsDb(mp3, 1.0).slice(0, live.length);
+    const n = Math.min(ref.length, live.length), a = live.slice(0, n), b = ref.slice(0, n), ma = a.reduce((s, x) => s + x, 0) / n, mb = b.reduce((s, x) => s + x, 0) / n;
+    let sab = 0, saa = 0, sbb = 0; for (let i = 0; i < n; i++) { sab += (a[i] - ma) * (b[i] - mb); saa += (a[i] - ma) ** 2; sbb += (b[i] - mb) ** 2; }
+    const rr = sab / Math.sqrt(saa * sbb);
+    txt += `\nAGAINST THE APPROVED MP3 (landing_score.mp3, the same timeline): Pearson r of loudness by second = ${rr.toFixed(3)} over ${n} s; mean level live ${ma.toFixed(1)} dB, mp3 ${mb.toFixed(1)} dB (offset ${(ma - mb).toFixed(1)} dB)\n  by section (mean dB, live − mp3 after removing the offset):`;
+    for (let i = 0; i < SEC.sections.length; i++) { const s0 = Math.floor(SEC.sections[i].t), s1 = Math.floor(i + 1 < SEC.sections.length ? SEC.sections[i + 1].t : n); const m = (x) => x.slice(s0, s1).reduce((s, v) => s + v, 0) / Math.max(1, s1 - s0); txt += `\n    ${SEC.sections[i].en.padEnd(26)} ${(m(a) - m(b) - (ma - mb)).toFixed(1).padStart(6)} dB`; }
+    ac.close();
+  }
+  out.textContent += txt; window.MEASURE = out.textContent; draw(live, ref);
+};
+function draw(live, ref) {
+  const cv = $("cv"), g = cv.getContext("2d"), W = cv.width, H = cv.height; g.clearRect(0, 0, W, H);
+  const all = [...live, ...(ref || [])].filter(Number.isFinite), lo = Math.min(...all), hi = Math.max(...all), n = Math.max(live.length, ref ? ref.length : 0);
+  const line = (y, col) => { g.strokeStyle = col; g.lineWidth = 1.5; g.beginPath(); y.forEach((v, i) => { const X = 40 + (W - 50) * i / n, Y = H - 20 - (H - 30) * (v - lo) / (hi - lo); i ? g.lineTo(X, Y) : g.moveTo(X, Y); }); g.stroke(); };
+  g.fillStyle = "#7d7a78"; g.font = "12px Georgia"; g.fillText(`${hi.toFixed(0)} dB`, 2, 14); g.fillText(`${lo.toFixed(0)} dB`, 2, H - 22);
+  if (ref) line(ref, "#c9efe8"); line(live, "#e1ad66");
+  g.fillStyle = "#e1ad66"; g.fillText("live", W - 120, 16); if (ref) { g.fillStyle = "#c9efe8"; g.fillText("approved mp3", W - 80, 16); }
+}
+rebuild();
+</script>

@@ -1,0 +1,300 @@
+{
+ "cycle": 255.0478260869565,
+ "bpm": 128.0,
+ "sections": [
+  {
+   "id": "stone",
+   "hy": "Քար",
+   "en": "The stone",
+   "t": 0.0
+  },
+  {
+   "id": "helix",
+   "hy": "Աստղագետի պարույրը",
+   "en": "The astronomer's helix",
+   "t": 9.15
+  },
+  {
+   "id": "tour",
+   "hy": "Տառ առ տառ",
+   "en": "The tour of 36",
+   "t": 12.55
+  },
+  {
+   "id": "writing",
+   "hy": "Գրությունը",
+   "en": "Writing 405",
+   "t": 53.35
+  },
+  {
+   "id": "prayer",
+   "hy": "Հայր մեր",
+   "en": "The Lord's Prayer",
+   "t": 65.098
+  },
+  {
+   "id": "numbers",
+   "hy": "Թվեր",
+   "en": "Letters are numbers",
+   "t": 82.098
+  },
+  {
+   "id": "embedding",
+   "hy": "Տարածություն",
+   "en": "Embedding space",
+   "t": 104.098
+  },
+  {
+   "id": "graph",
+   "hy": "Գրաֆ",
+   "en": "The alphabet as a graph",
+   "t": 113.473
+  },
+  {
+   "id": "pretraining",
+   "hy": "Նախաուսուցում",
+   "en": "Pre-training in Armenian",
+   "t": 209.098
+  },
+  {
+   "id": "return",
+   "hy": "Տուն",
+   "en": "Return",
+   "t": 246.598
+  }
+ ],
+ "shaders": [
+  "ArcShader",
+  "ArmillaryShader",
+  "BackdropShader",
+  "BallShader",
+  "BowlShader",
+  "CentroidShader",
+  "ChordShader",
+  "ClusterShader",
+  "DashShader",
+  "DiskShader",
+  "EpiShader",
+  "FloorExtShader",
+  "FloorFitShader",
+  "FloorPointsShader",
+  "FlowShader",
+  "GeodesicShader",
+  "GlobeLineShader",
+  "GridShader",
+  "HelixStrandShader",
+  "HullShader",
+  "KinShader",
+  "LabelShader",
+  "LawCurveShader",
+  "LawDotShader",
+  "LawPointsShader",
+  "LawProjShader",
+  "LetterShader",
+  "MapShader",
+  "MoteShader",
+  "NodeShader",
+  "OccShader",
+  "PenShader",
+  "PlateShader",
+  "PulseShader",
+  "RingShader",
+  "RippleShader",
+  "SparkShader",
+  "SpecBarShader",
+  "SpectrumShader",
+  "StarRingShader",
+  "StarShader",
+  "TensorShader",
+  "TrajShader",
+  "WalkerShader",
+  "WriteArcShader",
+  "WriteLineShader",
+  "WritePArcShader",
+  "WritePLineShader",
+  "WritePShader",
+  "WriteShader"
+ ],
+ "segments": [
+  {
+   "name": "flight",
+   "t": 0.0,
+   "dur": 6.15
+  },
+  {
+   "name": "line",
+   "t": 6.15,
+   "dur": 3.0
+  },
+  {
+   "name": "lift",
+   "t": 9.15,
+   "dur": 1.7
+  },
+  {
+   "name": "lift",
+   "t": 10.85,
+   "dur": 1.7
+  },
+  {
+   "name": "tour",
+   "t": 12.55,
+   "dur": 40.8
+  },
+  {
+   "name": "write",
+   "t": 53.35,
+   "dur": 11.748
+  },
+  {
+   "name": "prayer",
+   "t": 65.098,
+   "dur": 17.0
+  },
+  {
+   "name": "numerals",
+   "t": 82.098,
+   "dur": 12.0
+  },
+  {
+   "name": "shirakatsi",
+   "t": 94.098,
+   "dur": 10.0
+  },
+  {
+   "name": "space",
+   "t": 104.098,
+   "dur": 9.375
+  },
+  {
+   "name": "web",
+   "t": 113.473,
+   "dur": 3.75
+  },
+  {
+   "name": "web",
+   "t": 117.223,
+   "dur": 5.625
+  },
+  {
+   "name": "msg",
+   "t": 122.848,
+   "dur": 2.25
+  },
+  {
+   "name": "msg",
+   "t": 125.098,
+   "dur": 5.25
+  },
+  {
+   "name": "spectral",
+   "t": 130.348,
+   "dur": 1.688
+  },
+  {
+   "name": "spectral",
+   "t": 132.035,
+   "dur": 2.062
+  },
+  {
+   "name": "vowels",
+   "t": 134.098,
+   "dur": 7.5
+  },
+  {
+   "name": "spectral2",
+   "t": 141.598,
+   "dur": 3.75
+  },
+  {
+   "name": "pagerank",
+   "t": 145.348,
+   "dur": 2.625
+  },
+  {
+   "name": "pagerank",
+   "t": 147.973,
+   "dur": 3.375
+  },
+  {
+   "name": "pagerank",
+   "t": 151.348,
+   "dur": 1.5
+  },
+  {
+   "name": "anneal",
+   "t": 152.848,
+   "dur": 3.75
+  },
+  {
+   "name": "anneal",
+   "t": 156.598,
+   "dur": 3.75
+  },
+  {
+   "name": "descent",
+   "t": 160.348,
+   "dur": 3.375
+  },
+  {
+   "name": "descent",
+   "t": 163.723,
+   "dur": 4.125
+  },
+  {
+   "name": "walk",
+   "t": 167.848,
+   "dur": 5.625
+  },
+  {
+   "name": "walk",
+   "t": 173.473,
+   "dur": 3.75
+  },
+  {
+   "name": "fourier",
+   "t": 177.223,
+   "dur": 4.688
+  },
+  {
+   "name": "fourier",
+   "t": 181.91,
+   "dur": 4.688
+  },
+  {
+   "name": "poincare",
+   "t": 186.598,
+   "dur": 9.375
+  },
+  {
+   "name": "svd",
+   "t": 195.973,
+   "dur": 11.25
+  },
+  {
+   "name": "collapse",
+   "t": 207.223,
+   "dur": 1.875
+  },
+  {
+   "name": "finale",
+   "t": 209.098,
+   "dur": 37.5
+  },
+  {
+   "name": "line2",
+   "t": 246.598,
+   "dur": 2.0
+  },
+  {
+   "name": "return",
+   "t": 248.598,
+   "dur": 4.85
+  },
+  {
+   "name": "rest",
+   "t": 253.448,
+   "dur": 1.6
+  }
+ ]
+}

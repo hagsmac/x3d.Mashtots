@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<title>Մաշտոց Համակարգ 2 — Mashtots System 2</title>
+<link rel="stylesheet" href="_ds/classical-9d846b67-876e-4960-856e-d507c5c0274c/styles.css">
+<script src="_ds/classical-9d846b67-876e-4960-856e-d507c5c0274c/_ds_bundle.js"></script>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+Armenian:wght@200..900&display=swap">
+<style>
+html,body{margin:0;height:100%;background:#1a1919;overflow:hidden}
+a{color:var(--color-accent-400)}a:hover{color:var(--color-accent-300)}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes fadein{from{opacity:0}to{opacity:1}}
+@keyframes rule{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes drift{0%{transform:scale(1) translate(0,0)}50%{transform:scale(1.025) translate(-6px,4px)}100%{transform:scale(1) translate(0,0)}}
+@keyframes pulse{0%,100%{opacity:.45}50%{opacity:1}}
+@keyframes glyph{from{opacity:0;transform:translateY(22px) scale(.94);filter:blur(6px)}to{opacity:1;transform:none;filter:none}}
+</style>
+</helmet>
+<div data-screen-label="Landing" style="position:fixed;inset:0;overflow:hidden;background:color-mix(in srgb,var(--color-neutral-900) 85%,black)">
+<div ref="{{ fitRef }}" style="width:1920px;height:1080px;position:absolute;left:50%;top:50%;overflow:hidden;transform:translate(-50%,-50%) scale(var(--fit,1));transform-origin:center;background:color-mix(in srgb,var(--color-neutral-900) 85%,black);color:var(--color-bg);font-family:var(--font-body),'Noto Serif Armenian',serif;text-wrap:pretty">
+
+  <sc-if value="{{ firmament }}" hint-placeholder-val="{{ false }}">
+    <img src="assets/mural.jpg" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:38% 50%;filter:sepia(.22) saturate(.7) brightness(.42) contrast(1.05);animation:drift 48s ease-in-out infinite">
+    <div style="position:absolute;inset:0;background:radial-gradient(ellipse 62% 70% at 50% 46%,transparent 30%,rgba(10,14,13,.94) 100%)"></div>
+  </sc-if>
+  <sc-if value="{{ plate }}" hint-placeholder-val="{{ true }}">
+    <figure class="plate" style="position:absolute;left:260px;top:88px;width:1400px;margin:0;border-width:14px;animation:fadein 1.8s both;overflow:hidden"><img src="assets/mural.jpg" alt="Van Khachatur, staircase fresco, Matenadaran, 1959–60" style="width:100%;height:auto;display:block;animation:drift 48s ease-in-out infinite"></figure>
+  </sc-if>
+
+  <canvas ref="{{ canvasRef }}" width="1920" height="1080" style="position:absolute;inset:0;width:1920px;height:1080px;pointer-events:none"></canvas>
+
+  <sc-if value="{{ showA }}" hint-placeholder-val="{{ false }}">
+    <div style="position:absolute;left:144px;top:132px;width:640px;display:flex;flex-direction:column;gap:14px;animation:glyph .9s cubic-bezier(.2,.8,.2,1) both">
+      <div style="font-size:24px;letter-spacing:.08em;text-transform:uppercase;color:var(--color-accent);font-feature-settings:'tnum' 1">Տառ {{ card.idx }} · 36-ից · {{ card.rowName }}</div>
+      <div style="display:flex;align-items:baseline;gap:34px"><div style="font-family:'Noto Serif Armenian',serif;font-weight:200;font-size:230px;line-height:.9;color:var(--color-accent-400);text-shadow:0 0 60px rgba(225,173,102,.35)">{{ card.ch }}</div><div><div style="font-family:'Noto Serif Armenian',serif;font-weight:300;font-size:56px;line-height:1">{{ card.name }}</div><div style="font-family:var(--font-heading),serif;font-size:36px;line-height:1.2;color:var(--color-neutral-400);margin-top:10px">{{ card.tr }} · {{ card.kind }}</div></div></div>
+      <div style="display:flex;gap:14px;flex-wrap:wrap"><span class="tag tag-outline" style="font-size:24px;padding:8px 16px;color:var(--color-accent-300);border-color:var(--color-accent-700)">= {{ card.num }}</span><span class="tag tag-outline" style="font-size:24px;padding:8px 16px;color:var(--color-neutral-300);border-color:var(--color-neutral-600)">{{ card.kindFull }}</span></div>
+      <div style="display:flex;align-items:baseline;gap:18px;margin-top:6px"><span style="font-family:'Noto Serif Armenian',serif;font-weight:300;font-size:44px;line-height:1.1">{{ card.word }}</span><span style="font-family:var(--font-heading),serif;font-size:32px;color:var(--color-neutral-400)">{{ card.gloss }}</span></div>
+    </div>
+  </sc-if>
+  <sc-if value="{{ showB }}" hint-placeholder-val="{{ false }}">
+    <div style="position:absolute;left:144px;top:132px;width:640px;display:flex;flex-direction:column;gap:14px;animation:glyph .9s cubic-bezier(.2,.8,.2,1) both">
+      <div style="font-size:24px;letter-spacing:.08em;text-transform:uppercase;color:var(--color-accent);font-feature-settings:'tnum' 1">Տառ {{ card.idx }} · 36-ից · {{ card.rowName }}</div>
+      <div style="display:flex;align-items:baseline;gap:34px"><div style="font-family:'Noto Serif Armenian',serif;font-weight:200;font-size:230px;line-height:.9;color:var(--color-accent-400);text-shadow:0 0 60px rgba(225,173,102,.35)">{{ card.ch }}</div><div><div style="font-family:'Noto Serif Armenian',serif;font-weight:300;font-size:56px;line-height:1">{{ card.name }}</div><div style="font-family:var(--font-heading),serif;font-size:36px;line-height:1.2;color:var(--color-neutral-400);margin-top:10px">{{ card.tr }} · {{ card.kind }}</div></div></div>
+      <div style="display:flex;gap:14px;flex-wrap:wrap"><span class="tag tag-outline" style="font-size:24px;padding:8px 16px;color:var(--color-accent-300);border-color:var(--color-accent-700)">= {{ card.num }}</span><span class="tag tag-outline" style="font-size:24px;padding:8px 16px;color:var(--color-neutral-300);border-color:var(--color-neutral-600)">{{ card.kindFull }}</span></div>
+      <div style="display:flex;align-items:baseline;gap:18px;margin-top:6px"><span style="font-family:'Noto Serif Armenian',serif;font-weight:300;font-size:44px;line-height:1.1">{{ card.word }}</span><span style="font-family:var(--font-heading),serif;font-size:32px;color:var(--color-neutral-400)">{{ card.gloss }}</span></div>
+    </div>
+  </sc-if>
+
+  <div style="position:absolute;left:144px;right:144px;top:676px;height:1px;background:color-mix(in srgb,var(--color-bg) 22%,transparent);transform-origin:left;animation:rule 1.2s 6.1s cubic-bezier(.2,.8,.2,1) both"></div>
+  <div style="position:absolute;left:144px;right:144px;top:716px;display:flex;flex-direction:column;gap:24px">
+    <div style="display:flex;align-items:baseline;gap:40px;animation:rise 1s 6.5s cubic-bezier(.2,.8,.2,1) both">
+      <h1 style="margin:0;font-family:'Noto Serif Armenian',serif;font-weight:300;font-size:118px;line-height:1;letter-spacing:-.01em">Մաշտոց Համակարգ 2</h1>
+      <div style="font-family:var(--font-heading),serif;font-weight:400;font-size:52px;line-height:1;color:var(--color-neutral-400)">Mashtots System 2</div>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:baseline;gap:40px;animation:rise 1s 7.4s cubic-bezier(.2,.8,.2,1) both">
+      <p style="margin:0;font-family:'Noto Serif Armenian',serif;font-weight:300;font-size:36px;line-height:1.35;max-width:1250px">Այբուբենը առաջին համակարգն էր։ Սա երկրորդն է։ <span style="font-family:var(--font-heading),serif;font-weight:400;font-size:34px;color:var(--color-neutral-400);white-space:nowrap">The alphabet was the first system. This is the second.</span></p>
+      <div style="flex:none;font-size:24px;letter-spacing:.08em;text-transform:uppercase;color:var(--color-accent);font-feature-settings:'tnum' 1">Մատենադարան · Երևան · 2026</div>
+    </div>
+  </div>
+
+  <div style="position:absolute;left:144px;right:144px;bottom:28px;display:flex;justify-content:space-between;align-items:center;gap:40px;animation:fadein 1.4s 8.4s both">
+    <div style="display:flex;align-items:center;gap:18px;flex:1;min-width:0">
+      <sc-if value="{{ musicOn }}" hint-placeholder-val="{{ true }}">
+        <button type="button" onClick="{{ toggleMusic }}" aria-pressed="{{ playing }}" style="cursor:pointer;display:inline-flex;align-items:center;gap:14px;font-family:var(--font-heading),'Noto Serif Armenian',serif;font-weight:600;font-size:26px;line-height:1;color:var(--color-accent-400);background:transparent;border:1px solid var(--color-accent-700);border-radius:var(--radius-md);padding:14px 26px" style-hover="background:color-mix(in srgb,var(--color-accent) 14%,transparent);color:var(--color-accent-300)" style-active="background:color-mix(in srgb,var(--color-accent) 24%,transparent)" style-focus="outline:2px solid var(--color-accent);outline-offset:2px">
+          <span style="display:inline-flex;align-items:flex-end;gap:3px;height:22px"><sc-for list="{{ bars }}" as="b" hint-placeholder-count="4"><span style="width:3px;height:{{ b.h }};background:currentColor;border-radius:1px;animation:{{ b.anim }}"></span></sc-for></span>
+          <span>{{ musicLabel }}</span>
+        </button>
+        <span style="font-size:24px;color:var(--color-neutral-500);font-feature-settings:'tnum' 1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0">{{ musicNote }}</span>
+      </sc-if>
+    </div>
+    <div style="display:flex;gap:28px;font-size:24px;letter-spacing:.06em;text-transform:uppercase;flex:none">
+      <a href="MashtotsDemo.dc.html" style="text-decoration:none;white-space:nowrap;color:var(--color-neutral-400);border-bottom:1px solid color-mix(in srgb,var(--color-bg) 22%,transparent);padding-bottom:4px" style-hover="color:var(--color-accent-300);border-color:var(--color-accent)">Ցուցադրություն · Live demo</a>
+      <a href="MashtotsDeck.dc.html" style="text-decoration:none;white-space:nowrap;color:var(--color-neutral-400);border-bottom:1px solid color-mix(in srgb,var(--color-bg) 22%,transparent);padding-bottom:4px" style-hover="color:var(--color-accent-300);border-color:var(--color-accent)">Ներկայացում · Stage deck</a>
+    </div>
+  </div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;pace&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:1.7,&quot;min&quot;:1,&quot;max&quot;:4,&quot;step&quot;:0.1,&quot;unit&quot;:&quot;s / letter&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Animation&quot;},&quot;treatment&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;plate&quot;,&quot;options&quot;:[&quot;plate&quot;,&quot;firmament&quot;],&quot;tsType&quot;:&quot;'plate' | 'firmament'&quot;,&quot;section&quot;:&quot;Treatment&quot;},&quot;music&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Sound&quot;}}">
+class Component extends DCLogic {
+  state = { playing: false, armed: false, spot: -1, tour: false };
+  canvasRef = React.createRef();
+  fitRef = React.createRef();
+  nodes = [];
+  // the 36 letters of 405: name, classical transliteration, numeral value, a word, and the phonetic features the attention heads read
+  // [ch, name, tr, word, gloss, vowel, place, voiced, aspirated]
+  DATA = [
+    ['Ա','Այբ','a','Արարատ','Ararat',1,.4,1,0],['Բ','Բեն','b','Բառ','word',0,.1,1,0],['Գ','Գիմ','g','Գիր','script',0,.8,1,0],['Դ','Դա','d','Դուռ','door',0,.35,1,0],['Ե','Եչ','e','Երևան','Yerevan',1,.5,1,0],['Զ','Զա','z','Զանգ','bell',0,.35,1,0],['Է','Է','ē','Էություն','essence',1,.5,1,0],['Ը','Ըթ','ə','Ընկեր','friend',1,.45,1,0],['Թ','Թո','tʻ','Թիվ','number',0,.35,0,1],
+    ['Ժ','Ժե','ž','Ժամանակ','time',0,.6,1,0],['Ի','Ինի','i','Իմաստություն','wisdom',1,.55,1,0],['Լ','Լիւն','l','Լույս','light',0,.35,1,0],['Խ','Խե','x','Խոսք','speech',0,.8,0,0],['Ծ','Ծա','c','Ծիրան','apricot',0,.35,0,0],['Կ','Կեն','k','Կյանք','life',0,.8,0,0],['Հ','Հո','h','Հայ','Armenian',0,1,0,0],['Ձ','Ձա','j','Ձայն','voice',0,.35,1,0],['Ղ','Ղատ','ġ','Ղողանջ','peal of bells',0,.9,1,0],
+    ['Ճ','Ճե','č','Ճանաչել','to know',0,.6,0,0],['Մ','Մեն','m','Մաշտոց','Mashtots',0,.1,1,0],['Յ','Յի','y','Յիշատակ','memory',0,.6,1,0],['Ն','Նու','n','Նարեկ','Narek',0,.35,1,0],['Շ','Շա','š','Շնորհք','grace',0,.6,0,0],['Ո','Ո','o','Ոսկի','gold',1,.25,1,0],['Չ','Չա','čʻ','Չքնաղ','marvellous',0,.6,0,1],['Պ','Պե','p','Պատմություն','history',0,.1,0,0],['Ջ','Ջե','ǰ','Ջուր','water',0,.6,1,0],
+    ['Ռ','Ռա','ṙ','Ռահվիրա','pioneer',0,.35,1,0],['Ս','Սե','s','Սեր','love',0,.35,0,0],['Վ','Վեւ','v','Վարդ','rose',0,.1,1,0],['Տ','Տիւն','t','Տուն','home',0,.35,0,0],['Ր','Րե','r','Րոպե','minute',0,.35,1,0],['Ց','Ցո','cʻ','Ցայգ','dawn',0,.35,0,1],['Ւ','Հիւն','w','ու · եւ','the u in ու, the and in եւ',1,.2,1,0],['Փ','Փիւր','pʻ','Փառք','glory',0,.1,0,1],['Ք','Քէ','kʻ','Քնար','lyre',0,.8,0,1],
+  ];
+  ROWS = ['միավոր · units', 'տասնյակ · tens', 'հարյուրյակ · hundreds', 'հազարյակ · thousands'];
+
+  componentDidMount() {
+    this.fit(); window.addEventListener('resize', this.fit); document.addEventListener('visibilitychange', this.fit);
+    this.alive = true;
+    this.attention = this.buildAttention();
+    const ready = document.fonts?.load ? document.fonts.load('300 40px "Noto Serif Armenian"') : Promise.resolve();
+    Promise.race([ready, new Promise(r => setTimeout(r, 1500))]).then(() => { if (this.alive) this.startCanvas(); });
+    if ((this.props.music ?? true) && localStorage.getItem('mashtots-landing-music') === '1') {
+      this.setState({ armed: true });
+      this.armHandler = () => { this.unarm(); if (!this.ctx) this.startAudio(); };
+      window.addEventListener('pointerdown', this.armHandler); window.addEventListener('keydown', this.armHandler);
+    }
+  }
+  componentDidUpdate(prev) { if ((prev.pace ?? 1.7) !== (this.props.pace ?? 1.7) || (prev.treatment ?? 'plate') !== (this.props.treatment ?? 'plate')) this.startCanvas(); }
+  componentWillUnmount() { this.alive = false; window.removeEventListener('resize', this.fit); document.removeEventListener('visibilitychange', this.fit); this.ro?.disconnect(); clearTimeout(this.fitTimer); this.unarm(); if (this.raf) cancelAnimationFrame(this.raf); this.stopAudio(true); }
+  unarm() { if (!this.armHandler) return; window.removeEventListener('pointerdown', this.armHandler); window.removeEventListener('keydown', this.armHandler); this.armHandler = null; this.setState({ armed: false }); }
+  fit = () => {
+    const el = this.fitRef.current; if (!el) return;
+    const host = el.parentElement, w = host?.clientWidth || window.innerWidth, h = host?.clientHeight || window.innerHeight;
+    if (!this.ro && window.ResizeObserver && host) { this.ro = new ResizeObserver(() => this.fit()); this.ro.observe(host); }
+    if (!(w > 0 && h > 0)) { clearTimeout(this.fitTimer); this.fitTimer = setTimeout(this.fit, 120); return; } // not laid out yet — never commit a zero scale (timers run in hidden documents, rAF does not)
+    el.style.setProperty('--fit', Math.min(w / 1920, h / 1080).toFixed(4));
+  };
+
+  /* ── three attention heads over hand-made letter embeddings: sound, number, order. softmax(−‖qᵢ−kⱼ‖²/τ) ── */
+  buildAttention() {
+    const N = 36, feats = [
+      (d, i) => [d[5] * 2, d[6] * 1.5, d[7] * .7, d[8] * .7],
+      (d, i) => [(i % 9) / 8 * 2, Math.floor(i / 9) / 3 * .6],
+      (d, i) => [i / 35 * 3],
+    ];
+    const taus = [.35, .25, .12];
+    const d2 = feats.map(f => { const F = this.DATA.map((d, i) => f(d, i)); return F.map(q => F.map(k => q.reduce((a, v, n) => a + (v - k[n]) ** 2, 0))); });
+    const heads = d2.map((D, h) => D.map((row, i) => { const s = row.map((dd, j) => i === j ? -Infinity : -dd / taus[h]); const m = Math.max(...s); const e = s.map(v => Math.exp(v - m)); const Z = e.reduce((a, b) => a + b, 0); return e.map(v => v / Z); }));
+    const mean = heads[0].map((row, i) => row.map((_, j) => (heads[0][i][j] + heads[1][i][j] + heads[2][i][j]) / 3));
+    const top = heads.map(W => W.map(row => row.map((w, j) => [w, j]).sort((a, b) => b[0] - a[0]).slice(0, 5)));
+    return { heads, mean, top, rowMax: mean.map(r => Math.max(...r)), d2, taus };
+  }
+
+  /* ── the cycle: stone → flight → line → lift into the helix → the tour of 36 → the writing of the first sentence → collapse → line → return → stone ── */
+  startCanvas() {
+    const c = this.canvasRef.current; if (!c) return;
+    if (this.raf) cancelAnimationFrame(this.raf);
+    const W = 1920, H = 1080, dpr = Math.min(1.5, window.devicePixelRatio || 1);
+    c.width = Math.round(W * dpr); c.height = Math.round(H * dpr);
+    const ctx = c.getContext('2d'); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const firm = (this.props.treatment ?? 'plate') === 'firmament';
+    const src = firm ? { x: 420, y: 367, w: 423, h: 713 } : { x: 686, y: 284, w: 137, h: 260 };
+    const veilBox = firm ? { x: 0, y: 0, w: 1920, h: 660 } : { x: 260, y: 88, w: 1400, h: 484 };
+    const row = { x: 144, y: 648, w: 1632 };
+    // the first sentence of 405, in the capitals that are the alphabet itself — measured once the font is in
+    const SENT = ['ՃԱՆԱՉԵԼ ԶԻՄԱՍՏՈՒԹԻՒՆ ԵՒ ԶԽՐԱՏ,', 'ԻՄԱՆԱԼ ԶԲԱՆՍ ՀԱՆՃԱՐՈՅ'];
+    ctx.font = '400 40px "Noto Serif Armenian", serif';
+    const slots = []; let word = 0;
+    SENT.forEach((line, li) => { const chars = [...line], widths = chars.map(ch => ctx.measureText(ch).width + 5), total = widths.reduce((a, b) => a + b, 0) - 5; let x = 960 - total / 2; chars.forEach((ch, ci) => { if (ch === ' ') word++; else slots.push({ ch, x: x + (widths[ci] - 5) / 2, y: 200 + li * 78, src: this.DATA.findIndex(d => d[0] === ch), word }); x += widths[ci]; }); word++; });
+    const NG = slots.length, GDT = .16, DW = 1 + NG * GDT + .55 + 4.6;
+    const N = 36, begin = .9, stagger = .07, flight = 2.8, flightR = 2.4, S = this.props.pace ?? 1.7;
+    const T1 = begin + (N - 1) * stagger + flight, TL = T1 + 3, TT = TL + 2, TC = TT + N * S, TW2 = TC + DW, TS = TW2, DS = 10.5, TS2 = TS + DS, TB = TS2, DB = 9.5, TB2 = TB + DB, TM = TB2, TSP = TM + 8, TP = TSP + 8, TA = TP + 8, TD = TA + 8, TD2 = TD + 8, TWK = TD2, TF = TWK + 9, TPC = TF + 9, TSV = TPC + 9, TSV2 = TSV + 10, TH = TSV2 + 2, T2 = TH + 2, T3 = T2 + (N - 1) * stagger + flightR, CYCLE = T3 + 1.6;
+    let seed = 405; const rnd = () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+    const ease = (p) => p < .5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2;
+    const cl = (v) => v < 0 ? 0 : v > 1 ? 1 : v, mix = (a, b, t) => a + (b - a) * t;
+    const GOLD = [225, 173, 102], DEEP = [194, 141, 65], TEAL = [201, 239, 232], PAPER = [243, 242, 242], GROUND = [27, 26, 26];
+    const HEADC = [GOLD, TEAL, PAPER], HEADN = ['ձայն · sound', 'թիվ · number', 'կարգ · order'];
+    const rgba = (col, a) => `rgba(${col[0]},${col[1]},${col[2]},${a})`;
+    const mixC = (a, b, t) => [Math.round(mix(a[0], b[0], t)), Math.round(mix(a[1], b[1], t)), Math.round(mix(a[2], b[2], t))];
+    const P = this.DATA.map((d, i) => {
+      const col = i % 4, r = Math.floor(i / 4);
+      const sx = src.x + (col + .5) / 4 * src.w, sy = src.y + (r + .5) / 9 * src.h, tx = row.x + (i + .5) / N * row.w, ty = row.y;
+      return { ch: d[0], sx, sy, tx, ty, c1: { x: sx + (tx - sx) * .12 + (rnd() - .5) * 240, y: sy - 380 - rnd() * 300 }, c2: { x: tx + (rnd() - .5) * 200, y: ty - 200 - rnd() * 220 }, t0: begin + i * stagger, r0: T2 + (N - 1 - i) * stagger, ph: rnd() * 6.283, trail: [], x: sx, y: sy, s: 1 };
+    });
+    const motes = Array.from({ length: 70 }, () => ({ x: rnd() * W, y: rnd() * H, s: .12 + rnd() * .35, a: .05 + rnd() * .12, r: .8 + rnd() * 1.6, ph: rnd() * 6.283 }));
+    const sparks = [];
+    const bez = (p, e) => { const u = 1 - e; return { x: u*u*u*p.sx + 3*u*u*e*p.c1.x + 3*u*e*e*p.c2.x + e*e*e*p.tx, y: u*u*u*p.sy + 3*u*u*e*p.c1.y + 3*u*e*e*p.c2.y + e*e*e*p.ty }; };
+    // the helix: four turns of nine — the numeral rows — around a vertical axis, in perspective; it draws in while the sentence is written
+    const HC = { x: 1180, y: 392 }, R = 300, HH = 430, F = 1500, RG = 400;
+    const helix = (i, T, sh) => { const r = R * (1 - .5 * sh), hh = HH * (1 - .5 * sh), cy = HC.y + 108 * sh, a = i / N * Math.PI * 8 + T * .22, X = r * Math.cos(a), Z = r * Math.sin(a), Y = (i / (N - 1) - .5) * hh, k = F / (F + Z + R); return { x: HC.x + X * k, y: cy + Y * k, s: k, z: Z }; };
+    const proj = (x3, y3, z3, sh) => { const k = F / (F + z3 + R); return { x: HC.x + x3 * k, y: HC.y + 108 * sh + y3 * k, z: z3 }; };
+    const A = this.attention, HM = { x: 1540, y: 150, cell: 6 }, SG = { x: 144, y: 586, cell: 18, gap: 3 };
+    // the embedding space: two principal axes by hand — place of articulation across, voicing down — each letter coloured by its class
+    const CLASSES = [['ձայնավորներ · vowels', TEAL], ['ձայնեղ · voiced', GOLD], ['խուլ · voiceless', PAPER], ['շնչեղ · aspirated', DEEP]];
+    const EMB = this.DATA.map((dd, i) => { const c = dd[5] ? 0 : dd[8] ? 3 : dd[7] ? 1 : 2, px = (dd[6] - .1) / .9; return { c, x: 330 + 820 * (.08 + .84 * px) + ((i % 9) - 4) * 16, y: [170, 300, 430, 530][c] + (Math.floor(i / 9) - 1.5) * 26 }; });
+    const HULLS = CLASSES.map((_, c) => { const m = EMB.filter(e => e.c === c); const xs = m.map(e => e.x), ys = m.map(e => e.y); return { x0: Math.min(...xs), x1: Math.max(...xs), y0: Math.min(...ys), y1: Math.max(...ys) }; });
+    // the attention tensor, 3 × 36 × 36, as a volume: three planes of cells in depth, turning
+    const TV = { x: 1330, y: 372, cell: 5, F: 900, tilt: .45 };
+    const STARS = Array.from({ length: 140 }, () => { const u = rnd() * 2 - 1, ph = rnd() * 6.283, r = Math.sqrt(1 - u * u); return { x: r * Math.cos(ph), y: u, z: r * Math.sin(ph), tw: rnd() * 6.283, s: .9 + rnd() * 1.3 }; });
+    const pulses = [], ripples = [];
+    const Wm = A.mean, Ws = Wm.map((r, i) => r.map((v, j) => (v + Wm[j][i]) / 2)), deg = Ws.map(r => r.reduce((a, b) => a + b, 0));
+    const Lap = Ws.map((r, i) => r.map((v, j) => (i === j ? deg[i] : 0) - v)), cshift = 2 * Math.max(...deg);
+    let fv = this.DATA.map((_, i) => Math.sin(i * 1.7));
+    for (let it = 0; it < 300; it++) { const mn = fv.reduce((a, b) => a + b, 0) / N; fv = fv.map(v => v - mn); const nv = fv.map((_, i) => { let s = 0; for (let j = 0; j < N; j++) s += ((i === j ? cshift : 0) - Lap[i][j]) * fv[j]; return s; }); const nrm = Math.hypot(...nv) || 1; fv = nv.map(v => v / nrm); }
+    const Lf = fv.map((_, i) => fv.reduce((s, v, j) => s + Lap[i][j] * v, 0)), lam2 = fv.reduce((s, v, i) => s + v * Lf[i], 0), fmax = Math.max(...fv.map(Math.abs));
+    const FIED = fv.map(v => v / fmax);
+    const PR = [Array(N).fill(1 / N)]; for (let k = 0; k < 14; k++) { const r = PR[k]; PR.push(r.map((_, i) => .15 / N + .85 * r.reduce((s, rj, j) => s + rj * Wm[j][i], 0))); }
+    const PRmax = Math.max(...PR[14]), PRtop = PR[14].map((v, i) => [v, i]).sort((a, b) => b[0] - a[0]).slice(0, 3);
+    const MSG = [this.DATA.map((_, i) => i === 18 ? 1 : 0)]; for (let l = 0; l < 5; l++) { const h = MSG[l], nh = h.map((_, i) => Wm[i].reduce((s, w, j) => s + w * h[j], 0)), mx = Math.max(...nh); MSG.push(nh.map(v => v / mx)); }
+    const GD = []; { let w = [-1.6, 1.3], vel = [0, 0]; for (let k = 0; k < 48; k++) { GD.push([...w]); const g = [2 * w[0] + .6 * w[1], 6 * w[1] + .6 * w[0]]; vel = [.9 * vel[0] - .08 * g[0], .9 * vel[1] - .08 * g[1]]; w = [w[0] + vel[0], w[1] + vel[1]]; } }
+    const GDP = { x: 490, y: 355, k: 110 }, gdx = (w) => ({ x: GDP.x + w[0] * GDP.k, y: GDP.y - w[1] * GDP.k });
+    // SVD of the attention matrix by power iteration with deflation — six singular triplets, the rank-k approximations and their residuals
+    const SV = []; { let Wd = Wm.map(r => r.slice()); for (let l = 0; l < 6; l++) { let v = this.DATA.map((_, i) => Math.cos(i * (l + 1.3))); for (let it = 0; it < 200; it++) { const u = Wd.map(r => r.reduce((s, w, j) => s + w * v[j], 0)); const nv = v.map((_, j) => Wd.reduce((s, r, i) => s + r[j] * u[i], 0)); const nrm = Math.hypot(...nv) || 1; v = nv.map(x => x / nrm); } const u = Wd.map(r => r.reduce((s, w, j) => s + w * v[j], 0)); const sig = Math.hypot(...u) || 1; const un = u.map(x => x / sig); SV.push({ sig, u: un, v }); Wd = Wd.map((r, i) => r.map((w, j) => w - sig * un[i] * v[j])); } }
+    const WK = [null], WKmax = [null], WKres = [0]; for (let k = 1; k <= 6; k++) { const M = Wm.map((r, i) => r.map((_, j) => { let s = 0; for (let l = 0; l < k; l++) s += SV[l].sig * SV[l].u[i] * SV[l].v[j]; return Math.max(0, s); })); WK.push(M); WKmax.push(M.map(r => Math.max(...r) || 1)); WKres.push(Math.sqrt(Wm.reduce((s, r, i) => s + r.reduce((ss, w, j) => ss + (w - M[i][j]) ** 2, 0), 0))); }
+    const um = (l) => Math.max(...SV[l].u.map(Math.abs)) || 1, SVDXY = this.DATA.map((_, i) => ({ x: 960 + SV[1].u[i] / um(1) * 240, y: 345 + SV[2].u[i] / um(2) * 200 }));
+    // k-means on the SVD plane, k = 4, Lloyd steps
+    const KM = []; { let cent = [0, 9, 18, 27].map(i => ({ ...SVDXY[i] })); for (let j = 0; j < 7; j++) { const assign = SVDXY.map(p => { let b = 0, bd = Infinity; cent.forEach((c, k) => { const dd = (p.x - c.x) ** 2 + (p.y - c.y) ** 2; if (dd < bd) { bd = dd; b = k; } }); return b; }); const inertia = SVDXY.reduce((s, p, i) => s + (p.x - cent[assign[i]].x) ** 2 + (p.y - cent[assign[i]].y) ** 2, 0); KM.push({ cent: cent.map(c => ({ ...c })), assign, inertia }); cent = cent.map((c, k) => { const m = SVDXY.filter((_, i) => assign[i] === k); return m.length ? { x: m.reduce((s, p) => s + p.x, 0) / m.length, y: m.reduce((s, p) => s + p.y, 0) / m.length } : c; }); } }
+    // Fourier: the PageRank values around the ring as a closed curve, its DFT, and the epicycles that redraw it
+    const FS = 180, ZS = []; for (let m = 0; m < FS; m++) { const th = m / FS * 6.283, pos = th / 6.283 * N, i0 = Math.floor(pos) % N, i1 = (i0 + 1) % N, val = mix(PR[14][i0], PR[14][i1], pos - Math.floor(pos)) / PRmax, r = 250 + 70 * (val - .5); ZS.push([r * Math.cos(th - Math.PI / 2), r * Math.sin(th - Math.PI / 2)]); }
+    const ZK = []; for (let k = -9; k <= 9; k++) { let re = 0, im = 0; for (let m = 0; m < FS; m++) { const th = -k * m / FS * 6.283; re += ZS[m][0] * Math.cos(th) - ZS[m][1] * Math.sin(th); im += ZS[m][0] * Math.sin(th) + ZS[m][1] * Math.cos(th); } ZK.push({ k, re: re / FS, im: im / FS, mag: Math.hypot(re, im) / FS }); } ZK.sort((a, b) => b.mag - a.mag);
+    // a Markov chain on the attention graph: 36 walkers, occupancy against the stationary distribution
+    const walkers = this.DATA.map((_, i) => ({ n: i, m: i, u: 1 })), occ = Array(N).fill(0); let occTotal = 0; const pen = [];
+    // a hyperbolic geodesic in the Poincaré disk: the circle through p, q and the inversion of p, orthogonal to the boundary
+    const geo = (p, q) => { const pp2 = p.x * p.x + p.y * p.y, pp = { x: p.x / pp2, y: p.y / pp2 }, a1 = 2 * (q.x - p.x), b1 = 2 * (q.y - p.y), c1 = q.x * q.x + q.y * q.y - pp2, a2 = 2 * (pp.x - p.x), b2 = 2 * (pp.y - p.y), c2 = pp.x * pp.x + pp.y * pp.y - pp2, det = a1 * b2 - a2 * b1; if (Math.abs(det) < 1e-6 || Math.abs(p.x * q.y - p.y * q.x) < 1e-3) { ctx.moveTo(960 + p.x * 250, 345 + p.y * 250); ctx.lineTo(960 + q.x * 250, 345 + q.y * 250); return; } const cx = (c1 * b2 - c2 * b1) / det, cy = (a1 * c2 - a2 * c1) / det, rho = Math.hypot(p.x - cx, p.y - cy), s = Math.atan2(p.y - cy, p.x - cx); let delta = Math.atan2(q.y - cy, q.x - cx) - s; while (delta > Math.PI) delta -= 6.283; while (delta < -Math.PI) delta += 6.283; ctx.arc(960 + cx * 250, 345 + cy * 250, rho * 250, s, s + delta, delta < 0); };
+    const tv = (x3, y3, z3, th) => { const xr = x3 * Math.cos(th) + z3 * Math.sin(th), zr = -x3 * Math.sin(th) + z3 * Math.cos(th), yr = y3 * Math.cos(TV.tilt) - zr * Math.sin(TV.tilt), zz = y3 * Math.sin(TV.tilt) + zr * Math.cos(TV.tilt), k = TV.F / (TV.F + zz); return { x: TV.x + xr * k, y: TV.y + yr * k, k }; };
+    const start = performance.now(); let last = start; let lastGlyph = -1;
+    const frame = (now) => {
+      if (!this.alive) return;
+      const dt = Math.min(.05, (now - last) / 1000); last = now;
+      const T = (now - start) / 1000, t = T % CYCLE;
+      const phase = t < T1 ? 'flight' : t < TL ? 'line' : t < TT ? 'lift' : t < TC ? 'tour' : t < TW2 ? 'write' : t < TS2 ? 'space' : t < TB2 ? 'web' : t < TSP ? 'message' : t < TP ? 'spectral' : t < TA ? 'pagerank' : t < TD ? 'anneal' : t < TD2 ? 'descent' : t < TF ? 'walk' : t < TPC ? 'fourier' : t < TSV ? 'poincare' : t < TSV2 ? 'svd' : t < TH ? 'collapse' : t < T2 ? 'line' : t < T3 ? 'return' : 'rest';
+      const spaceK = phase === 'space' ? ease(cl((t - TS) / 1.6)) * (1 - ease(cl((t - (TS2 - 1.4)) / 1.4))) : 0;
+      const RING = phase === 'web' || phase === 'message' || phase === 'spectral' || phase === 'pagerank' || phase === 'anneal' || phase === 'descent' || phase === 'walk' || phase === 'fourier' || phase === 'poincare' || phase === 'svd';
+      const webK = RING ? ease(cl((t - TB) / 1.6)) * (1 - ease(cl((t - (TSV2 - 1.4)) / 1.4))) : 0;
+      const poinK = phase === 'poincare' ? ease(cl((t - TPC) / 1.4)) * (1 - ease(cl((t - (TSV - 1.2)) / 1.2))) : 0;
+      const svdK = phase === 'svd' ? ease(cl((t - TSV) / 1.6)) * (1 - ease(cl((t - (TSV2 - 1.4)) / 1.4))) : 0;
+      const svdR = phase === 'svd' ? 1 + Math.min(5, Math.floor((t - TSV) / 10 * 6)) : 0, svdJ = phase === 'svd' ? Math.max(0, Math.min(6, Math.floor(t - TSV - 3))) : -1, KMcur = svdJ >= 0 ? KM[svdJ] : null;
+      const specK = phase === 'spectral' ? ease(cl((t - TSP) / 1.2)) * (1 - ease(cl((t - (TP - 1)) / 1))) : 0;
+      let Wcur = A.mean, RMcur = A.rowMax, tau = 0;
+      if (phase === 'anneal') { const u = (t - TA) / 8; tau = Math.exp(mix(Math.log(.12), Math.log(3), .5 - .5 * Math.cos(6.283 * u))); Wcur = A.d2[0].map((_, i) => { const acc = Array(N).fill(0); for (let h = 0; h < 3; h++) { const s = A.d2[h][i].map((dd, j) => i === j ? -Infinity : -dd / (tau * A.taus[h] / .25)); const m = Math.max(...s); const e = s.map(v => Math.exp(v - m)); const Z = e.reduce((x, y) => x + y, 0); for (let j = 0; j < N; j++) acc[j] += e[j] / Z / 3; } return acc; }); RMcur = Wcur.map(r => Math.max(...r)); }
+      if (svdR > 0) { Wcur = WK[svdR]; RMcur = WKmax[svdR]; }
+      if (phase !== this.lastPhase) { this.lastPhase = phase; if (phase === 'space') this.pluck(0); if (phase === 'write') this.pluck(18); if (phase === 'web') this.pluck(28); if (phase === 'message') this.pluck(19); if (phase === 'spectral') this.pluck(11); if (phase === 'pagerank') this.pluck(25); if (phase === 'anneal') this.pluck(26); if (phase === 'descent') this.pluck(2); if (phase === 'walk') { this.pluck(35); occ.fill(0); occTotal = 0; walkers.forEach((w, i) => { w.n = i; w.m = i; w.u = 1; }); } if (phase === 'fourier') { this.pluck(34); pen.length = 0; } if (phase === 'poincare') this.pluck(15); if (phase === 'svd') this.pluck(29); }
+      const spot = phase === 'tour' ? Math.min(N - 1, Math.floor((t - TT) / S)) : -1;
+      const spotK = phase === 'tour' ? ((t - TT) % S) / S : 0;
+      const inHelix = phase === 'tour' || phase === 'lift' || phase === 'collapse' || phase === 'write' || phase === 'space' || phase === 'web' || phase === 'message' || phase === 'spectral' || phase === 'pagerank' || phase === 'anneal' || phase === 'descent' || phase === 'walk' || phase === 'fourier' || phase === 'poincare' || phase === 'svd';
+      const veil = phase === 'lift' ? ease((t - TL) / 2) : (phase === 'tour' || phase === 'write' || phase === 'space' || RING) ? 1 : phase === 'collapse' ? 1 - ease((t - TSV2) / 2) : 0;
+      const shrink = phase === 'write' ? ease(cl((t - TC) / 1.2)) * (1 - ease(cl((t - (TW2 - 1.2)) / 1.2))) : 0;
+      if (spot !== this.lastSpot || (phase === 'tour') !== this.state.tour) {
+        this.lastSpot = spot; this.setState({ spot, tour: phase === 'tour' });
+        if (spot >= 0) { this.pluck(spot); const q = P[spot]; for (let k = 0; k < 22; k++) { const a = rnd() * 6.283, v = 40 + rnd() * 110; sparks.push({ x: q.x, y: q.y, vx: Math.cos(a) * v, vy: Math.sin(a) * v - 20, life: 1, r: .8 + rnd() * 1.6 }); } }
+      }
+      ctx.clearRect(0, 0, W, H);
+      for (const m of motes) { m.y -= m.s * 60 * dt; m.x += Math.sin(T * .4 + m.ph) * 8 * dt; if (m.y < -4) { m.y = H + 4; m.x = rnd() * W; } ctx.fillStyle = rgba(GOLD, m.a * (.6 + .4 * Math.sin(T * .9 + m.ph))); ctx.beginPath(); ctx.arc(m.x, m.y, m.r, 0, 6.283); ctx.fill(); }
+      if (veil > 0) { ctx.fillStyle = rgba(GROUND, .82 * veil); ctx.fillRect(veilBox.x, veilBox.y, veilBox.w, veilBox.h); }
+      // the astronomer's globe — a wire sphere around the helix, turning the other way
+      if (veil > 0) {
+        const rot = -T * .12, rg = RG * (1 - .45 * shrink); ctx.lineWidth = 1;
+        const poly = (pts) => { for (let k = 1; k < pts.length; k++) { const a = pts[k], b = pts[k - 1]; ctx.strokeStyle = rgba(GOLD, (.045 + .07 * cl((-(a.z) + rg) / (2 * rg))) * veil); ctx.beginPath(); ctx.moveTo(b.x, b.y); ctx.lineTo(a.x, a.y); ctx.stroke(); } };
+        for (let m = 0; m < 8; m++) { const ph = m / 8 * Math.PI + rot, pts = []; for (let k = 0; k <= 40; k++) { const th = -Math.PI / 2 + k / 40 * Math.PI; pts.push(proj(rg * Math.cos(th) * Math.cos(ph), rg * Math.sin(th), rg * Math.cos(th) * Math.sin(ph), shrink)); } poly(pts); }
+        for (const lat of [-60, -30, 0, 30, 60]) { const la = lat / 180 * Math.PI, r = rg * Math.cos(la), y3 = rg * Math.sin(la), pts = []; for (let k = 0; k <= 64; k++) { const ps = k / 64 * 6.283 + rot; pts.push(proj(r * Math.cos(ps), y3, r * Math.sin(ps), shrink)); } poly(pts); }
+        for (const st of STARS) { const ph = Math.atan2(st.z, st.x) + rot, rr = Math.hypot(st.x, st.z), q = proj(rg * rr * Math.cos(ph), rg * st.y, rg * rr * Math.sin(ph), shrink); const front = cl((-q.z + rg) / (2 * rg)); ctx.fillStyle = rgba(PAPER, (.1 + .45 * (.5 + .5 * Math.sin(T * 1.7 + st.tw))) * veil * (.35 + .65 * front)); ctx.beginPath(); ctx.arc(q.x, q.y, st.s * (.6 + .6 * front), 0, 6.283); ctx.fill(); }
+        const ec = 23.4 / 180 * Math.PI, ept = []; for (let k = 0; k <= 72; k++) { const ps = k / 72 * 6.283 + rot; ept.push(proj(rg * Math.cos(ps), rg * Math.sin(ps) * Math.sin(ec), rg * Math.sin(ps) * Math.cos(ec), shrink)); }
+        for (let k = 1; k < ept.length; k++) { ctx.strokeStyle = rgba(TEAL, (.06 + .1 * cl((-(ept[k].z) + rg) / (2 * rg))) * veil); ctx.beginPath(); ctx.moveTo(ept[k - 1].x, ept[k - 1].y); ctx.lineTo(ept[k].x, ept[k].y); ctx.stroke(); }
+        const sp = T * .3 + rot, sun = proj(rg * Math.cos(sp), rg * Math.sin(sp) * Math.sin(ec), rg * Math.sin(sp) * Math.cos(ec), shrink), sg = ctx.createRadialGradient(sun.x, sun.y, 0, sun.x, sun.y, 26); sg.addColorStop(0, rgba(GOLD, .7 * veil)); sg.addColorStop(1, rgba(GOLD, 0)); ctx.fillStyle = sg; ctx.fillRect(sun.x - 26, sun.y - 26, 52, 52); ctx.fillStyle = rgba(PAPER, .95 * veil); ctx.beginPath(); ctx.arc(sun.x, sun.y, 3, 0, 6.283); ctx.fill();
+      }
+      // the light inside the stone
+      const out = cl((t - begin + .8) / 1.2) * (1 - cl((t - T1 + 1.2) / 1.6)), back = cl((t - T2 + .4) / 1.2) * (1 - cl((t - T3 - .2) / 1.2));
+      const glow = (.12 + .06 * Math.sin(T * .7) + Math.max(out, back) * .3) * (1 - veil * .7);
+      const cx = src.x + src.w / 2, cy = src.y + src.h / 2, gr = Math.max(src.w, src.h) * 1.1;
+      const g = ctx.createRadialGradient(cx, cy, 10, cx, cy, gr); g.addColorStop(0, rgba(TEAL, glow)); g.addColorStop(1, rgba(TEAL, 0)); ctx.fillStyle = g; ctx.fillRect(cx - gr, cy - gr, gr * 2, gr * 2);
+      // positions
+      const pts = [];
+      for (let i = 0; i < N; i++) {
+        const p = P[i]; let pr = 1, st = 'set';
+        if (phase === 'flight' || phase === 'rest') { if (t < p.t0 || phase === 'rest') { pr = 0; st = 'rest'; } else if (t < p.t0 + flight) { pr = ease((t - p.t0) / flight); st = 'out'; } }
+        else if (phase === 'return') { if (t < p.r0) { pr = 1; } else if (t < p.r0 + flightR) { pr = 1 - ease((t - p.r0) / flightR); st = 'back'; } else { pr = 0; st = 'rest'; } }
+        p.st = st; p.pr = pr; p.s = 1;
+        if (phase === 'flight') { if (st === 'set' && !p.landed) { p.landed = true; ripples.push({ x: p.tx, y: p.ty, age: 0 }); } } else if (phase === 'rest') p.landed = false;
+        if (st === 'rest') { p.x = p.sx; p.y = p.sy; continue; }
+        if (inHelix) {
+          const h = helix(i, T, shrink), k = phase === 'lift' ? ease((t - TL) / 2) : phase === 'collapse' ? 1 - ease((t - TSV2) / 2) : 1;
+          p.x = mix(p.tx, h.x, k); p.y = mix(p.ty, h.y, k); p.s = mix(1, h.s, k); p.z = h.z;
+          if (spaceK > 0) { const em = EMB[i]; p.x = mix(h.x, em.x, spaceK); p.y = mix(h.y, em.y, spaceK); p.s = mix(h.s, 1.05, spaceK); p.z = h.z * (1 - spaceK); }
+          if (webK > 0) { const a = i / N * 6.283 - Math.PI / 2 + T * .08, rx = 960 + 250 * Math.cos(a), ry = 345 + 228 * Math.sin(a); p.x = mix(h.x, rx, webK); p.y = mix(h.y, ry, webK) + specK * FIED[i] * 95; p.s = mix(h.s, 1.1, webK); p.z = h.z * (1 - webK); if (poinK > 0) { p.x = mix(p.x, 960 + (p.x - 960) * .8, poinK); p.y = mix(p.y, 345 + (p.y - 345) * .8, poinK); } if (svdK > 0) { p.x = mix(p.x, SVDXY[i].x, svdK); p.y = mix(p.y, SVDXY[i].y, svdK); } }
+        } else { const q = bez(p, pr); p.x = q.x; p.y = q.y; }
+      }
+      // attention — lines from the spotlit letter to its kin, one colour per head, weight as alpha and width
+      if (spot >= 0) {
+        const q = P[spot], fade = Math.min(1, spotK * 4) * (1 - cl((spotK - .85) / .15));
+        A.top.forEach((T_, h) => T_[spot].forEach(([w, j], rank) => {
+          const k = P[j], wn = w / A.top[h][spot][0][0];
+          ctx.strokeStyle = rgba(HEADC[h], (.12 + .7 * wn) * fade); ctx.lineWidth = .8 + 2.4 * wn;
+          ctx.beginPath(); ctx.moveTo(q.x, q.y); const mx = (q.x + k.x) / 2 + (h - 1) * 40, my = (q.y + k.y) / 2 - 30 - h * 18; ctx.quadraticCurveTo(mx, my, k.x, k.y); ctx.stroke();
+          if (rank === 0) { ctx.font = '400 20px "Lora", serif'; ctx.fillStyle = rgba(HEADC[h], .9 * fade); ctx.textAlign = 'left'; ctx.textBaseline = 'middle'; ctx.fillText(w.toFixed(2).replace('.', ','), k.x + 22 * k.s + 6, k.y + (h - 1) * 18); }
+        }));
+        ctx.strokeStyle = rgba(GOLD, .5 * fade); ctx.lineWidth = 1; ctx.setLineDash([4, 8]); ctx.beginPath(); ctx.moveTo(q.x, q.y); ctx.lineTo(560, 300); ctx.stroke(); ctx.setLineDash([]);
+        ctx.strokeStyle = rgba(GOLD, .8 * fade); ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(q.x, q.y, 34 * q.s + 6 * Math.sin(T * 3), 0, 6.283); ctx.stroke();
+        // the alphabet stone as a positional grid — 4 rows of 9, the spotlit cell lit
+        ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+        for (let i = 0; i < N; i++) { const r = Math.floor(i / 9), cc = i % 9, lit = i === spot; ctx.fillStyle = lit ? rgba(TEAL, .95 * fade) : rgba(GOLD, (i < spot ? .34 : .14) * fade); ctx.fillRect(SG.x + cc * (SG.cell + SG.gap), SG.y + r * (SG.cell + SG.gap), SG.cell, SG.cell); }
+        ctx.font = '400 20px "Lora", serif'; ctx.fillStyle = rgba(PAPER, .6 * fade); ctx.fillText('դիրք · position ' + (Math.floor(spot / 9) + 1) + ' × ' + (spot % 9 + 1) + ' · 4 × 9', SG.x + 9 * (SG.cell + SG.gap) + 16, SG.y + 2 * (SG.cell + SG.gap) + 2);
+      }
+      // the attention map — 36 × 36, the three heads averaged, the query row lit
+      if (veil > 0) {
+        const a = veil; ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+        ctx.font = '400 22px "Lora", serif'; ctx.fillStyle = rgba(GOLD, .9 * a); ctx.fillText('Ուշադրություն · attention', HM.x, HM.y - 36);
+        ctx.font = '400 20px "Lora", serif'; ctx.fillStyle = rgba(PAPER, .55 * a); ctx.fillText('softmax(QKᵀ / √d) · 36 × 36 · 3 heads', HM.x, HM.y - 12);
+        for (let i = 0; i < N; i++) for (let j = 0; j < N; j++) { const v = Wcur[i][j] / RMcur[i]; ctx.fillStyle = rgba(i === spot ? TEAL : GOLD, (0.06 + .8 * v) * a * (i === spot ? 1 : .75)); ctx.fillRect(HM.x + j * HM.cell, HM.y + i * HM.cell, HM.cell - 1, HM.cell - 1); }
+        if (spot >= 0) { ctx.strokeStyle = rgba(TEAL, .9 * a); ctx.lineWidth = 1; ctx.strokeRect(HM.x - 2, HM.y + spot * HM.cell - 2, N * HM.cell + 3, HM.cell + 3); ctx.fillStyle = rgba(TEAL, a); ctx.font = '300 22px "Noto Serif Armenian", serif'; ctx.fillText(P[spot].ch, HM.x + N * HM.cell + 10, HM.y + spot * HM.cell + 7); }
+        HEADN.forEach((n, h) => { const y = HM.y + N * HM.cell + 30 + h * 28; ctx.fillStyle = rgba(HEADC[h], .9 * a); ctx.fillRect(HM.x, y - 8, 22, 2); ctx.fillStyle = rgba(PAPER, .7 * a); ctx.font = '400 20px "Lora", serif'; ctx.fillText(n, HM.x + 34, y); });
+      }
+      // the embedding space — class rings, labels, nearest-kin edges — and the attention tensor turning beside it
+      if (spaceK > 0) {
+        const a = spaceK; ctx.lineWidth = 1; ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+        HULLS.forEach((hl, c) => { const cx = (hl.x0 + hl.x1) / 2, cy = (hl.y0 + hl.y1) / 2, rx = (hl.x1 - hl.x0) / 2 + 48, ry = (hl.y1 - hl.y0) / 2 + 34; ctx.strokeStyle = rgba(CLASSES[c][1], .22 * a); ctx.setLineDash([3, 7]); ctx.beginPath(); ctx.ellipse(cx, cy, rx, ry, 0, 0, 6.283); ctx.stroke(); ctx.setLineDash([]); ctx.font = '400 20px "Lora", serif'; ctx.fillStyle = rgba(CLASSES[c][1], .85 * a); ctx.fillText(CLASSES[c][0], hl.x0 - 20, cy - ry - 10); });
+        for (let i = 0; i < N; i++) for (const [w, j] of A.top[0][i].slice(0, 2)) { ctx.strokeStyle = rgba(GOLD, .16 * a); ctx.beginPath(); ctx.moveTo(P[i].x, P[i].y); ctx.lineTo(P[j].x, P[j].y); ctx.stroke(); }
+        ctx.strokeStyle = rgba(PAPER, .18 * a); ctx.beginPath(); ctx.moveTo(300, 586); ctx.lineTo(1180, 586); ctx.moveTo(300, 120); ctx.lineTo(300, 586); ctx.stroke();
+        ctx.font = '400 20px "Lora", serif'; ctx.fillStyle = rgba(PAPER, .6 * a); ctx.fillText('ներդրման տարածություն · embedding space · 2 principal axes: place →, voicing ↓', 300, 612);
+        ctx.fillStyle = rgba(PAPER, .45 * a); ctx.fillText('շրթնային · labial', 330, 112); ctx.textAlign = 'right'; ctx.fillText('կոկորդային · glottal', 1150, 112);
+        const th = T * .25, scan = Math.floor(T * 1.5) % N;
+        for (let h = 0; h < 3; h++) for (let i = 0; i < N; i++) for (let j = 0; j < N; j++) { const v = A.heads[h][i][j] / A.rowMax[i] * .6, q = tv((j - 17.5) * TV.cell, (i - 17.5) * TV.cell, (h - 1) * 70, th), hot = i === scan; ctx.fillStyle = rgba(HEADC[h], Math.min(1, (.05 + .6 * v) * (hot ? 1.9 : 1)) * a * q.k); const s = (hot ? 4.4 : 3) * q.k; ctx.fillRect(q.x - s / 2, q.y - s / 2, s, s); }
+        ctx.textAlign = 'center'; ctx.font = '400 20px "Lora", serif'; ctx.fillStyle = rgba(GOLD, .8 * a); ctx.fillText('3 × 36 × 36 · ուշադրության թենզորը · the attention tensor', TV.x, 568); ctx.fillStyle = rgba(TEAL, .8 * a); ctx.font = '300 22px "Noto Serif Armenian", serif'; ctx.fillText(P[scan].ch + ' · տող ' + (scan + 1), TV.x, 540);
+      }
+      if (webK > 0) {
+        const a = webK; ctx.lineWidth = 1;
+        const msgL = phase === 'message' ? Math.min(5, Math.floor((t - TM) / 1.5)) : -1, msgF = phase === 'message' ? ((t - TM) % 1.5) / 1.5 : 0;
+        const prK = phase === 'pagerank' ? Math.min(14, (t - TP) / 6 * 14) : -1;
+        for (let i = 0; i < N; i++) for (let j = i + 1; j < N; j++) {
+          const w = (Wcur[i][j] / RMcur[i] + Wcur[j][i] / RMcur[j]) / 2; let al = (.025 + .42 * w * w) * a, col = GOLD;
+          if (msgL >= 0) al *= 1 + .9 * Math.sin(Math.PI * msgF) * w;
+          if (specK > 0 && Math.sign(FIED[i]) !== Math.sign(FIED[j])) { col = PAPER; al = Math.max(al, .14 * specK); }
+          ctx.strokeStyle = rgba(col, al * (1 - poinK)); ctx.beginPath(); ctx.moveTo(P[i].x, P[i].y); ctx.lineTo(P[j].x, P[j].y); ctx.stroke();
+          if (poinK > 0) { ctx.strokeStyle = rgba(col, Math.min(1, al * 1.7) * poinK); ctx.beginPath(); geo({ x: (P[i].x - 960) / 250, y: (P[i].y - 345) / 250 }, { x: (P[j].x - 960) / 250, y: (P[j].y - 345) / 250 }); ctx.stroke(); }
+        }
+        ctx.lineWidth = 1.4; for (const off of [0, Math.PI / 4]) { ctx.strokeStyle = rgba(GOLD, .4 * a * (1 - specK) * (1 - poinK) * (1 - svdK)); ctx.beginPath(); for (let k = 0; k <= 4; k++) { const an = off + k * Math.PI / 2 + T * .08, x = 960 + 250 * Math.cos(an), y = 345 + 228 * Math.sin(an); k ? ctx.lineTo(x, y) : ctx.moveTo(x, y); } ctx.stroke(); }
+        for (let i = 0; i < N; i++) {
+          const p = P[i]; let r = 0, col = GOLD, al = .35;
+          if (msgL >= 0) { r = 6 + 26 * mix(MSG[msgL][i], MSG[Math.min(5, msgL + 1)][i], ease(msgF)); }
+          else if (specK > 0) { r = 15 * specK; col = FIED[i] > 0 ? GOLD : TEAL; al = .3; }
+          else if (prK >= 0) { const k0 = Math.floor(prK), k1 = Math.min(14, k0 + 1); r = 6 + 40 * mix(PR[k0][i], PR[k1][i], prK - k0) / PRmax; }
+          if (r > 0) { const rg = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, r * 1.5); rg.addColorStop(0, rgba(col, al * a)); rg.addColorStop(1, rgba(col, 0)); ctx.fillStyle = rg; ctx.fillRect(p.x - r * 1.5, p.y - r * 1.5, r * 3, r * 3); ctx.strokeStyle = rgba(col, .6 * a); ctx.lineWidth = 1; ctx.beginPath(); ctx.arc(p.x, p.y, r, 0, 6.283); ctx.stroke(); }
+        }
+        const fwd = phase === 'web' || phase === 'message', bwd = phase === 'descent';
+        if (fwd || bwd) while (pulses.length < (phase === 'message' ? 60 : 26)) { const i = Math.floor(rnd() * N), h = Math.floor(rnd() * 3), [, j] = A.top[h][i][Math.floor(rnd() * 3)]; pulses.push({ i, j, u: 0, v: .6 + rnd() * .7, h }); }
+        for (let k = pulses.length - 1; k >= 0; k--) { const pl = pulses[k]; pl.u += dt * pl.v; if (pl.u >= 1) { pulses.splice(k, 1); continue; } const a0 = bwd ? P[pl.j] : P[pl.i], b0 = bwd ? P[pl.i] : P[pl.j], x = mix(a0.x, b0.x, pl.u), y = mix(a0.y, b0.y, pl.u), u0 = Math.max(0, pl.u - .12), x0 = mix(a0.x, b0.x, u0), y0 = mix(a0.y, b0.y, u0); ctx.strokeStyle = rgba(bwd ? DEEP : HEADC[pl.h], .7 * a); ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x, y); ctx.stroke(); ctx.fillStyle = rgba(bwd ? GOLD : TEAL, .95 * a); ctx.beginPath(); ctx.arc(x, y, 2.6, 0, 6.283); ctx.fill(); }
+        ctx.textBaseline = 'alphabetic'; ctx.font = '400 20px "Lora", serif';
+        if (prK >= 0) { const k0 = Math.min(14, Math.floor(prK)); PRtop.forEach(([, i]) => { const p = P[i], dx = p.x - 960, dy = p.y - 345, L = Math.hypot(dx, dy) || 1; ctx.textAlign = dx < 0 ? 'right' : 'left'; ctx.fillStyle = rgba(TEAL, .9 * a); ctx.fillText(p.ch + ' ' + PR[k0][i].toFixed(3).replace('.', ','), p.x + dx / L * 58, p.y + dy / L * 58 + 7); }); }
+        if (specK > 0) { ctx.textAlign = 'center'; ctx.fillStyle = rgba(GOLD, .85 * specK); ctx.fillText('f > 0', 960, 90); ctx.fillStyle = rgba(TEAL, .85 * specK); ctx.fillText('f < 0', 960, 640); }
+        if (phase === 'descent') {
+          const u = cl((t - TD) / 6.5), gk = Math.min(47, u * 47), k0 = Math.floor(gk), b = a;
+          for (const c of [.08, .25, .6, 1.2, 2.1, 3.3, 4.8]) { ctx.strokeStyle = rgba(PAPER, .14 * b); ctx.lineWidth = 1; ctx.beginPath(); for (let k = 0; k <= 72; k++) { const th = k / 72 * 6.283, rr = Math.sqrt(c / (Math.cos(th) ** 2 + 3 * Math.sin(th) ** 2 + .6 * Math.cos(th) * Math.sin(th))), q = gdx([rr * Math.cos(th), rr * Math.sin(th)]); k ? ctx.lineTo(q.x, q.y) : ctx.moveTo(q.x, q.y); } ctx.stroke(); }
+          ctx.strokeStyle = rgba(GOLD, .7 * b); ctx.lineWidth = 1.5; ctx.beginPath(); for (let k = 0; k <= k0; k++) { const q = gdx(GD[k]); k ? ctx.lineTo(q.x, q.y) : ctx.moveTo(q.x, q.y); } ctx.stroke();
+          const w0 = GD[k0], w1 = GD[Math.min(47, k0 + 1)], ball = gdx([mix(w0[0], w1[0], gk - k0), mix(w0[1], w1[1], gk - k0)]), bg = ctx.createRadialGradient(ball.x, ball.y, 0, ball.x, ball.y, 22); bg.addColorStop(0, rgba(TEAL, .8 * b)); bg.addColorStop(1, rgba(TEAL, 0)); ctx.fillStyle = bg; ctx.fillRect(ball.x - 22, ball.y - 22, 44, 44); ctx.fillStyle = rgba(PAPER, b); ctx.beginPath(); ctx.arc(ball.x, ball.y, 4, 0, 6.283); ctx.fill();
+          const wv = GD[k0], loss = wv[0] * wv[0] + 3 * wv[1] * wv[1] + .6 * wv[0] * wv[1];
+          ctx.textAlign = 'left'; ctx.fillStyle = rgba(PAPER, .7 * b); ctx.fillText('L(w) = w₁² + 3w₂² + 0,6·w₁w₂ · քայլ ' + k0 + ' · L = ' + loss.toFixed(3).replace('.', ','), 300, 135); ctx.fillStyle = rgba(GOLD, .7 * b); ctx.fillText('w ← w + v · v ← βv − η∇L', 300, 585);
+        }
+        // the random walk — walkers hop along the chords by the transition matrix; occupancy bars grow outward, the stationary π outlined
+        if (phase === 'walk') {
+          const occMax = Math.max(1, ...occ);
+          for (const wk of walkers) { wk.u += dt * 1.7; if (wk.u >= 1) { wk.n = wk.m; occ[wk.n]++; occTotal++; let r = rnd(), m = 0, acc = 0; for (m = 0; m < N; m++) { acc += Wm[wk.n][m]; if (r <= acc) break; } wk.m = Math.min(N - 1, m); wk.u = 0; } const a0 = P[wk.n], b0 = P[wk.m], e = ease(wk.u), x = mix(a0.x, b0.x, e), y = mix(a0.y, b0.y, e); ctx.fillStyle = rgba(TEAL, .9 * a); ctx.beginPath(); ctx.arc(x, y, 3, 0, 6.283); ctx.fill(); }
+          for (let i = 0; i < N; i++) { const p = P[i], dx = p.x - 960, dy = p.y - 345, L = Math.hypot(dx, dy) || 1, ux = dx / L, uy = dy / L, bar = 70 * occ[i] / occMax, pi = 70 * PR[14][i] / PRmax; ctx.strokeStyle = rgba(GOLD, .75 * a); ctx.lineWidth = 6; ctx.beginPath(); ctx.moveTo(p.x + ux * 30, p.y + uy * 30); ctx.lineTo(p.x + ux * (30 + bar), p.y + uy * (30 + bar)); ctx.stroke(); ctx.strokeStyle = rgba(PAPER, .5 * a); ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(p.x + ux * (30 + pi) - uy * 5, p.y + uy * (30 + pi) + ux * 5); ctx.lineTo(p.x + ux * (30 + pi) + uy * 5, p.y + uy * (30 + pi) - ux * 5); ctx.stroke(); }
+        }
+        // Fourier — the epicycles redraw the PageRank shape of the alphabet, harmonics added as it turns
+        if (phase === 'fourier') {
+          const u = cl((t - TF) / 7.2), thp = u * 6.283, K = Math.min(ZK.length, 3 + Math.floor(u * 17));
+          ctx.save(); ctx.translate(960, 345); ctx.rotate(T * .08);
+          let x = 0, y = 0; ctx.lineWidth = 1;
+          for (let l = 0; l < K; l++) { const z = ZK[l], c = Math.cos(z.k * thp), s = Math.sin(z.k * thp), vx = z.re * c - z.im * s, vy = z.re * s + z.im * c; ctx.strokeStyle = rgba(PAPER, .22 * a); ctx.beginPath(); ctx.arc(x, y, z.mag, 0, 6.283); ctx.stroke(); ctx.strokeStyle = rgba(TEAL, .6 * a); ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + vx, y + vy); ctx.stroke(); x += vx; y += vy; }
+          pen.push([x, y]); if (pen.length > 600) pen.shift();
+          ctx.strokeStyle = rgba(GOLD, .85 * a); ctx.lineWidth = 2; ctx.beginPath(); pen.forEach(([px, py], k) => k ? ctx.lineTo(px, py) : ctx.moveTo(px, py)); ctx.stroke();
+          ctx.fillStyle = rgba(PAPER, a); ctx.beginPath(); ctx.arc(x, y, 4, 0, 6.283); ctx.fill(); ctx.restore();
+          ctx.textAlign = 'left'; ctx.fillStyle = rgba(PAPER, .6 * a); ctx.fillText('|ĉₖ| · սպեկտր · spectrum, k = −9 … 9', 300, 450);
+          ZK.forEach((z, l) => { ctx.fillStyle = rgba(l < K ? GOLD : PAPER, (l < K ? .8 : .25) * a); const hgt = Math.min(90, z.mag * 1.6); ctx.fillRect(300 + l * 20, 560 - hgt, 12, hgt); });
+          ctx.fillStyle = rgba(TEAL, .8 * a); ctx.fillText('k = ' + ZK.slice(0, 3).map(z => z.k).join(', ') + ' …', 300, 585);
+        }
+        // the Poincaré disk — its boundary; the chords above are now geodesics
+        if (poinK > 0) { ctx.strokeStyle = rgba(GOLD, .4 * poinK); ctx.lineWidth = 1.2; ctx.beginPath(); ctx.arc(960, 345, 250, 0, 6.283); ctx.stroke(); ctx.strokeStyle = rgba(GOLD, .15 * poinK); ctx.setLineDash([2, 6]); ctx.beginPath(); ctx.arc(960, 345, 200, 0, 6.283); ctx.stroke(); ctx.setLineDash([]); }
+        // SVD — the letters in the plane of the second and third left singular vectors; k-means finds four families
+        if (svdK > 0) {
+          ctx.strokeStyle = rgba(PAPER, .18 * svdK); ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(700, 345); ctx.lineTo(1220, 345); ctx.moveTo(960, 120); ctx.lineTo(960, 570); ctx.stroke();
+          ctx.textAlign = 'left'; ctx.fillStyle = rgba(PAPER, .5 * svdK); ctx.fillText('u₂', 1226, 350); ctx.fillText('u₃', 966, 116);
+          if (KMcur) { KMcur.cent.forEach((c, k) => { const col = CLASSES[k][1]; ctx.strokeStyle = rgba(col, .9 * svdK); ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(c.x - 10, c.y - 10); ctx.lineTo(c.x + 10, c.y + 10); ctx.moveTo(c.x - 10, c.y + 10); ctx.lineTo(c.x + 10, c.y - 10); ctx.stroke(); }); ctx.lineWidth = 1; for (let i = 0; i < N; i++) { const c = KMcur.cent[KMcur.assign[i]]; ctx.strokeStyle = rgba(CLASSES[KMcur.assign[i]][1], .22 * svdK); ctx.beginPath(); ctx.moveTo(P[i].x, P[i].y); ctx.lineTo(c.x, c.y); ctx.stroke(); } }
+        }
+        ctx.textAlign = 'center'; ctx.fillStyle = rgba(PAPER, .6 * a);
+        const CAP = { web: 'ամբողջապես կապակցված · fully connected · 36 × 35 ⁄ 2 = 630 chords, weighted by attention · signal on the heaviest edges', message: 'GNN · հաղորդագրությունների փոխանցում Ճ-ից · message passing from Ճ · h⁽ˡ⁺¹⁾ = Â h⁽ˡ⁾ · շերտ l = ' + Math.max(0, msgL), spectral: 'Լապլասիան L = D − W · Fiedler vector · spectral cut · λ₂ = ' + lam2.toFixed(3).replace('.', ','), pagerank: 'PageRank · d = 0,85 · r ← (1−d)/N + d·Mᵀr · կրկնություն · iteration ' + Math.max(0, Math.floor(prK)), anneal: 'softmax(−‖q−k‖² / τ) · ջերմաստիճան · temperature τ = ' + tau.toFixed(2).replace('.', ','), descent: 'գրադիենտային վայրէջք · gradient descent with momentum · η = 0,08 · β = 0,9 · հետադարձ անցում · backward pass on the graph', walk: 'Մարկով · random walk · 36 walkers on the transition matrix · occupancy ' + occTotal + ' hops → stationary π (outlined)', fourier: 'Fourier · էպիցիկլեր · epicycles redraw the PageRank shape · ' + Math.min(ZK.length, 3 + Math.floor(cl((t - TF) / 7.2) * 17)) + ' of 19 harmonics', poincare: 'Poincaré · հիպերբոլական ներդրում · hyperbolic embedding · chords become geodesics ⟂ the boundary · curvature −1', svd: 'SVD · W ≈ Σ σₗ uₗ vₗᵀ · rank k = ' + svdR + ' · ‖W − Wₖ‖_F = ' + (WKres[svdR] || 0).toFixed(3).replace('.', ',') + (KMcur ? ' · k-means k = 4 · iteration ' + svdJ + ' · inertia ' + Math.round(KMcur.inertia / 1000) + 'k' : '') };
+        ctx.fillText(CAP[phase] || CAP.web, 960, 612);
+      }
+      // the letters
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      const order = P.map((p, i) => i).sort((a, b) => (P[b].z || 0) - (P[a].z || 0));
+      for (const i of order) {
+        const p = P[i];
+        if (p.st === 'rest') { p.trail.length = 0; const sweep = (T * 150) % (src.w + src.h + 600) - 300, dist = (p.sx - src.x) + (p.sy - src.y), boost = cl(1 - Math.abs(dist - sweep) / 60); ctx.font = `300 ${firm ? 44 : 20}px "Noto Serif Armenian", serif`; ctx.fillStyle = rgba(boost > 0 ? mixC(TEAL, PAPER, boost) : TEAL, .18 + .1 * Math.sin(T * 1.3 + p.ph) + .5 * boost); ctx.fillText(p.ch, p.x, p.y); continue; }
+        const moving = p.st === 'out' || p.st === 'back', pr = p.pr;
+        let size = (pr < .5 ? mix(firm ? 44 : 20, 46, ease(pr * 2)) : mix(46, 27, ease((pr - .5) * 2))) * (inHelix ? mix(1, 1.45 * p.s, veil) : 1);
+        let col = mixC(TEAL, pr < .6 ? GOLD : mixC(GOLD, DEEP, (pr - .6) / .4), cl(pr / .6));
+        const breathe = moving ? 1 : .82 + .18 * (.5 + .5 * Math.sin(T * 1.1 + p.ph));
+        if (moving) { p.trail.push({ x: p.x, y: p.y }); if (p.trail.length > 16) p.trail.shift(); pts.push(p); } else if (p.trail.length) p.trail.shift();
+        for (let k = 1; k < p.trail.length; k++) { ctx.strokeStyle = rgba(GOLD, (k / p.trail.length) * .35 * (moving ? Math.sin(Math.PI * pr) : .4)); ctx.lineWidth = 1 + k / p.trail.length * 1.5; ctx.beginPath(); ctx.moveTo(p.trail[k - 1].x, p.trail[k - 1].y); ctx.lineTo(p.trail[k].x, p.trail[k].y); ctx.stroke(); }
+        let alpha = Math.min(1, pr * 6 + .2) * breathe;
+        if (i === spot) { size *= 1.9; col = TEAL; alpha = 1; } else if (spot >= 0) { alpha *= .55 + .45 * (A.mean[spot][i] / A.rowMax[spot]); }
+        if (inHelix) alpha *= mix(1, .55 + .45 * cl((p.z + R) / (2 * R)), veil) * (1 - .3 * shrink);
+        if (spaceK > 0) { col = mixC(col, CLASSES[EMB[i].c][1], spaceK * .85); alpha = Math.min(1, alpha * mix(1, 1.3, spaceK)); }
+        if (svdK > 0 && KMcur) col = mixC(col, CLASSES[KMcur.assign[i]][1], svdK * .85);
+        const bloom = moving ? .45 * Math.sin(Math.PI * pr) : i === spot ? .35 : .10 * breathe;
+        const rg = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, size * 1.6); rg.addColorStop(0, rgba(col, bloom)); rg.addColorStop(1, rgba(col, 0)); ctx.fillStyle = rg; ctx.fillRect(p.x - size * 1.6, p.y - size * 1.6, size * 3.2, size * 3.2);
+        ctx.font = `300 ${size}px "Noto Serif Armenian", serif`; ctx.fillStyle = rgba(col, alpha); ctx.fillText(p.ch, p.x, p.y);
+      }
+      ctx.lineWidth = 1;
+      for (let i = 0; i < pts.length; i++) for (let j = i + 1; j < pts.length; j++) { const d = Math.hypot(pts[i].x - pts[j].x, pts[i].y - pts[j].y); if (d < 170) { ctx.strokeStyle = rgba(GOLD, .22 * (1 - d / 170)); ctx.beginPath(); ctx.moveTo(pts[i].x, pts[i].y); ctx.lineTo(pts[j].x, pts[j].y); ctx.stroke(); } }
+      // the writing — each glyph of the first sentence flies out of its source letter, attending to the glyphs before it
+      if (phase === 'write') {
+        const tw = t - TC, fadeOut = cl((tw - (DW - 1.3)) / 1.1);
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        for (let k = 0; k < NG; k++) {
+          const sl = slots[k], u = (tw - (1 + k * GDT)) / .55; if (u <= 0) break;
+          if (k > lastGlyph) { lastGlyph = k; if (sl.src >= 0) this.pluck(sl.src, true); }
+          const e = ease(Math.min(1, u)), s = sl.src >= 0 ? P[sl.src] : { x: sl.x, y: sl.y - 40 };
+          const x = mix(s.x, sl.x, e), y = mix(s.y, sl.y, e), alpha = (.35 + .6 * e) * (1 - fadeOut), size = mix(26, 40, e);
+          if (u < 1) { ctx.strokeStyle = rgba(GOLD, .35 * (1 - e)); ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(s.x, s.y); ctx.lineTo(x, y); ctx.stroke(); }
+          if (u < 2.4 && k > 0) { for (let b = Math.max(0, k - 3); b < k; b++) { const pv = slots[b], same = pv.word === sl.word; ctx.strokeStyle = rgba(same ? TEAL : GOLD, (same ? .4 : .18) * (1 - u / 2.4) * (1 - fadeOut)); ctx.lineWidth = same ? 1.4 : .8; ctx.beginPath(); ctx.moveTo(x, y); ctx.quadraticCurveTo((x + pv.x) / 2, Math.min(y, pv.y) - 26 - (k - b) * 10, pv.x, pv.y); ctx.stroke(); } }
+          const col = mixC(GOLD, DEEP, e), rg = ctx.createRadialGradient(x, y, 0, x, y, size * 1.4); rg.addColorStop(0, rgba(col, (u < 1 ? .4 : .12) * (1 - fadeOut))); rg.addColorStop(1, rgba(col, 0)); ctx.fillStyle = rg; ctx.fillRect(x - size * 1.4, y - size * 1.4, size * 2.8, size * 2.8);
+          ctx.font = `400 ${size}px "Noto Serif Armenian", serif`; ctx.fillStyle = rgba(col, alpha); ctx.fillText(sl.ch, x, y);
+        }
+        if (tw < .5) lastGlyph = -1;
+        const tr = cl((tw - (1 + NG * GDT + .9)) / 1.2) * (1 - fadeOut);
+        if (tr > 0) { ctx.font = '400 26px "Lora", serif'; ctx.fillStyle = rgba(PAPER, .75 * tr); ctx.fillText('To know wisdom and instruction; to perceive the words of understanding.', 960, 352); ctx.font = '400 22px "Lora", serif'; ctx.fillStyle = rgba(GOLD, .8 * tr); ctx.fillText('Առակաց Ա․2 · Proverbs 1:2 · 405 · ' + NG + ' glyphs · causal attention', 960, 392); }
+      } else lastGlyph = -1;
+      for (let k = ripples.length - 1; k >= 0; k--) { const r = ripples[k]; r.age += dt / .8; if (r.age >= 1) { ripples.splice(k, 1); continue; } ctx.strokeStyle = rgba(GOLD, .55 * (1 - r.age)); ctx.lineWidth = 1.2; ctx.beginPath(); ctx.arc(r.x, r.y, 4 + 44 * r.age, 0, 6.283); ctx.stroke(); }
+      // sparks
+      for (let k = sparks.length - 1; k >= 0; k--) { const s = sparks[k]; s.life -= dt / 1.3; if (s.life <= 0) { sparks.splice(k, 1); continue; } s.x += s.vx * dt; s.y += s.vy * dt; s.vy += 30 * dt; s.vx *= .985; ctx.fillStyle = rgba(TEAL, .8 * s.life); ctx.beginPath(); ctx.arc(s.x, s.y, s.r * s.life, 0, 6.283); ctx.fill(); }
+      this.raf = requestAnimationFrame(frame);
+    };
+    this.raf = requestAnimationFrame(frame);
+  }
+
+  /* ── music: dam drone, slow modal chords, a duduk-like voice, and a plucked note for each spotlit letter ── */
+  toggleMusic = () => { this.unarm(); if (this.ctx) { this.stopAudio(); localStorage.setItem('mashtots-landing-music', '0'); } else { this.startAudio(); localStorage.setItem('mashtots-landing-music', '1'); } };
+  startAudio() {
+    const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return;
+    const ctx = new AC(); this.nodes = [];
+    try { this.buildGraph(ctx); } catch (e) { console.error(e); try { ctx.close(); } catch (_) {} return; }
+    this.ctx = ctx;
+    this.timer = setInterval(() => this.tick(), 120);
+    this.setState({ playing: true });
+  }
+  buildGraph(ctx) {
+    this.ctx = ctx;
+    const master = this.master = ctx.createGain(); master.gain.value = 0;
+    const comp = ctx.createDynamicsCompressor(); comp.threshold.value = -20; comp.ratio.value = 3; comp.knee.value = 14; comp.release.value = .4;
+    master.connect(comp); comp.connect(ctx.destination);
+    const conv = ctx.createConvolver(); conv.buffer = this.impulse(ctx, 3.8, 2.4);
+    const wet = ctx.createGain(); wet.gain.value = .42; const dry = ctx.createGain(); dry.gain.value = .85;
+    const bus = this.bus = ctx.createGain(); bus.connect(dry); bus.connect(conv); conv.connect(wet); dry.connect(master); wet.connect(master);
+    master.gain.linearRampToValueAtTime(.75, ctx.currentTime + 3.5);
+    this.startDam(); this.startDuduk();
+    this.nextNote = ctx.currentTime + 3; this.phrase = []; this.lastDeg = 4; this.prevF = 0;
+    this.nextChord = ctx.currentTime + .5; this.chord = 'i';
+  }
+  stopAudio(immediate) {
+    const ctx = this.ctx; if (!ctx) return; clearInterval(this.timer); this.ctx = null; this.setState({ playing: false });
+    const t = ctx.currentTime; this.master.gain.cancelScheduledValues(t); this.master.gain.setValueAtTime(this.master.gain.value, t); this.master.gain.linearRampToValueAtTime(0, t + (immediate ? .1 : 1.4));
+    setTimeout(() => { try { ctx.close(); } catch (e) {} }, immediate ? 150 : 1600);
+  }
+  impulse(ctx, seconds, decay) { const rate = ctx.sampleRate, len = Math.floor(rate * seconds), buf = ctx.createBuffer(2, len, rate); for (let c = 0; c < 2; c++) { const d = buf.getChannelData(c); for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, decay); } return buf; }
+  startDam() {
+    const { ctx, bus } = this, f = 146.83, g = ctx.createGain(); g.gain.value = 0;
+    const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 720; lp.Q.value = .8; g.connect(lp); lp.connect(bus);
+    for (const [fr, det, type, amp] of [[f, -5, 'sawtooth', .5], [f, 5, 'sawtooth', .5], [f / 2, 0, 'sine', .8], [f * 2, 3, 'triangle', .12]]) { const o = ctx.createOscillator(); o.type = type; o.frequency.value = fr; o.detune.value = det; const og = ctx.createGain(); og.gain.value = amp; o.connect(og); og.connect(g); o.start(); this.nodes.push(o); }
+    g.gain.linearRampToValueAtTime(.13, ctx.currentTime + 5);
+    const lfo = ctx.createOscillator(); lfo.frequency.value = .06; const lg = ctx.createGain(); lg.gain.value = 220; lfo.connect(lg); lg.connect(lp.frequency); lfo.start(); this.nodes.push(lfo);
+  }
+  startDuduk() {
+    const { ctx, bus } = this, v = this.duduk = {};
+    v.o1 = ctx.createOscillator(); v.o1.type = 'sawtooth'; v.o2 = ctx.createOscillator(); v.o2.type = 'square';
+    const m1 = ctx.createGain(); m1.gain.value = .7; const m2 = ctx.createGain(); m2.gain.value = .16;
+    v.filter = ctx.createBiquadFilter(); v.filter.type = 'lowpass'; v.filter.frequency.value = 1250; v.filter.Q.value = 1.5;
+    const formant = ctx.createBiquadFilter(); formant.type = 'peaking'; formant.frequency.value = 640; formant.gain.value = 6; formant.Q.value = 1.1;
+    v.env = ctx.createGain(); v.env.gain.value = 0;
+    v.o1.connect(m1); v.o2.connect(m2); m1.connect(v.filter); m2.connect(v.filter); v.filter.connect(formant); formant.connect(v.env); v.env.connect(bus);
+    v.lfo = ctx.createOscillator(); v.lfo.frequency.value = 5.1; v.vib = ctx.createGain(); v.vib.gain.value = 0; v.lfo.connect(v.vib); v.vib.connect(v.o1.detune); v.vib.connect(v.o2.detune);
+    const nb = ctx.createBuffer(1, ctx.sampleRate * 2, ctx.sampleRate), nd = nb.getChannelData(0); for (let i = 0; i < nd.length; i++) nd[i] = Math.random() * 2 - 1;
+    v.noise = ctx.createBufferSource(); v.noise.buffer = nb; v.noise.loop = true; const bp = ctx.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 1500; bp.Q.value = .6; v.breath = ctx.createGain(); v.breath.gain.value = 0; v.noise.connect(bp); bp.connect(v.breath); v.breath.connect(bus);
+    v.o1.frequency.value = v.o2.frequency.value = 293.66;
+    for (const n of [v.o1, v.o2, v.lfo, v.noise]) { n.start(); this.nodes.push(n); }
+  }
+  tick() {
+    const ctx = this.ctx; if (!ctx) return;
+    while (this.nextNote < ctx.currentTime + .9) {
+      if (!this.phrase.length) { this.phrase = this.makePhrase(); this.nextNote += 1.4 + Math.random() * 2.6; this.prevF = 0; }
+      const n = this.phrase.shift(); this.playNote(n, this.nextNote, this.phrase.length === 0); this.nextNote += n.dur;
+    }
+    if (this.nextChord < ctx.currentTime + 1) { const dur = 11 + Math.random() * 5; this.playChord(this.chord, this.nextChord, dur); const NEXT = { i: ['VII', 'iv', 'v', 'VI'], VII: ['i', 'VI'], v: ['i', 'iv'], iv: ['i', 'VII'], VI: ['VII', 'i'] }[this.chord]; this.chord = NEXT[Math.floor(Math.random() * NEXT.length)]; this.nextChord += dur; }
+  }
+  makePhrase() {
+    const POOL = [0, 2, 3, 5, 7, 8, 10, 12]; let deg = this.lastDeg; const len = 3 + Math.floor(Math.random() * 4), notes = [];
+    for (let i = 0; i < len; i++) {
+      const r = Math.random(), step = r < .3 ? -1 : r < .6 ? 1 : r < .72 ? -2 : r < .84 ? 2 : r < .92 ? 0 : (Math.random() < .5 ? -3 : 3);
+      deg = Math.max(0, Math.min(POOL.length - 1, deg + step));
+      const last = i === len - 1; if (last && Math.random() < .7) deg = [0, 4, 2, 7][Math.floor(Math.random() * 4)];
+      notes.push({ semi: POOL[deg], dur: last ? 2.4 + Math.random() * 1.8 : [.7, .9, 1.2, 1.6, 2.2][Math.floor(Math.random() * 5)], grace: Math.random() < .35 });
+    }
+    this.lastDeg = deg; return notes;
+  }
+  playNote(n, t, lastOfPhrase) {
+    const v = this.duduk, f = 293.66 * Math.pow(2, n.semi / 12), end = t + n.dur, legato = this.prevF > 0, lvl = .26;
+    for (const o of [v.o1, v.o2]) { o.frequency.cancelScheduledValues(t); if (n.grace) { o.frequency.setValueAtTime(f * Math.pow(2, -2 / 12), t); o.frequency.exponentialRampToValueAtTime(f, t + .14); } else if (legato) { o.frequency.setValueAtTime(this.prevF, t); o.frequency.exponentialRampToValueAtTime(f, t + .09); } else o.frequency.setValueAtTime(f, t); }
+    const g = v.env.gain; g.cancelScheduledValues(t);
+    if (legato) { g.setValueAtTime(lvl * .55, t); g.linearRampToValueAtTime(lvl, t + .08); } else { g.setValueAtTime(.0001, t); g.exponentialRampToValueAtTime(lvl, t + .24); }
+    if (lastOfPhrase) { g.setValueAtTime(lvl, end - .45); g.exponentialRampToValueAtTime(.0001, end - .02); } else { g.setValueAtTime(lvl, end - .08); g.linearRampToValueAtTime(lvl * .55, end); }
+    v.vib.gain.cancelScheduledValues(t); v.vib.gain.setValueAtTime(0, t); v.vib.gain.linearRampToValueAtTime(n.dur > 1.5 ? 9 : 5, t + Math.min(.9, n.dur * .5));
+    v.filter.frequency.cancelScheduledValues(t); v.filter.frequency.setValueAtTime(1650, t); v.filter.frequency.exponentialRampToValueAtTime(1150, t + .6);
+    const b = v.breath.gain; b.cancelScheduledValues(t); b.setValueAtTime(.0001, t); b.exponentialRampToValueAtTime(.03, t + .15); b.exponentialRampToValueAtTime(.011, t + .6); b.setValueAtTime(.011, end - .25); b.exponentialRampToValueAtTime(.0001, end - .02);
+    this.prevF = f;
+  }
+  playChord(name, t, dur) {
+    const { ctx, bus } = this, CH = { i: [0, 7, 12, 15], VII: [-2, 5, 10, 14], v: [-5, 2, 7, 10], iv: [-7, 0, 5, 8], VI: [-4, 3, 8, 12] }[name];
+    const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 1500; const g = ctx.createGain(); g.gain.value = 0; lp.connect(g); g.connect(bus);
+    for (const s of CH) { const o = ctx.createOscillator(); o.type = 'triangle'; o.frequency.value = 146.83 * Math.pow(2, s / 12); o.detune.value = (Math.random() - .5) * 6; o.connect(lp); o.start(t); o.stop(t + dur + 6.5); }
+    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(.028, t + 3.5); g.gain.setValueAtTime(.028, t + dur); g.gain.linearRampToValueAtTime(0, t + dur + 6);
+  }
+  // each letter has a note: its column picks the degree, its numeral row the octave
+  pluck(i, soft) {
+    const ctx = this.ctx; if (!ctx) return;
+    const t = ctx.currentTime + .02, POOL = [0, 2, 3, 5, 7, 8, 10, 12], f = 293.66 * Math.pow(2, (POOL[(i % 9) % 8] + 12 * Math.min(2, Math.floor(i / 9)) - 12) / 12);
+    const lvl = soft ? .028 : .08, dur = soft ? .9 : 2.4;
+    const o = ctx.createOscillator(); o.type = 'triangle'; o.frequency.value = f; const o2 = ctx.createOscillator(); o2.type = 'sine'; o2.frequency.value = f * 2.01;
+    const g = ctx.createGain(); g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(lvl, t + .012); g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+    const g2 = ctx.createGain(); g2.gain.value = .22; o.connect(g); o2.connect(g2); g2.connect(g); g.connect(this.bus); o.start(t); o2.start(t); o.stop(t + dur + .1); o2.stop(t + dur + .1);
+  }
+
+  renderVals() {
+    const treatment = this.props.treatment ?? 'plate', playing = this.state.playing, spot = this.state.spot, tour = this.state.tour && spot >= 0;
+    const d = this.DATA[Math.max(0, spot)];
+    const card = { idx: spot + 1, ch: d[0], name: d[1], tr: d[2], word: d[3], gloss: d[4], num: String((spot % 9 + 1) * 10 ** Math.floor(Math.max(0, spot) / 9)).replace(/\B(?=(\d{3})+(?!\d))/g, ' '), rowName: this.ROWS[Math.floor(Math.max(0, spot) / 9)], kind: d[5] ? 'ձայնավոր' : 'բաղաձայն', kindFull: d[5] ? 'ձայնավոր · vowel' : (d[8] ? 'շնչեղ բաղաձայն · aspirated' : d[7] ? 'ձայնեղ բաղաձայն · voiced' : 'խուլ բաղաձայն · voiceless') };
+    const H = ['10px', '18px', '14px', '22px', '12px'];
+    return {
+      canvasRef: this.canvasRef, fitRef: this.fitRef,
+      plate: treatment === 'plate', firmament: treatment === 'firmament',
+      card, showA: tour && spot % 2 === 0, showB: tour && spot % 2 === 1,
+      musicOn: this.props.music ?? true, playing,
+      bars: H.map((h, i) => ({ h, anim: playing ? `pulse ${.9 + i * .17}s ease-in-out ${-i * .2}s infinite` : 'none' })),
+      musicLabel: playing ? 'Լռել · Silence' : 'Լսել · Listen',
+      musicNote: playing ? 'Դուդուկ, դամ, ամեն տառի նոտան · duduk, dam, a note per letter' : this.state.armed ? 'Հպեք՝ ձայնի համար · tap for sound' : 'Դուդուկ և դամ · improvised live',
+      toggleMusic: this.toggleMusic,
+    };
+  }
+}
+</script>
+</body>
+</html>

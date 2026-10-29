@@ -1,0 +1,207 @@
+<!doctype html><meta charset="utf-8"><title>Mashtots Landing · director (explore)</title>
+<link rel="icon" href="data:,">
+<!--
+  The director: a transport for the Landing that changes nothing in the scene.
+  The scene's time is clock.elapsedTime + toff, and toff is ROUTEd from the Seek TimeSensor's cycleInterval (the page's section tabs use it).
+  Writing toff on EVERY frame (from a callback on the clock's elapsedTime) makes the page own the scene's time: pause, slow motion, fast
+  forward, frame steps, looping one act, and PREVIEWING a re-timing preset on the approved scene, before anything is baked.
+
+  URL:  ?scene=approved (default) | ?scene=retime&preset=graph-expanded   (a build from ../retime/build.sh)
+        ?preview=graph-expanded  (approved scene, played through that preset's timeline; a new act such as "vowels" shows as a frozen frame)
+        &t=SEC  &speed=X  &paused=1  &calm=1  &plates=1
+  Keys: space play/pause · ← → sections · , . frame step · [ ] speed · L loop this act · C captions · M calm · P plates · 1-4 cameras · f orbit
+-->
+<style>
+html,body{margin:0;height:100%;background:#0b0a0a;color:#b9b3ad;font-family:Georgia,serif}
+#wrap{display:flex;flex-direction:column;align-items:center;height:100%}
+#stage{position:relative;width:min(100vw,177.78vh - 150px);aspect-ratio:16/9;overflow:hidden}
+x3d-canvas{width:100%;height:100%;display:block}
+#nav{position:absolute;left:0;right:0;top:0;display:flex;justify-content:center;gap:.2vmin;padding:.6vmin 1vmin 0;background:linear-gradient(rgba(11,10,10,.88),rgba(11,10,10,0));z-index:3}
+#nav button{all:unset;cursor:pointer;display:flex;flex-direction:column;align-items:center;padding:.5vmin 1vmin;border-bottom:2px solid transparent;color:#8b8784;font:clamp(8px,1.2vmin,16px)/1.15 Georgia,serif;white-space:nowrap}
+#nav button .hy{font-size:1.15em;color:#b9b3ad}
+#nav button.on{border-bottom-color:#cd9646;color:#cd9646} #nav button.on .hy{color:#e8b86a}
+#nav button:focus-visible,#bar button:focus-visible,#bar select:focus-visible{outline:2px solid #f0cd96;outline-offset:2px}
+#prog{position:absolute;left:0;top:0;height:2px;background:#cd9646;z-index:4}
+#acts{position:absolute;left:0;right:0;bottom:0;height:6px;display:flex;z-index:3;opacity:.85}
+#acts div{height:100%;border-right:1px solid #0b0a0a;box-sizing:border-box;cursor:pointer}
+#loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#cd9646;font-size:clamp(14px,2.2vmin,30px);background:#0b0a0a;z-index:5;transition:opacity .8s}
+#loading.done{opacity:0;pointer-events:none}
+#bar{display:flex;flex-wrap:wrap;align-items:center;gap:.6em;padding:.5em 1em;font-size:14px}
+#bar button,#bar select{cursor:pointer;color:#cd9646;background:#141212;border:1px solid rgba(205,150,70,.5);padding:.3em .7em;font:14px Georgia,serif}
+#bar button[aria-pressed=true]{background:#3a2a14;color:#f0cd96}
+#read{font-variant-numeric:tabular-nums;color:#8b8784;min-width:30em}
+#cap{min-height:3em;max-width:min(100vw,177.78vh - 150px);padding:.2em 1em;font-size:15px;line-height:1.45;color:#d8d2cc}
+#cap .hy{color:#e8b86a;margin-right:.5em}
+#cap[hidden]{display:block;visibility:hidden}
+.note{color:#6b6865;font-size:12px;padding:0 1em .6em}
+</style>
+<script src="../../vendor/x_ite/x_ite.min.js"></script>
+<div id="wrap">
+<div id="stage">
+<x3d-canvas splashScreen="false" contextMenu="false" notifications="false"></x3d-canvas>
+<div id="prog"></div><div id="nav" role="toolbar" aria-label="sections"></div><div id="acts" aria-hidden="true"></div>
+<div id="loading">Բեռնվում է · loading…</div>
+</div>
+<div id="bar" role="toolbar" aria-label="transport">
+  <button id="play" aria-label="play or pause (space)">❚❚</button>
+  <button id="stepb" aria-label="one frame back (comma)">‹</button><button id="stepf" aria-label="one frame forward (period)">›</button>
+  <label>speed <select id="speed" aria-label="speed ([ and ])"><option>0.1</option><option>0.25</option><option>0.5</option><option>0.75</option><option selected>1</option><option>1.5</option><option>2</option><option>4</option></select></label>
+  <button id="loop" aria-pressed="false" aria-label="loop this act (L)">loop act</button>
+  <button id="calm" aria-pressed="false" aria-label="calm: half speed, no drifting particles (M)">calm</button>
+  <button id="plates" aria-pressed="false" aria-label="plates: one still per act, step with the arrows (P)">plates</button>
+  <button id="capb" aria-pressed="true" aria-label="captions (C)">captions</button>
+  <button id="listen" aria-pressed="false" aria-label="the score">listen</button>
+  <span id="read" aria-hidden="true"></span>
+</div>
+<div id="cap" aria-live="polite"></div>
+<div class="note" id="mode"></div>
+</div>
+<script>
+const q = new URLSearchParams(location.search), canvas = document.querySelector("x3d-canvas");
+const SCENE = q.get("scene") || "approved", PRESET = q.get("preset") || "graph-expanded", PREVIEW = SCENE === "approved" ? q.get("preview") : null;
+canvas.setAttribute("src", SCENE === "retime" ? `../retime/build/mashtots-landing-${PRESET}.x3d` : "../../mashtots-landing.x3d");
+const $ = id => document.getElementById(id);
+function el(tag, cls, text) { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+let SEC, TL, CAPS, segs, appr, cyc, clock, seekNode, scene, ready = false;
+// ---- the director's clock: V is the time of the timeline being shown (approved, a build, or a preview preset) ----
+let V = +(q.get("t") || 0), speed = +(q.get("speed") || 1), paused = q.has("paused"), loopAct = false, calm = false, plates = false, ePrev = null;
+let toff = 0, frames = 0, fps = 0, fpsT = performance.now(), lastSeg = null, step = 0;
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+// ---- timelines (the same maths as timeline_retimed.py) ----
+function segAt(S, tr) { for (const s of S) if (tr < s.r0 + s.dur || s === S[S.length - 1]) return s; }
+function actAt(S, tr) { const s = segAt(S, tr), tau = tr - s.r0; return s.a0 + tau * (s.rate + 0.5 * (s.rate_end - s.rate) * tau / Math.max(s.dur, 1e-9)); }
+function span(S, name) { const p = S.filter(s => s.name === name); return p.length ? [p[0].r0, p[p.length - 1].r0 + p[p.length - 1].dur] : null; }
+const baseName = n => n.replace(/2$/, "");
+// preview: a time of the preset's timeline -> the approved scene's real time showing the same act time (holds: proportionally; new holds: frozen)
+function toApproved(v) {
+  const s = segAt(segs, v), a = actAt(segs, v);
+  if (s.rate === 0 && s.rate_end === 0) {
+    const mine = span(segs, s.name), theirs = span(appr, s.name);
+    if (theirs) return theirs[0] + (v - mine[0]) / (mine[1] - mine[0]) * (theirs[1] - theirs[0]);
+  }
+  const cand = appr.filter(x => (x.rate > 0 || x.rate_end > 0) && a >= x.a0 - 1e-9 && a <= x.a1 + 1e-9);
+  const x = cand.find(x => x.name === baseName(s.name)) || cand[0];
+  if (!x) return 0;
+  const k = (x.rate_end - x.rate) / x.dur, da = a - x.a0;
+  return x.r0 + (Math.abs(k) < 1e-12 ? da / x.rate : (-x.rate + Math.sqrt(Math.max(0, x.rate * x.rate + 2 * k * da))) / k);
+}
+const wrap = t => ((t % cyc) + cyc) % cyc;
+
+// ---- every frame: own the scene's time ----
+function onFrame(e) {
+  frames++;
+  const dt = ePrev === null ? 0 : Math.min(0.25, Math.max(0, e - ePrev)); ePrev = e;
+  if (!paused) V += dt * speed * (calm ? 0.5 : 1);
+  if (step) { V += step; step = 0; }
+  if (loopAct && lastSeg) { const sp = span(segs, lastSeg.name); if (V >= sp[1] || V < sp[0] - 0.5) V = sp[0]; }
+  V = wrap(V);
+  const S = PREVIEW ? toApproved(V) : V;
+  toff = wrap(S - e); seekNode.cycleInterval = toff + 0.001;            // ROUTEd to every shader's toff
+}
+
+// ---- UI ----
+function secIndex(t) { let k = 0; SEC.sections.forEach((s, i) => { if (t >= s.t - 0.05) k = i; }); return k; }
+function goto(t) { V = wrap(t); syncAudio(true); }
+function act(d) {                                                          // previous / next section, or previous / next plate
+  if (plates) { const P = plateTimes(); let i = P.findIndex(p => p > V + 0.05); if (i < 0) i = 0; i = d > 0 ? i : (i - 2 + P.length) % P.length; goto(P[i]); return; }
+  const i = Math.max(0, Math.min(SEC.sections.length - 1, secIndex(V) + d)); goto(SEC.sections[i].t);
+}
+function plateTimes() { const seen = new Set(), out = []; for (const s of segs) { if (seen.has(s.name)) continue; seen.add(s.name); const sp = span(segs, s.name); out.push((sp[0] + sp[1]) / 2); } return out; }
+function setPaused(p) { paused = p; $("play").textContent = paused ? "▶" : "❚❚"; syncAudio(true); }
+function setSpeed(x) { speed = x; $("speed").value = String(x); syncAudio(true); }
+function toggle(id, v) { $(id).setAttribute("aria-pressed", String(v)); }
+function setCalm(v) {
+  calm = v; toggle("calm", v);
+  for (const n of scene.rootNodes) { try { if (n && n.getNodeTypeName() === "Shape") { const nm = n.appearance.shaders[0].getNodeName(); if (["MoteShader", "SparkShader", "RippleShader"].includes(nm)) n.visible = !v; } } catch (_) {} }
+  syncAudio(true);
+}
+function setPlates(v) { plates = v; toggle("plates", v); if (v) { setPaused(true); act(+1); } }
+function readout() {
+  const s = segAt(segs, V), a = actAt(segs, V), i = secIndex(V);
+  [...$("nav").children].forEach((b, j) => b.classList.toggle("on", j === i));
+  $("prog").style.width = (100 * V / cyc).toFixed(2) + "%";
+  $("read").textContent = `${V.toFixed(2)} / ${cyc.toFixed(2)} s · act ${a.toFixed(2)} s · ${s.name}${s.rate === 0 && s.rate_end === 0 ? " (hold)" : ` · rate ${((s.rate + s.rate_end) / 2).toFixed(2)}×`}` +
+    `${PREVIEW ? ` · approved ${toApproved(V).toFixed(2)} s` : ""} · ${paused ? "paused" : (speed * (calm ? 0.5 : 1)) + "×"} · ${fps} fps`;
+  if (!lastSeg || s.name !== lastSeg.name) {
+    lastSeg = s; const sec = SEC.sections[i];
+    $("cap").replaceChildren(el("span", "hy", sec.hy), document.createTextNode(CAPS[s.name] || CAPS[baseName(s.name)] || ""));
+  }
+}
+// ---- the score. The approved scene plays the mp3 (204.25 s, the approved loop; it follows the speed with preserved pitch). A re-timed build or a
+// preview (or ?score=live) plays the LIVE score (../live-score/score.js), computed from the same timeline: it follows pause, speed and seeks. ----
+const LIVE = SCENE === "retime" || !!PREVIEW || q.get("score") === "live";
+const audio = new Audio("../../landing_score.mp3"); audio.preload = "auto"; audio.preservesPitch = true; let listening = false, live = null;
+async function startLive() {
+  const m = await import("../live-score/score.js"), data = await (await fetch("../live-score/score_data.json")).json();
+  const ctx = new AudioContext(); await ctx.resume();
+  const score = m.buildScore(data, new m.Timeline(segs, cyc), Math.floor(Math.random() * 3));
+  live = { ctx, player: new m.Player(ctx, score, new m.Voices(ctx)), score };
+  $("mode").textContent = `Live score: ${score.events.length} events from this timeline · harmony audit ${score.audit.outside} of ${score.audit.checked} notes outside the table.`;
+}
+function syncAudio(force) {
+  if (!listening) return;
+  if (LIVE) { if (!live) return; const rate = speed * (calm ? 0.5 : 1); if (paused) { if (live.player.on) live.player.stop(); } else live.player.follow(V, rate); return; }
+  const rate = speed * (calm ? 0.5 : 1);
+  if (paused || rate < 0.25 || rate > 4) { audio.pause(); return; }
+  audio.playbackRate = rate;
+  const want = PREVIEW ? toApproved(V) : V;
+  if (force || Math.abs(audio.currentTime - want) > 0.3) audio.currentTime = want;
+  if (audio.paused) audio.play().catch(() => {});
+}
+$("listen").onclick = async () => {
+  listening = !listening; toggle("listen", listening);
+  if (LIVE) { if (listening) { if (!live) await startLive(); syncAudio(true); } else if (live) live.player.stop(); return; }
+  if (listening) syncAudio(true); else audio.pause();
+};
+$("play").onclick = () => setPaused(!paused);
+$("stepb").onclick = () => { setPaused(true); step = -1 / 30; };
+$("stepf").onclick = () => { setPaused(true); step = 1 / 30; };
+$("speed").onchange = e => setSpeed(+e.target.value);
+$("loop").onclick = () => { loopAct = !loopAct; toggle("loop", loopAct); };
+$("calm").onclick = () => setCalm(!calm);
+$("plates").onclick = () => setPlates(!plates);
+$("capb").onclick = () => { const h = !$("cap").hidden; $("cap").hidden = h; toggle("capb", !h); };
+const SPEEDS = [0.1, 0.25, 0.5, 0.75, 1, 1.5, 2, 4];
+addEventListener("keydown", e => {
+  if (!ready || e.target.tagName === "SELECT") return;
+  const k = e.key;
+  if (k === " ") { e.preventDefault(); setPaused(!paused); }
+  else if (k === "ArrowRight") act(1); else if (k === "ArrowLeft") act(-1);
+  else if (k === ".") { setPaused(true); step = 1 / 30; } else if (k === ",") { setPaused(true); step = -1 / 30; }
+  else if (k === "]" || k === "[") { const i = SPEEDS.indexOf(speed); setSpeed(SPEEDS[Math.max(0, Math.min(SPEEDS.length - 1, (i < 0 ? 4 : i) + (k === "]" ? 1 : -1)))]); }
+  else if (k === "l" || k === "L") $("loop").click(); else if (k === "c" || k === "C") $("capb").click();
+  else if (k === "m" || k === "M") $("calm").click(); else if (k === "p" || k === "P") $("plates").click();
+  else if (k === "f") { const n = scene.getNamedNode("Nav"); n.type = n.type[0] === "NONE" ? ["EXAMINE", "ANY"] : ["NONE"]; }
+  else { const vp = { 1: "Cam", 2: "CamHelix", 3: "CamRing", 4: "CamStone" }[k]; if (vp) scene.getNamedNode(vp).set_bind = true; }
+});
+
+async function boot() {
+  const secUrl = SCENE === "retime" ? `../retime/build/sections-${PRESET}.json` : "../../sections.json";
+  [SEC, TL, CAPS] = await Promise.all([secUrl, "../retime/timelines.json", "captions.json"].map(u => fetch(u).then(r => r.json())));
+  appr = TL.approved.segs; segs = SCENE === "retime" ? TL[PRESET].segs : PREVIEW ? TL[PREVIEW].segs : appr; cyc = SCENE === "retime" ? TL[PRESET].cycle : PREVIEW ? TL[PREVIEW].cycle : TL.approved.cycle;
+  if (PREVIEW) {                                                           // the preset's own section starts
+    SEC = JSON.parse(JSON.stringify(SEC));
+    const first = { stone: "flight", helix: "lift", tour: "tour", writing: "write", prayer: "prayer", numbers: "numerals", embedding: "space", graph: "web", pretraining: "finale", return: "line2" };
+    for (const s of SEC.sections) { const sp = span(segs, first[s.id]); if (sp) s.t = sp[0]; }
+  }
+  for (const s of SEC.sections) { const b = document.createElement("button"); b.append(el("span", "hy", s.hy), el("span", null, s.en)); b.onclick = () => goto(s.t); $("nav").appendChild(b); }
+  const names = []; for (const s of segs) if (!names.includes(s.name)) names.push(s.name);
+  for (const nm of names) { const sp = span(segs, nm), d = el("div"); d.style.width = (100 * (sp[1] - sp[0]) / cyc) + "%"; const hold = segs.find(s => s.name === nm).rate === 0;
+    d.style.background = hold ? "#4a3b26" : nm === "vowels" ? "#c9efe8" : "#2c2723"; d.title = nm; d.onclick = () => goto(sp[0]); $("acts").appendChild(d); }
+  $("mode").textContent = (SCENE === "retime" ? `Re-timed build: ${PRESET} (${cyc.toFixed(1)} s loop). ` : PREVIEW ? `Approved scene, previewed through the preset ${PREVIEW} (${cyc.toFixed(1)} s loop): a new act such as the measured vowels shows as a frozen frame until it is baked. ` : "Approved scene. ") +
+    "Space play/pause · ← → sections · , . frames · [ ] speed · L loop act · M calm · P plates · C captions." + (reduce ? " Your system asks for reduced motion: the piece starts paused, in calm mode." : "");
+  if (q.has("t") === false && location.hash) { const s = SEC.sections.find(x => x.id === location.hash.slice(1)); if (s) V = s.t; }
+  const wait = setInterval(() => {
+    try { scene = canvas.browser.currentScene; clock = scene.rootNodes.length > 10 && scene.getNamedNode("Clock"); } catch (_) { clock = null; }
+    if (!clock) return;
+    clearInterval(wait); seekNode = scene.getNamedNode("Seek");
+    clock.getField("elapsedTime").addFieldCallback("director", onFrame);
+    setTimeout(() => $("loading").classList.add("done"), 400); ready = true;
+    setSpeed(speed); setPaused(paused || reduce); if (q.has("calm") || reduce) setCalm(true); if (q.has("plates")) setPlates(true);
+    setInterval(() => { const now = performance.now(); fps = Math.round(frames * 1000 / (now - fpsT)); frames = 0; fpsT = now; }, 1000);
+    setInterval(() => { readout(); syncAudio(false); }, 100);
+  }, 300);
+}
+boot();
+</script>

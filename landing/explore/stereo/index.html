@@ -1,0 +1,72 @@
+<!doctype html><meta charset="utf-8"><title>Mashtots Landing · stereo (explore)</title>
+<link rel="icon" href="data:,">
+<!-- The re-timed Landing in stereo. Two copies of the scene render the left and the right eye: each scene's Eye TimeSensor (ROUTEd to every
+     shader's eyeX) moves its camera by half the separation, both converging on the shot's target (the slide plane in the slide view, the helix
+     in the helix shots), and both are held on exactly the same moment (each scene's toff rewritten every frame from its own clock).
+     Modes: anaglyph (red-cyan glasses; half-colour: the left eye's luminance in red, the right eye's green and blue), side by side (a phone in
+     a cardboard viewer, or a headset's flat-video player), cross-eyed (side by side, swapped: no glasses), wiggle (one view, the eyes
+     alternating: depth with no equipment).   ?preset=graph-expanded &mode=anaglyph|sbs|cross|wiggle &sep=0.35 &t=SEC
+     Keys: space play/pause · ← → 5 s · m mode · [ ] separation · 2 the helix camera, 1 the slide camera -->
+<style>
+html,body{margin:0;height:100%;background:#000;color:#b9b3ad;font:14px Georgia,serif;overflow:hidden}
+#view{position:absolute;left:0;right:0;top:0;bottom:44px;display:flex;align-items:center;justify-content:center}
+#pair{position:relative;width:min(100vw,(100vh - 44px) * 1.7778);aspect-ratio:16/9}
+x3d-canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.anaglyph #L{filter:url(#red)} .anaglyph #R{filter:url(#cyan);mix-blend-mode:screen}
+.sbs #pair,.cross #pair{width:min(100vw,(100vh - 44px) * 3.5556);aspect-ratio:32/9}
+.sbs #L,.cross #R{left:0;width:50%} .sbs #R,.cross #L{left:50%;width:50%}
+.wiggle #R{visibility:hidden}
+#bar{position:absolute;left:0;right:0;bottom:0;height:44px;display:flex;gap:.6em;align-items:center;padding:0 1em;background:#0b0a0a}
+#bar button{cursor:pointer;color:#cd9646;background:#141212;border:1px solid rgba(205,150,70,.5);padding:.25em .7em;font:14px Georgia,serif}
+#bar button[aria-pressed=true]{background:#3a2a14;color:#f0cd96}
+input[type=range]{accent-color:#cd9646}
+#read{font-variant-numeric:tabular-nums;color:#8b8784}
+</style>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <filter id="red" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="0.299 0.587 0.114 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0"/></filter>
+  <filter id="cyan" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="0 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 1 0"/></filter>
+</svg>
+<script src="../../vendor/x_ite/x_ite.min.js"></script>
+<div id="view"><div id="pair">
+  <x3d-canvas id="L" splashScreen="false" contextMenu="false" notifications="false"></x3d-canvas>
+  <x3d-canvas id="R" splashScreen="false" contextMenu="false" notifications="false"></x3d-canvas>
+</div></div>
+<div id="bar" role="toolbar" aria-label="stereo">
+  <button id="play" aria-label="play or pause">❚❚</button>
+  <button data-mode="anaglyph">anaglyph</button><button data-mode="sbs">side by side</button><button data-mode="cross">cross-eyed</button><button data-mode="wiggle">wiggle</button>
+  <label>separation <input id="sep" type="range" min="0" max="0.8" step="0.01" aria-label="eye separation"></label>
+  <span id="read">loading…</span>
+</div>
+<script>
+const q = new URLSearchParams(location.search), PRESET = q.get("preset") || "graph-expanded";
+let mode = q.get("mode") || "anaglyph", sep = +(q.get("sep") || 0.35), V = +(q.get("t") || 9.0), playing = !q.has("paused"), last = null, CYC = 255.05, wig = 0;
+const E = ["L", "R"].map(id => ({ el: document.getElementById(id), side: id === "L" ? -1 : 1, scene: null, seek: null, eye: null, ok: false }));
+for (const e of E) e.el.setAttribute("src", `../retime/build/mashtots-landing-${PRESET}.x3d`);
+fetch("../retime/timelines.json").then(r => r.json()).then(TL => { if (TL[PRESET]) CYC = TL[PRESET].cycle; });
+const wrap = t => ((t % CYC) + CYC) % CYC;
+function eyeFor(e) { if (mode === "wiggle") return 1 + (wig ? 0.5 : -0.5) * sep; return 1 + e.side * 0.5 * sep; }
+function hook(e) {
+  try { e.scene = e.el.browser.currentScene; } catch (_) { return false; }
+  if (!e.scene || e.scene.rootNodes.length < 11) return false;
+  e.seek = e.scene.getNamedNode("Seek"); e.eye = e.scene.getNamedNode("Eye");
+  e.scene.getNamedNode("Clock").getField("elapsedTime").addFieldCallback("stereo", t => { e.seek.cycleInterval = wrap(V - t) + 0.001; e.eye.cycleInterval = eyeFor(e); });
+  return (e.ok = true);
+}
+const wait = setInterval(() => { if (E.every(e => e.ok || hook(e))) { clearInterval(wait); document.getElementById("read").textContent = "ready"; } }, 200);
+function frame(now) { if (playing && last !== null) V = wrap(V + (now - last) / 1000); last = now; document.getElementById("read").textContent = `${V.toFixed(1)} s · ${mode} · separation ${sep.toFixed(2)}`; requestAnimationFrame(frame); }
+requestAnimationFrame(frame);
+setInterval(() => { wig ^= 1; }, 110);                       // wiggle: the eyes alternate about 4.5 times a second
+function setMode(m) { mode = m; document.body.className = m; document.querySelectorAll("[data-mode]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.mode === m))); }
+document.querySelectorAll("[data-mode]").forEach(b => b.onclick = () => setMode(b.dataset.mode));
+const sl = document.getElementById("sep"); sl.value = sep; sl.oninput = () => { sep = +sl.value; };
+document.getElementById("play").onclick = () => { playing = !playing; document.getElementById("play").textContent = playing ? "❚❚" : "▶"; };
+const MODES = ["anaglyph", "sbs", "cross", "wiggle"];
+addEventListener("keydown", ev => {
+  if (ev.key === " ") { ev.preventDefault(); document.getElementById("play").click(); }
+  else if (ev.key === "ArrowRight") V = wrap(V + 5); else if (ev.key === "ArrowLeft") V = wrap(V - 5);
+  else if (ev.key === "m") setMode(MODES[(MODES.indexOf(mode) + 1) % 4]);
+  else if (ev.key === "]") { sep = Math.min(0.8, sep + 0.05); sl.value = sep; } else if (ev.key === "[") { sep = Math.max(0, sep - 0.05); sl.value = sep; }
+  else if (ev.key === "1" || ev.key === "2") for (const e of E) try { e.scene.getNamedNode(ev.key === "1" ? "Cam" : "CamHelix").set_bind = true; } catch (_) {}
+});
+setMode(mode);
+</script>

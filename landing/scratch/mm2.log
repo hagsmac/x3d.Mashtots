@@ -1,0 +1,11 @@
+scored in 26 s: 142 kicks, 2050 logged notes
+audit: 2050 pitched events, 0 outside the harmony table
+duduk sounding: tour+writing 77%, prayer 93%, numbers+shira 84%, build 72%, finale 86%
+harp sounding: tour+writing 95%, prayer 67%, numbers+shira 45%, build 97%, finale 100%
+full stem loudness: drone 2.1->-37.0, pad -25.7->-38.0, harp -23.0->-25.5, arp -27.0->-32.0, duduk -19.7->-25.0, kick -15.3->-30.0, bass -11.9->-31.5, perc -22.2->-31.0, saw -23.3->-38.0, fx -12.5->-32.0, plate -21.9->-28.0
+full: -17.0 LUFS integrated (was -19.0), peak 0.890 (-1.01 dBFS), true peak -1.01 dBFS
+wrote scratch/stage/landing_score_c.mp3 (204.25 s)
+harp stem loudness: drone 2.1->-37.0, pad -25.7->-38.0, harp -23.0->-25.5, arp -27.0->-32.0, duduk -19.7->-25.0, plate -21.9->-28.0
+harp: -18.0 LUFS integrated (was -19.2), peak 0.659 (-3.62 dBFS), true peak -3.48 dBFS
+wrote scratch/stage/landing_score_harp_c.mp3 (204.25 s)
+total 134 s

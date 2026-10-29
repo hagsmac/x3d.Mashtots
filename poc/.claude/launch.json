@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "participation-form",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["-m", "http.server", "8797", "--bind", "127.0.0.1", "--directory", "/Users/handshake/Projects/x3d/work/mashtots-poc/participation"],
+      "port": 8797
+    }
+  ]
+}

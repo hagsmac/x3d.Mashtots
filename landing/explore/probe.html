@@ -1,0 +1,8 @@
+<!doctype html><meta charset=utf-8><pre id=o>probing…</pre><script>
+(async()=>{const o={ua:navigator.userAgent,dpr:devicePixelRatio,cores:navigator.hardwareConcurrency,mem:navigator.deviceMemory};
+o.webgpu=!!navigator.gpu; if(navigator.gpu){try{const a=await navigator.gpu.requestAdapter();o.adapter=a?{info:a.info&&{v:a.info.vendor,a:a.info.architecture,d:a.info.description},limits:{maxStorage:a.limits.maxStorageBufferBindingSize,maxWG:a.limits.maxComputeInvocationsPerWorkgroup}}:null}catch(e){o.adapterErr=String(e)}}
+o.xr=!!navigator.xr; if(navigator.xr){try{o.vr=await navigator.xr.isSessionSupported('immersive-vr');o.ar=await navigator.xr.isSessionSupported('immersive-ar')}catch(e){o.xrErr=String(e)}}
+const gl=document.createElement('canvas').getContext('webgl2');o.webgl2=!!gl;if(gl){const d=gl.getExtension('WEBGL_debug_renderer_info');o.gpu=d&&gl.getParameter(d.UNMASKED_RENDERER_WEBGL);o.maxTex=gl.getParameter(gl.MAX_TEXTURE_SIZE);o.maxUnif=gl.getParameter(gl.MAX_FRAGMENT_UNIFORM_VECTORS);o.floatRT=!!gl.getExtension('EXT_color_buffer_float')}
+o.audioCtx=!!(window.AudioContext);if(o.audioCtx){const c=new AudioContext();o.sr=c.sampleRate;o.baseLat=c.baseLatency;o.worklet=!!c.audioWorklet;o.state=c.state;c.close()}
+o.reducedMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;o.speech=!!window.speechSynthesis;o.offline=!!window.OfflineAudioContext;
+document.getElementById('o').textContent=JSON.stringify(o,null,1);window.PROBE=o})()</script>

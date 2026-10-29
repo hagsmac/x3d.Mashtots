@@ -1,0 +1,52 @@
+<!doctype html><meta charset="utf-8"><title>load probe</title>
+<!-- Where the Landing's load time goes. Before X_ITE loads, wraps the WebGL calls that compile and link shaders and EVERY call that can block on a
+     program still being compiled in the background (status, uniform and attribute queries, useProgram, the first draws), attributes the time to
+     the program, and records main-thread long tasks. Then loads a scene and reports.  ?src=../../mashtots-landing.x3d (default)  &min=11 root nodes -->
+<style>body{margin:0;background:#111;color:#ddd;font:13px ui-monospace,Menlo,monospace} x3d-canvas{width:640px;height:360px;display:block} pre{padding:8px;white-space:pre-wrap}</style>
+<script>
+const T = { calls: {}, perProg: new Map(), srcOf: new Map(), progShaders: new Map(), long: 0, nLong: 0, longMax: 0 };
+const P = WebGL2RenderingContext.prototype;
+function label(prog) {                       // a program's name: the start of its vertex shader's main(), after tl()
+  const sh = (T.progShaders.get(prog) || []).map(s => T.srcOf.get(s) || "").find(s => s.includes("gl_Position")) || "";
+  const m = sh.match(/void main\(\)\s*\{([\s\S]{0,400})/); const body = m ? m[1].replace(/\s+/g, " ").replace(/^ ?tl\(\);? ?/, "") : "?";
+  return `${(sh.length / 1000).toFixed(1)}k · ${body.slice(0, 90)}`;
+}
+const PROGARG = { linkProgram: 0, useProgram: 0, getProgramParameter: 0, getUniformLocation: 0, getActiveUniform: 0, getAttribLocation: 0, getActiveAttrib: 0 };
+let current = null;
+for (const name of ["compileShader", "linkProgram", "getProgramParameter", "getShaderParameter", "getUniformLocation", "getActiveUniform", "getAttribLocation", "getActiveAttrib", "useProgram", "drawElements", "drawArrays", "texImage2D", "bufferData"]) {
+  const f = P[name]; if (!f) continue;
+  P[name] = function (...a) {
+    const s = performance.now(); const r = f.apply(this, a); const d = performance.now() - s;
+    T.calls[name] = (T.calls[name] || 0) + d;
+    const prog = name in PROGARG ? a[0] : (name.startsWith("draw") ? current : null);
+    if (name === "useProgram") current = a[0];
+    if (prog) T.perProg.set(prog, (T.perProg.get(prog) || 0) + d);
+    return r;
+  };
+}
+const fSrc = P.shaderSource; P.shaderSource = function (sh, src) { T.srcOf.set(sh, src); return fSrc.call(this, sh, src); };
+const fAtt = P.attachShader; P.attachShader = function (prog, sh) { if (!T.progShaders.has(prog)) T.progShaders.set(prog, []); T.progShaders.get(prog).push(sh); return fAtt.call(this, prog, sh); };
+new PerformanceObserver(l => { for (const e of l.getEntries()) { T.long += e.duration; T.nLong++; T.longMax = Math.max(T.longMax, e.duration); } }).observe({ entryTypes: ["longtask"] });
+</script>
+<script src="../../vendor/x_ite/x_ite.min.js"></script>
+<x3d-canvas splashScreen="false" contextMenu="false" notifications="false"></x3d-canvas>
+<pre id="out">loading…</pre>
+<script>
+const q = new URLSearchParams(location.search), canvas = document.querySelector("x3d-canvas");
+canvas.setAttribute("src", q.get("src") || "../../mashtots-landing.x3d");
+const iv = setInterval(() => {
+  let sc = null; try { sc = canvas.browser.currentScene; } catch (_) {}
+  if (sc && sc.rootNodes.length >= +(q.get("min") || 11)) {
+    clearInterval(iv); const parsed = performance.now();
+    let first = null; sc.getNamedNode("Clock").getField("elapsedTime").addFieldCallback("p", () => { if (first === null) { first = performance.now(); setTimeout(report, 2500); } });
+    function report() {
+      const progs = [...T.perProg.entries()].sort((a, b) => b[1] - a[1]);
+      const r = { scene_ready_ms: Math.round(parsed), first_frame_ms: Math.round(first), long_tasks_ms: Math.round(T.long), longest_task_ms: Math.round(T.longMax), hidden: document.hidden,
+        gl_calls_ms: Object.fromEntries(Object.entries(T.calls).map(([k, v]) => [k, Math.round(v)]).sort((a, b) => b[1] - a[1])),
+        programs: progs.length, blocked_in_programs_ms: Math.round(progs.reduce((s, x) => s + x[1], 0)),
+        top_programs: progs.slice(0, 10).map(([p, ms]) => `${Math.round(ms)} ms · ${label(p)}`) };
+      document.getElementById("out").textContent = JSON.stringify(r, null, 1); window.PROBE = r;
+    }
+  }
+}, 20);
+</script>

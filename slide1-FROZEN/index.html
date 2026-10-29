@@ -1,0 +1,17 @@
+<!doctype html><meta charset="utf-8"><title>Mashtots slide 1 (X3D)</title>
+<style>html,body{margin:0;height:100%;background:#07060a;display:flex;align-items:center;justify-content:center}
+x3d-canvas{width:min(100vw,177.78vh);height:min(56.25vw,100vh);display:block}</style>
+<link rel="icon" href="data:,">
+<script src="vendor/x_ite/x_ite.min.js"></script>
+<x3d-canvas splashScreen="false" contextMenu="false" notifications="false"></x3d-canvas>
+<script>
+// ?classic = shader-free fallback; ?src=FILE.x3d = any file in this folder (inspection stills)
+const q = new URLSearchParams(location.search), canvas = document.querySelector("x3d-canvas");
+canvas.setAttribute("src", q.get("src") || (q.has("classic") ? "mashtots-reveal-classic.x3d" : "mashtots-reveal.x3d"));
+// keys: 1 slide camera, 2 alphabet stone, 3 gilt line (left half), f = free navigation on/off (drag to orbit)
+addEventListener("keydown", e => {
+  const s = canvas.browser.currentScene, vp = { 1: "Cam", 2: "CamStone", 3: "CamLine" }[e.key];
+  try { if (vp) s.getNamedNode(vp).set_bind = true;
+        if (e.key === "f") { const n = s.getNamedNode("Nav"); n.type = n.type[0] === "NONE" ? ["EXAMINE", "ANY"] : ["NONE"]; } } catch (_) {}   // the classic file has neither
+});
+</script>

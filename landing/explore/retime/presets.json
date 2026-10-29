@@ -1,0 +1,313 @@
+{
+ "approved": {
+  "about": "timeline.py exactly: the scene you approved (204.25 s). Used to check that the re-timing code changes nothing by itself.",
+  "segments": {}
+ },
+ "graph-expanded": {
+  "about": "The graph acts get whole bars of the 128 BPM grid (4 to 6 bars, 7.5 to 11.25 s, about the deck's own pace) instead of 4 to 6 s at 1.5-2x; inside each act the speed RAMPS: slow motion where the eye should land (the first hop from Ճ, the cut, the cold end of the annealing), time-lapse through iterations (PageRank and the Markov walk rush to convergence). A new 4-bar hold inside the spectral cut: the measured Grabar graph takes over and its highest mode lifts the vowels out of the ring. The helix lift is slowed. Every other section is unchanged, so the loop grows. Camera: corner shots and sweeps (the lift, a glance at each new row of the tour, an orbit of the attention tensor, PageRank as a relief, a slow push across the drop that breathes with the kick, a crane down at the return); the title block stays put and dims, computed from the one clock. Colour: four spectral moments (the stone's notes as light, the numerals' values, the measured fastest mode, PageRank).",
+  "segments": {
+   "lift": {
+    "sec": 3.4,
+    "profile": [[0, 1.0], [0.5, 0.45], [1, 1.0]]
+   },
+   "space": {"bars": 5},
+   "web": {
+    "bars": 5,
+    "profile": [[0, 0.8], [0.4, 0.8], [1, 1.2]]
+   },
+   "msg": {
+    "bars": 4,
+    "profile": [[0, 0.6], [0.3, 0.6], [1, 1.3]]
+   },
+   "spectral": {
+    "split_at": 3.0,
+    "first": {
+     "bars": 2,
+     "profile": [[0, 0.45], [0.45, 0.45], [1, 1.3]]
+    },
+    "hold": {
+     "name": "vowels",
+     "bars": 4
+    },
+    "second": {"bars": 2}
+   },
+   "pagerank": {
+    "bars": 4,
+    "profile": [[0, 0.55], [0.35, 0.55], [0.8, 1.7], [1, 1.0]]
+   },
+   "anneal": {
+    "bars": 4,
+    "profile": [[0, 0.6], [0.5, 1.5], [1, 0.6]]
+   },
+   "descent": {
+    "bars": 4,
+    "profile": [[0, 0.6], [0.45, 1.25], [1, 1.0]]
+   },
+   "walk": {
+    "bars": 5,
+    "profile": [[0, 0.8], [0.6, 1.0], [1, 1.6]]
+   },
+   "fourier": {
+    "bars": 5,
+    "profile": [[0, 0.8], [0.5, 1.2], [1, 0.9]]
+   },
+   "poincare": {"bars": 5},
+   "svd": {"bars": 6},
+   "collapse": {"bars": 1}
+  },
+  "camera": [
+   {
+    "name": "the lift: orbit a third of the way round the helix, rising (look-at shot)",
+    "k": "plateau(t_, TL - 0.3, TT + 2.5, 1.6)",
+    "u": "prog(t_, TL - 0.3, TT + 2.5)",
+    "eye": "HCW + vec3(10.5 * sin(-0.95 * u), 1.2 + 1.6 * u, 10.5 * cos(-0.95 * u))",
+    "target": "HCW"
+   },
+   {
+    "name": "row 2 of the tour: a glance from the other corner",
+    "k": "bump(t_, TT + 9.0 * PACE - 0.5, TT + 9.0 * PACE + 3.5)",
+    "yaw": 0.18,
+    "pitch": 0.06,
+    "push": 0.35,
+    "pivot": "helix"
+   },
+   {
+    "name": "row 3: back to the first corner",
+    "k": "bump(t_, TT + 18.0 * PACE - 0.5, TT + 18.0 * PACE + 3.5)",
+    "yaw": -0.18,
+    "pitch": -0.06,
+    "push": 0.35,
+    "pivot": "helix"
+   },
+   {
+    "name": "row 4: from below",
+    "k": "bump(t_, TT + 27.0 * PACE - 0.5, TT + 27.0 * PACE + 3.5)",
+    "yaw": 0.15,
+    "pitch": -0.12,
+    "push": 0.4,
+    "pivot": "helix"
+   },
+   {
+    "name": "the last letters of the tour: a dive inside the helix, the letters circling the viewer",
+    "k": "bump(t_, TC - 4.5, TC + 0.8)",
+    "u": "prog(t_, TC - 4.5, TC + 0.8)",
+    "eye": "HCW + vec3(1.2 * cos(2.0 * u), 0.3, 1.8 + 1.2 * sin(2.0 * u))",
+    "target": "HCW + vec3(-2.0, -0.2, -3.0)"
+   },
+   {
+    "name": "the embedding space: orbit the attention tensor",
+    "k": "plateau(t_, TW2 + 1.0, TS2 - 0.4, 2.5)",
+    "yaw": -0.32,
+    "pitch": 0.12,
+    "push": 0.7,
+    "pivot": "tensor"
+   },
+   {
+    "name": "PageRank: a high corner of the ring, so that rank reads as relief",
+    "k": "plateau(t_, TP + 0.3, TA - 0.3, 1.4)",
+    "u": "prog(t_, TP + 0.3, TA - 0.3)",
+    "eye": "RINGW + vec3(6.0 - 3.0 * u, 6.5, 7.0)",
+    "target": "RINGW"
+   },
+   {
+    "name": "the drop: a slow push across bars 10 to 18",
+    "k": "plateau(T_, FIN0 + 10.0 * BAR, FIN0 + 18.0 * BAR, 3.5 * BAR)",
+    "yaw": 0.06,
+    "pitch": 0.03,
+    "push": 0.9,
+    "pivot": "slide"
+   },
+   {
+    "name": "the drop: the set breathes with each kick",
+    "k": "plateau(T_, FIN0 + 10.0 * BAR, FIN0 + 18.0 * BAR, BAR) * kick",
+    "yaw": 0.0,
+    "pitch": 0.0,
+    "push": 0.12,
+    "pivot": "slide"
+   },
+   {
+    "name": "the return: looking down onto the stone as the letters come home",
+    "k": "bump(t_, T2 - 0.3, T3 + 1.2)",
+    "u": "prog(t_, T2 - 0.3, T3 + 1.2)",
+    "eye": "STONEW + vec3(2.5 - 1.5 * u, 4.0, 8.0)",
+    "target": "STONEW"
+   }
+  ],
+  "spectral": [
+   {
+    "name": "the stone's notes as light",
+    "metric": "pitch",
+    "k": "plateau(t_, TL - 0.2, TT + 9.0 * PACE, 1.2)"
+   },
+   {
+    "name": "letters are numbers: log10 of the value",
+    "metric": "value",
+    "k": "numK"
+   },
+   {
+    "name": "the measured fastest mode",
+    "metric": "fastmode",
+    "k": "vowK"
+   },
+   {
+    "name": "PageRank as it converges",
+    "metric": "pagerank",
+    "k": "plateau(t_, TP - 0.4, TA - 0.6, 0.8)"
+   }
+  ]
+ },
+ "same-length": {
+  "about": "The same idea inside the approved loop length (204.25 s, so the existing mp3 score still fits end to end, though not note for note): graph acts on 3 bars with the same ramps, a 3-bar vowels act; paid for by contracting the tour (it fills what is left) and the three medieval interludes by 2-3 s each.",
+  "total": 204.25227,
+  "segments": {
+   "tour": {"fill": true},
+   "prayer": {"sec": 14.0},
+   "numerals": {"sec": 10.0},
+   "shirakatsi": {"sec": 8.0},
+   "space": {"bars": 4},
+   "web": {
+    "bars": 4,
+    "profile": [[0, 0.8], [0.4, 0.8], [1, 1.2]]
+   },
+   "msg": {
+    "bars": 3,
+    "profile": [[0, 0.6], [0.3, 0.6], [1, 1.3]]
+   },
+   "spectral": {
+    "split_at": 3.0,
+    "first": {
+     "bars": 1,
+     "profile": [[0, 0.45], [0.45, 0.45], [1, 1.3]]
+    },
+    "hold": {
+     "name": "vowels",
+     "bars": 3
+    },
+    "second": {"bars": 2}
+   },
+   "pagerank": {
+    "bars": 3,
+    "profile": [[0, 0.55], [0.35, 0.55], [0.8, 1.7], [1, 1.0]]
+   },
+   "anneal": {
+    "bars": 3,
+    "profile": [[0, 0.6], [0.5, 1.5], [1, 0.6]]
+   },
+   "descent": {
+    "bars": 3,
+    "profile": [[0, 0.6], [0.45, 1.25], [1, 1.0]]
+   },
+   "walk": {
+    "bars": 3,
+    "profile": [[0, 0.8], [0.6, 1.0], [1, 1.6]]
+   },
+   "fourier": {
+    "bars": 3,
+    "profile": [[0, 0.8], [0.5, 1.2], [1, 0.9]]
+   },
+   "poincare": {"bars": 3},
+   "svd": {"bars": 4},
+   "collapse": {"bars": 1}
+  },
+  "camera": [
+   {
+    "name": "the lift: orbit a third of the way round the helix, rising (look-at shot)",
+    "k": "plateau(t_, TL - 0.3, TT + 2.5, 1.6)",
+    "u": "prog(t_, TL - 0.3, TT + 2.5)",
+    "eye": "HCW + vec3(10.5 * sin(-0.95 * u), 1.2 + 1.6 * u, 10.5 * cos(-0.95 * u))",
+    "target": "HCW"
+   },
+   {
+    "name": "row 2 of the tour: a glance from the other corner",
+    "k": "bump(t_, TT + 9.0 * PACE - 0.5, TT + 9.0 * PACE + 3.5)",
+    "yaw": 0.18,
+    "pitch": 0.06,
+    "push": 0.35,
+    "pivot": "helix"
+   },
+   {
+    "name": "row 3: back to the first corner",
+    "k": "bump(t_, TT + 18.0 * PACE - 0.5, TT + 18.0 * PACE + 3.5)",
+    "yaw": -0.18,
+    "pitch": -0.06,
+    "push": 0.35,
+    "pivot": "helix"
+   },
+   {
+    "name": "row 4: from below",
+    "k": "bump(t_, TT + 27.0 * PACE - 0.5, TT + 27.0 * PACE + 3.5)",
+    "yaw": 0.15,
+    "pitch": -0.12,
+    "push": 0.4,
+    "pivot": "helix"
+   },
+   {
+    "name": "the last letters of the tour: a dive inside the helix, the letters circling the viewer",
+    "k": "bump(t_, TC - 4.5, TC + 0.8)",
+    "u": "prog(t_, TC - 4.5, TC + 0.8)",
+    "eye": "HCW + vec3(1.2 * cos(2.0 * u), 0.3, 1.8 + 1.2 * sin(2.0 * u))",
+    "target": "HCW + vec3(-2.0, -0.2, -3.0)"
+   },
+   {
+    "name": "the embedding space: orbit the attention tensor",
+    "k": "plateau(t_, TW2 + 1.0, TS2 - 0.4, 2.5)",
+    "yaw": -0.32,
+    "pitch": 0.12,
+    "push": 0.7,
+    "pivot": "tensor"
+   },
+   {
+    "name": "PageRank: a high corner of the ring, so that rank reads as relief",
+    "k": "plateau(t_, TP + 0.3, TA - 0.3, 1.4)",
+    "u": "prog(t_, TP + 0.3, TA - 0.3)",
+    "eye": "RINGW + vec3(6.0 - 3.0 * u, 6.5, 7.0)",
+    "target": "RINGW"
+   },
+   {
+    "name": "the drop: a slow push across bars 10 to 18",
+    "k": "plateau(T_, FIN0 + 10.0 * BAR, FIN0 + 18.0 * BAR, 3.5 * BAR)",
+    "yaw": 0.06,
+    "pitch": 0.03,
+    "push": 0.9,
+    "pivot": "slide"
+   },
+   {
+    "name": "the drop: the set breathes with each kick",
+    "k": "plateau(T_, FIN0 + 10.0 * BAR, FIN0 + 18.0 * BAR, BAR) * kick",
+    "yaw": 0.0,
+    "pitch": 0.0,
+    "push": 0.12,
+    "pivot": "slide"
+   },
+   {
+    "name": "the return: looking down onto the stone as the letters come home",
+    "k": "bump(t_, T2 - 0.3, T3 + 1.2)",
+    "u": "prog(t_, T2 - 0.3, T3 + 1.2)",
+    "eye": "STONEW + vec3(2.5 - 1.5 * u, 4.0, 8.0)",
+    "target": "STONEW"
+   }
+  ],
+  "spectral": [
+   {
+    "name": "the stone's notes as light",
+    "metric": "pitch",
+    "k": "plateau(t_, TL - 0.2, TT + 9.0 * PACE, 1.2)"
+   },
+   {
+    "name": "letters are numbers: log10 of the value",
+    "metric": "value",
+    "k": "numK"
+   },
+   {
+    "name": "the measured fastest mode",
+    "metric": "fastmode",
+    "k": "vowK"
+   },
+   {
+    "name": "PageRank as it converges",
+    "metric": "pagerank",
+    "k": "plateau(t_, TP - 0.4, TA - 0.6, 0.8)"
+   }
+  ]
+ }
+}

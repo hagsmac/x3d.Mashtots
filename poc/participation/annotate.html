@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="hy">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mashtots · annotation · նշագրում</title>
+<style>
+  :root { --ink:#1e1b16; --paper:#f7f2e7; --gold:#a8792a; --line:#d9cfb9; --soft:#6b6253; --sel:#24456e; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--paper); color:var(--ink); font: 18px/1.5 "Noto Sans Armenian","Noto Sans","Arial Unicode MS","Segoe UI",sans-serif; }
+  header { padding:14px 22px; border-bottom:1px solid var(--line); display:flex; gap:16px; align-items:center; flex-wrap:wrap; }
+  header h1 { font: 600 20px/1.2 "Noto Serif Armenian","Noto Serif",Georgia,serif; margin:0; color:var(--gold); letter-spacing:.02em; }
+  header .meta { color:var(--soft); font-size:14px; }
+  main { max-width:880px; margin:0 auto; padding:22px; }
+  .card { background:#fffdf8; border:1px solid var(--line); border-radius:10px; padding:22px; margin-bottom:18px; }
+  .text { font: 26px/1.6 "Noto Serif Armenian","Noto Serif",Georgia,serif; }
+  .ctx { color:var(--soft); font-size:16px; margin-top:10px; }
+  h2 { font-size:15px; text-transform:uppercase; letter-spacing:.08em; color:var(--soft); margin:18px 0 8px; }
+  .opts { display:flex; flex-wrap:wrap; gap:8px; }
+  button { font:inherit; font-size:16px; border:1px solid var(--line); background:#fff; color:var(--ink); padding:9px 14px; border-radius:8px; cursor:pointer; }
+  button:hover { border-color:var(--gold); }
+  button.on { background:var(--sel); color:#fff; border-color:var(--sel); }
+  button.primary { background:var(--gold); color:#fff; border-color:var(--gold); }
+  button .k { display:inline-block; min-width:1.4em; color:var(--soft); font-size:13px; }
+  button.on .k { color:#dfe7f2; }
+  .row { display:flex; gap:10px; align-items:center; flex-wrap:wrap; justify-content:space-between; }
+  .bar { height:6px; background:var(--line); border-radius:3px; overflow:hidden; margin:6px 0 16px; }
+  .bar > div { height:100%; background:var(--gold); width:0; }
+  textarea { width:100%; font:inherit; font-size:16px; padding:8px; border:1px solid var(--line); border-radius:8px; min-height:3em; }
+  .word { font: 40px/1.4 "Noto Serif Armenian","Noto Serif",Georgia,serif; display:flex; flex-wrap:wrap; align-items:center; user-select:none; }
+  .word .l { padding:0 1px; }
+  .word .gap { width:16px; height:52px; cursor:pointer; position:relative; }
+  .word .gap::after { content:""; position:absolute; left:7px; top:6px; bottom:6px; width:2px; background:transparent; }
+  .word .gap:hover::after { background:var(--line); }
+  .word .gap.cut::after { background:var(--sel); width:3px; }
+  .pieces { color:var(--sel); font-size:18px; margin-top:8px; }
+  .muted { color:var(--soft); font-size:14px; }
+  .hide { display:none; }
+  a { color:var(--sel); }
+</style>
+</head>
+<body>
+<header>
+  <h1>Մաշտոց · Mashtots</h1>
+  <div class="meta">Նշագրում · Annotation · <span id="batchName">no batch loaded</span> · annotator <b id="anon"></b></div>
+</header>
+<main>
+  <section id="start" class="card">
+    <p><b>Thank you for helping.</b> You will read short Armenian sentences and say which Armenian they are and how they are spelled, and cut some words into their parts.
+       Nothing about you is collected: the form gives you a random code (above) and keeps your answers on this computer until you press <b>Save my answers</b>.
+       How your work is credited is in the consent form you received with this file.</p>
+    <p lang="hy">Շնորհակալութիւն։ Կարդացէք կարճ նախադասութիւններ, նշեցէք թէ որ հայերէնն է եւ ինչ ուղղագրութեամբ գրուած է, եւ բաժանեցէք քանի մը բառ իրենց մասերուն։
+       Ձեր մասին ոչինչ կը հաւաքուի։</p>
+    <div class="opts">
+      <button class="primary" onclick="document.getElementById('file').click()">Open a batch file · Բացել</button>
+      <button onclick="loadBatch(DEMO)">Try the demo · Փորձել</button>
+    </div>
+    <input id="file" type="file" accept=".json,application/json" class="hide" onchange="openFile(this.files[0])">
+    <p class="muted">Keys: 1-6 variety, Q W E R spelling, A S D how sure, Enter next, Backspace back. Click between letters to cut a word.</p>
+  </section>
+
+  <section id="work" class="hide">
+    <div class="row"><span class="muted" id="pos"></span><span class="muted" id="done"></span></div>
+    <div class="bar"><div id="prog"></div></div>
+
+    <div id="ds" class="card hide">
+      <div class="text" id="dsText" lang="hy"></div>
+      <h2>Which Armenian? · Ո՞ր հայերէնը</h2>
+      <div class="opts" id="dialect"></div>
+      <h2>Spelling · Ուղղագրութիւն</h2>
+      <div class="opts" id="spelling"></div>
+      <h2>How sure are you? · Որքա՞ն վստահ էք</h2>
+      <div class="opts" id="conf"></div>
+      <h2>Note (optional) · Նշում</h2>
+      <textarea id="note" placeholder="for example: Western words but Eastern spelling; a dialect word; a typo"></textarea>
+    </div>
+
+    <div id="mo" class="card hide">
+      <div class="muted">Cut the word into its parts: the stem and each ending. Click between two letters to cut; click again to undo.</div>
+      <div class="muted" lang="hy">Բառը բաժանեցէք մասերու. արմատ եւ վերջաւորութիւններ։</div>
+      <div class="word" id="word" lang="hy"></div>
+      <div class="pieces" id="pieces"></div>
+      <div class="ctx" id="ctx" lang="hy"></div>
+      <h2>&nbsp;</h2>
+      <div class="opts">
+        <button id="noCut" onclick="toggleNoCut()">It has no parts · Մաս չունի</button>
+        <button id="unsure" onclick="toggleUnsure()">Not sure · Վստահ չեմ</button>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="opts">
+        <button onclick="go(-1)">← Back</button>
+        <button class="primary" onclick="go(1)">Next →</button>
+      </div>
+      <div class="opts">
+        <button onclick="save()">Save my answers · Պահել</button>
+      </div>
+    </div>
+    <p class="muted">Your answers stay in this browser until you save them; send the saved file to the project coordinator as described in the consent form.</p>
+  </section>
+</main>
+<script>
+const DEMO = {"batch": "demo", "created": "2026-10-29 01:17:58 UTC", "items": [{"task": "dialect_spelling", "text": "Անոնցմէ մէկն էր Թուրքիոյ Ազրպէյճանին տրամադրած բազմատեսակ ռազմական օժանդակութիւնը։", "id": "demo-00"}, {"task": "dialect_spelling", "text": "Կլիմայական փոփոխութիւնը կրնայ նկարագրուիլ իբրեւ դանդաղ եւ ներդաշնակ փոփոխութիւն, որ կ՚ազդէ երկրագունդին կլիմային:", "id": "demo-01"}, {"task": "dialect_spelling", "text": "ՄՏԱՀՂԱՑՈՒՄՆԵՐ ԵՎ ԻՐԱԿԱՆԱՑՈՒՄՆԵՐ «Հայպետնախագիծ» ինստիտուտը կարևոր դեր է խաղում հանրապետության քաղաքների, շրջկենտրոնների ու գյուղական վայրերի կառուցապատման գործում:", "id": "demo-02"}, {"task": "dialect_spelling", "text": "երկրորդ՝ զի ոչ հարկ ինչ եւ ոչ պէտք կարեւորք էին նոցա՝ զազգաց աւտարաց եւ զաշխարհաց ի բացեայ եւ զհամբաւս հինս եւ զզրոյցս նախնականս յիւրեանց թագաւորաց կամ մեհենից մատեանս գրել.", "id": "demo-03"}, {"task": "dialect_spelling", "text": "Այդ գործարանների արտադրամասերում արտադրվող հեռուստաընդունիչների մի մասը կառաքվի լեհ ընկերակիցներին:", "id": "demo-04"}, {"task": "dialect_spelling", "text": "ՀՀԿ ներսում նոր խմբավորումը՝ ի դեմս Կարեն Կարապետյանի և նրա թիմի, ակնհայտորեն դուրս է մղում ոչ միայն հներին, օդիոզ օլիգարխներին, այլ նաև Սերժ Սարգսյանի երիտասարդ բարեփոխիչներին:", "id": "demo-05"}, {"task": "dialect_spelling", "text": "Բայց անցցուք այսուհետեւ որ ինչ յաղագս Տիգրանայ եւ որ ի նմանէ գործք:", "id": "demo-06"}, {"task": "dialect_spelling", "text": "եւ նստէր ի վերայ նորա՝ եւ էր տեսիլ նորա իբրեւ զփայլակն՝ եւ հանդերձ նորա սպիտակ իբրեւ զձիւն:", "id": "demo-07"}, {"task": "dialect_spelling", "text": "Իրանի Անվտանգության բարձրագույն խորհրդի ներկայացուցիչների գնահատականով, «Ի տարբերություն Ռուսաստանի, որը մշտապես շփոթվածություն է ցուցաբերում արտաքին քաղաքականության մեջ, հատկապես Կովկասում, Իրանը տարածաշրջանում ամերիկյան ռազմական ներկայությունը չի դիտարկում որպես երկարաժամկետ գործոն, եթե նույնիսկ նկատի է առնվում 20 տարին:", "id": "demo-08"}, {"task": "dialect_spelling", "text": "Մոտիկ ծառի սեղմ փչակը կանացի ամոթույքի էր նման։", "id": "demo-09"}, {"task": "dialect_spelling", "text": "Կառոյց մը, որ կը ծառայէ բացարձակապէս ռուսական շահերուն։", "id": "demo-10"}, {"task": "dialect_spelling", "text": "սեպտեմբերին Արցախի դէմ սկսած ազրպէյճանական պատերազմը մի քանի ձեւերով տարբեր էր նախորդ ռազմական ընդհարումներէն։", "id": "demo-11"}, {"task": "morph", "word": "Կարդալուց", "context": "Կարդալուց հետո Լուսինեի համաձայնությունը խնդրեցի իմ դիտարկումները դնել հանրային տարածքում:", "id": "demo-12"}, {"task": "morph", "word": "մասնագետներ", "context": "Նրա աշխատանքին մասնակցում էին ՌՍՖՍՀ-ի, Ուկրաինայի, Բելոռուսիայի, Ղազախստանի, միջինասիական և անդրկովկասյան հանրապետությունների գիտնականներ և մասնագետներ:", "id": "demo-13"}, {"task": "morph", "word": "դասակարգին", "context": "Աշխարհի բոլոր բարեկամեցողութիւնը քիչ պիտի գար այդ դասակարգին չէ թէ մարսելի, գոնէ մատչելի ընծայել Պրուստը։", "id": "demo-14"}, {"task": "morph", "word": "հանրապետություններից", "context": "Գիտակցելով այդ բանը, լավ նախաձեռնության հեղինակները վերջերս Սոչիում անցկացրին համամիութենական գիտագործնական կոնֆերանս, որտեղ գիտնականներ, բժիշկներ, ուսուցիչներ, իրավաբաններ, հոգեբաններ, սոցիոլոգներ և կուսակցական աշխատողներ հրավիրվեցին միութենական բոլոր հանրապետություններից։", "id": "demo-15"}], "text_licences": "UD Armenian treebanks, CC BY-SA 4.0", "note": "demo only: answers to the demo are not used"};
+const DIALECTS = [["E","Eastern · Արեւելահայերէն"],["W","Western · Արեւմտահայերէն"],["G","Classical · Գրաբար"],["M","Mixed · Խառն"],["D","Another dialect · Բարբառ"],["X","Not Armenian / can't tell · Չգիտեմ"]];
+const SPELL = [["classical","Classical · Դասական"],["reformed","Reformed (1922/1940) · Բարեփոխուած"],["mixed","Mixed · Խառն"],["unknown","Can't tell · Չգիտեմ"]];
+const CONF = [[3,"Sure · Վստահ"],[2,"Fairly sure · Գրեթէ"],[1,"Guessing · Կռահում"]];
+const KEYS_D = "123456", KEYS_S = "qwer", KEYS_C = "asd";
+let B = null, i = 0, L = {}, anon = localStorage.getItem("mashtots_anon");
+if (!anon) { anon = "anon-" + Array.from(crypto.getRandomValues(new Uint8Array(4))).map(b => b.toString(16).padStart(2, "0")).join(""); localStorage.setItem("mashtots_anon", anon); }
+document.getElementById("anon").textContent = anon;
+
+function openFile(f) { const r = new FileReader(); r.onload = () => { try { loadBatch(JSON.parse(r.result)); } catch (e) { alert("Not a batch file: " + e); } }; r.readAsText(f, "utf-8"); }
+function storeKey() { return "mashtots_labels_" + B.batch; }
+function loadBatch(b) {
+  if (!b || !b.items) { alert("This file has no items."); return; }
+  B = b; L = JSON.parse(localStorage.getItem(storeKey()) || "{}"); i = Math.max(0, B.items.findIndex(it => !L[it.id]));
+  document.getElementById("batchName").textContent = "batch " + B.batch + " · " + B.items.length + " items";
+  document.getElementById("start").classList.add("hide"); document.getElementById("work").classList.remove("hide"); render();
+}
+function persist() { localStorage.setItem(storeKey(), JSON.stringify(L)); }
+function lab() { const it = B.items[i]; return L[it.id] || (L[it.id] = { id: it.id, task: it.task }); }
+function opts(el, list, field, keys) {
+  const box = document.getElementById(el); box.innerHTML = "";
+  list.forEach(([v, t], k) => { const b = document.createElement("button"); b.innerHTML = `<span class="k">${keys[k] || ""}</span>${t}`;
+    if (lab()[field] === v) b.classList.add("on"); b.onclick = () => { lab()[field] = v; lab().t = new Date().toISOString(); persist(); render(); }; box.appendChild(b); });
+}
+function render() {
+  const it = B.items[i], n = B.items.length, done = B.items.filter(x => isDone(L[x.id], x)).length;
+  document.getElementById("pos").textContent = `item ${i + 1} of ${n}`; document.getElementById("done").textContent = `${done} answered`;
+  document.getElementById("prog").style.width = (100 * done / n) + "%";
+  const ds = it.task === "dialect_spelling";
+  document.getElementById("ds").classList.toggle("hide", !ds); document.getElementById("mo").classList.toggle("hide", ds);
+  if (ds) {
+    document.getElementById("dsText").textContent = it.text;
+    opts("dialect", DIALECTS, "dialect", KEYS_D); opts("spelling", SPELL, "spelling", KEYS_S.toUpperCase()); opts("conf", CONF, "confidence", KEYS_C.toUpperCase());
+    const note = document.getElementById("note"); note.value = lab().note || ""; note.oninput = () => { lab().note = note.value; persist(); };
+  } else { renderWord(it); }
+}
+function renderWord(it) {
+  const w = document.getElementById("word"), letters = Array.from(it.word), cuts = new Set(lab().cuts || []);
+  w.innerHTML = "";
+  letters.forEach((ch, k) => {
+    const digraph = k > 0 && letters[k - 1].toLowerCase() === "ո" && letters[k].toLowerCase() === "ւ";   // ու is one vowel: never cut inside it
+    if (k > 0 && !digraph) { const g = document.createElement("span"); g.className = "gap" + (cuts.has(k) ? " cut" : ""); g.title = "cut here";
+      g.onclick = () => { const c = new Set(lab().cuts || []); c.has(k) ? c.delete(k) : c.add(k); lab().cuts = [...c].sort((a, b) => a - b); lab().no_parts = false; lab().t = new Date().toISOString(); persist(); render(); };
+      w.appendChild(g); }
+    const s = document.createElement("span"); s.className = "l"; s.textContent = ch; w.appendChild(s);
+  });
+  const cs = [0, ...(lab().cuts || []), letters.length], parts = [];
+  for (let k = 0; k < cs.length - 1; k++) parts.push(letters.slice(cs[k], cs[k + 1]).join(""));
+  lab().segments = lab().no_parts ? [it.word] : parts;
+  persist();
+  document.getElementById("pieces").textContent = lab().no_parts ? "no parts" : parts.join(" | ");
+  document.getElementById("ctx").textContent = it.context || "";
+  document.getElementById("noCut").classList.toggle("on", !!lab().no_parts); document.getElementById("unsure").classList.toggle("on", !!lab().unsure);
+}
+function toggleNoCut() { const l = lab(); l.no_parts = !l.no_parts; if (l.no_parts) l.cuts = []; l.t = new Date().toISOString(); persist(); render(); }
+function toggleUnsure() { const l = lab(); l.unsure = !l.unsure; persist(); render(); }
+function isDone(l, it) { if (!l) return false; return it.task === "dialect_spelling" ? !!(l.dialect && l.spelling) : !!(l.no_parts || (l.cuts && l.cuts.length) || l.unsure); }
+function go(d) { i = Math.min(B.items.length - 1, Math.max(0, i + d)); render(); window.scrollTo(0, 0); }
+function save() {
+  const out = { batch: B.batch, annotator: anon, tool: "participation/annotate.html v1", saved: new Date().toISOString(),
+                labels: B.items.map(it => L[it.id]).filter(l => l && Object.keys(l).length > 2) };
+  const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([JSON.stringify(out, null, 1)], { type: "application/json" }));
+  a.download = `labels_${B.batch}_${anon}.json`; a.click();
+}
+document.addEventListener("keydown", e => {
+  if (!B || e.target.tagName === "TEXTAREA") return;
+  const it = B.items[i], k = e.key.toLowerCase();
+  if (e.key === "Enter") return go(1);
+  if (e.key === "Backspace") { e.preventDefault(); return go(-1); }
+  if (it.task !== "dialect_spelling") return;
+  const set = (f, v) => { lab()[f] = v; lab().t = new Date().toISOString(); persist(); render(); };
+  if (KEYS_D.includes(k)) set("dialect", DIALECTS[KEYS_D.indexOf(k)][0]);
+  else if (KEYS_S.includes(k)) set("spelling", SPELL[KEYS_S.indexOf(k)][0]);
+  else if (KEYS_C.includes(k)) set("confidence", CONF[KEYS_C.indexOf(k)][0]);
+});
+</script>
+</body>
+</html>

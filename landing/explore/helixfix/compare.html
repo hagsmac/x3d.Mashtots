@@ -1,0 +1,62 @@
+<!doctype html><meta charset="utf-8"><title>The helix, before and after the fix</title>
+<link rel="icon" href="data:,">
+<!-- Before (the approved v5 scene, explore/helixfix/before/) and after (../../mashtots-landing.x3d, fixed 28 Oct) side by side, locked to the
+     same moment: each scene's toff is rewritten every frame from its own clock (the director's method), so both show exactly time V.
+     Keys: space play/pause · ← → step 1 s · 1-4 cameras (2 = the helix from the side) · URL ?t=SEC&cam=2 -->
+<style>
+html,body{margin:0;background:#0b0a0a;color:#b9b3ad;font:15px/1.4 Georgia,serif}
+#row{display:flex;gap:6px;padding:6px}
+.col{flex:1;min-width:0}
+.col h2{margin:.2em 0;font-weight:400;font-size:15px;color:#e8b86a}
+.col h2 span{color:#7d7a78;font-size:13px}
+.st{position:relative;width:100%;aspect-ratio:16/9;background:#141212}
+x3d-canvas{width:100%;height:100%;display:block}
+#bar{display:flex;flex-wrap:wrap;align-items:center;gap:.5em;padding:.2em 8px}
+button{cursor:pointer;color:#cd9646;background:#141212;border:1px solid rgba(205,150,70,.5);padding:.25em .7em;font:14px Georgia,serif}
+button:focus-visible,input:focus-visible{outline:2px solid #f0cd96}
+input[type=range]{flex:1;min-width:200px;accent-color:#cd9646}
+#t{font-variant-numeric:tabular-nums;color:#8b8784;min-width:7em}
+.note{color:#7d7a78;font-size:13px;padding:0 8px 8px;max-width:80em}
+</style>
+<script src="../../vendor/x_ite/x_ite.min.js"></script>
+<div id="row">
+  <div class="col"><h2>Before <span>· the approved v5 scene (2-px lines, the branch bug)</span></h2><div class="st"><x3d-canvas id="a" src="before/mashtots-landing.x3d" splashScreen="false" contextMenu="false" notifications="false"></x3d-canvas></div></div>
+  <div class="col"><h2>After <span>· mashtots-landing.x3d now (1-px lines, alpha × 1.6, the branch fixed)</span></h2><div class="st"><x3d-canvas id="b" src="../../mashtots-landing.x3d" splashScreen="false" contextMenu="false" notifications="false"></x3d-canvas></div></div>
+</div>
+<div id="bar">
+  <button id="play" aria-label="play or pause (space)">▶</button>
+  <input id="slider" type="range" min="0" max="204.25" step="0.01" value="20" aria-label="time">
+  <span id="t" aria-live="off">loading…</span>
+  <button data-t="10.2">helix lifts</button><button data-t="20">tour</button><button data-t="45">tour, row 4</button><button data-t="58">writing</button><button data-t="100">Shirakatsi</button>
+  <button data-cam="1">camera 1</button><button data-cam="2">2 · helix side</button><button data-cam="3">3</button><button data-cam="4">4</button>
+</div>
+<div class="note">Both scenes are paused at the same moment; play runs them together. What changed: the double strand through the letters, the polar axis, the ecliptic pole, the dashed precession circle, three orbits and the degree ticks were in the code but not on screen (X_ITE 16.5.1 drew almost nothing of these line sets at linewidthScaleFactor 2), and the orbits, the precession circle and the pole went through the constellations' branch (the stray grey bars). The rest of the scene is byte-identical.</div>
+<script>
+const q = new URLSearchParams(location.search), CYC = 204.25227;
+let V = +(q.get("t") || 20), playing = false, last = null;
+const S = ["a", "b"].map(id => ({ el: document.getElementById(id), clock: null, seek: null, scene: null }));
+const wrap = t => ((t % CYC) + CYC) % CYC;
+function hook(s) {
+  try { s.scene = s.el.browser.currentScene; s.clock = s.scene.rootNodes.length > 10 && s.scene.getNamedNode("Clock"); } catch (_) { s.clock = null; }
+  if (!s.clock) return false;
+  s.seek = s.scene.getNamedNode("Seek");
+  s.clock.getField("elapsedTime").addFieldCallback("compare", e => { s.seek.cycleInterval = wrap(V - e) + 0.001; });
+  return true;
+}
+const wait = setInterval(() => { const ok = S.map(s => s.clock || hook(s)); if (ok.every(Boolean)) { clearInterval(wait); document.getElementById("t").textContent = V.toFixed(2) + " s"; if (q.get("cam")) cam(q.get("cam")); } }, 300);
+function cam(k) { const vp = { 1: "Cam", 2: "CamHelix", 3: "CamRing", 4: "CamStone" }[k]; for (const s of S) try { s.scene.getNamedNode(vp).set_bind = true; } catch (_) {} }
+function set(t) { V = wrap(t); document.getElementById("slider").value = V; document.getElementById("t").textContent = V.toFixed(2) + " s"; }
+function frame(now) { if (playing && last !== null) set(V + (now - last) / 1000); last = now; requestAnimationFrame(frame); }
+requestAnimationFrame(frame);
+document.getElementById("play").onclick = () => { playing = !playing; document.getElementById("play").textContent = playing ? "❚❚" : "▶"; };
+document.getElementById("slider").oninput = e => set(+e.target.value);
+document.querySelectorAll("[data-t]").forEach(b => b.onclick = () => set(+b.dataset.t));
+document.querySelectorAll("[data-cam]").forEach(b => b.onclick = () => cam(b.dataset.cam));
+addEventListener("keydown", e => {
+  if (e.target.tagName === "INPUT" && e.key !== " ") return;
+  if (e.key === " ") { e.preventDefault(); document.getElementById("play").click(); }
+  else if (e.key === "ArrowRight") set(V + 1); else if (e.key === "ArrowLeft") set(V - 1);
+  else if ("1234".includes(e.key)) cam(e.key);
+});
+set(V);
+</script>

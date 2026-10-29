@@ -1,0 +1,29 @@
+<!doctype html><meta charset="utf-8"><title>capture the poster frame</title>
+<!-- Renders the approved scene at 1920 x 1080, freezes it at t = POSTER_T (the moment the page opens on), and posts the frame as a JPEG to
+     receive.py (port 8795), which writes ../../poster.jpg. The drawing buffer is preserved so that the frame can be read back. -->
+<style>body{margin:0;background:#0b0a0a;color:#ddd;font:13px monospace} x3d-canvas{width:1920px;height:1080px;display:block}</style>
+<script>
+const g = HTMLCanvasElement.prototype.getContext;
+HTMLCanvasElement.prototype.getContext = function (type, opts) { return g.call(this, type, Object.assign({}, opts, { preserveDrawingBuffer: true })); };
+</script>
+<script src="../../vendor/x_ite/x_ite.min.js"></script>
+<pre id="out">loading…</pre>
+<x3d-canvas src="../../mashtots-landing.x3d" splashScreen="false" contextMenu="false" notifications="false"></x3d-canvas>
+<script>
+const POSTER_T = +(new URLSearchParams(location.search).get("t") || 0.02), CYC = 204.25227;
+const xc = document.querySelector("x3d-canvas"), out = document.getElementById("out");
+const iv = setInterval(() => {
+  let sc = null; try { sc = xc.browser.currentScene; } catch (_) {}
+  if (!sc || sc.rootNodes.length < 11) return;
+  clearInterval(iv);
+  const clock = sc.getNamedNode("Clock"), seek = sc.getNamedNode("Seek");
+  clock.getField("elapsedTime").addFieldCallback("freeze", e => { seek.cycleInterval = (((POSTER_T - e) % CYC) + CYC) % CYC + 0.001; });
+  setTimeout(() => {
+    const gl = xc.shadowRoot ? xc.shadowRoot.querySelector("canvas") : document.querySelector("canvas");
+    gl.toBlob(async b => {
+      const r = await fetch("http://127.0.0.1:8795/poster.jpg", { method: "POST", body: b });
+      out.textContent = `${gl.width} x ${gl.height} · ${await r.text()}`; window.DONE = out.textContent;
+    }, "image/jpeg", 0.86);
+  }, 4000);
+}, 100);
+</script>
