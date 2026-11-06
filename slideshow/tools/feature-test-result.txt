@@ -1,0 +1,154 @@
+feature-test.js on stage.html?gate=0&deck=1&info=1 · Chromium (Playwright MCP) · Apple M3 · 1600 x 900 · 2026-11-03
+148 of 148 passed · console errors and warnings: 0
+Reload variants (loaded separately, console clean): ?score=v1 (3,312 events, audit 0 of 1,578) · ?mix=0 (5,242 events, audit 0 of 2,931) · ?scene=expanded (loop 255.0 s) · ?ui=bar · ?ui=0 · ?scoreseed=1&layers=-saws,-fx (4,769 events)
+
+✓ pause / play | deck ▶/❚❚ | paused=true
+✓ pause / play | deck ▶/❚❚ |
+✓ next section | deck ⏭ | 2 -> 3
+✓ previous section | deck ⏮ | 3 -> 2
+✓ frame forward (pauses) | deck frame ▸ | 0.033
+✓ frame back | deck ◂ frame | 0.033
+✓ back to the start | deck ⟲ 0:00 | 0.00
+✓ seek anywhere | deck scrubber | 120.00
+✓ speed 0.25× | deck speed | 0.25
+✓ speed 0.5× | deck speed | 0.5
+✓ speed 0.75× | deck speed | 0.75
+✓ speed 1× | deck speed | 1
+✓ speed 1.5× | deck speed | 1.5
+✓ speed 2× | deck speed | 2
+✓ section: The stone | deck Sections | 0.00
+✓ section: The astronomer's helix | deck Sections | 9.15
+✓ section: The tour of 36 | deck Sections | 12.55
+✓ section: Writing 405 | deck Sections | 53.35
+✓ section: The Lord's Prayer | deck Sections | 65.10
+✓ section: Letters are numbers | deck Sections | 82.10
+✓ section: Embedding space | deck Sections | 104.10
+✓ section: The alphabet as a graph | deck Sections | 122.85
+✓ section: Pre-training in Armenian | deck Sections | 225.97
+✓ section: Return | deck Sections | 263.47
+✓ act: flight | deck Acts | flight
+✓ act: line | deck Acts | line
+✓ act: lift | deck Acts | lift
+✓ act: tour | deck Acts | tour
+✓ act: write | deck Acts | write
+✓ act: prayer | deck Acts | prayer
+✓ act: numerals | deck Acts | numerals
+✓ act: shirakatsi | deck Acts | shirakatsi
+✓ act: space | deck Acts | space
+✓ act: tokens | deck Acts | tokens
+✓ act: space2 | deck Acts | space2
+✓ act: web | deck Acts | web
+✓ act: msg | deck Acts | msg
+✓ act: spectral | deck Acts | spectral
+✓ act: vowels | deck Acts | vowels
+✓ act: spectral2 | deck Acts | spectral2
+✓ act: pagerank | deck Acts | pagerank
+✓ act: anneal | deck Acts | anneal
+✓ act: descent | deck Acts | descent
+✓ act: walk | deck Acts | walk
+✓ act: fourier | deck Acts | fourier
+✓ act: poincare | deck Acts | poincare
+✓ act: svd | deck Acts | svd
+✓ act: svdm | deck Acts | svdm
+✓ act: svd2 | deck Acts | svd2
+✓ act: collapse | deck Acts | collapse
+✓ act: finale | deck Acts | finale
+✓ act: line2 | deck Acts | line2
+✓ act: return | deck Acts | return
+✓ act: rest | deck Acts | rest
+✓ camera CamHelix | deck Cameras | CamHelix
+✓ camera CamRing | deck Cameras | CamRing
+✓ camera CamStone | deck Cameras | CamStone
+✓ camera Cam | deck Cameras |
+✓ orbit on | deck orbit | EXAMINE
+✓ orbit off | deck orbit |
+✓ dazzle off | deck Dazzle | off
+✓ dazzle subtle | deck Dazzle | subtle
+✓ dazzle wild | deck Dazzle | wild
+✓ dazzle dazzle | deck Dazzle | dazzle
+✓ fix a plan seed | deck seed + use seed | 21
+✓ unfix the seed | deck fixed |
+✓ draw a new plan | deck new plan | 21 -> 576033
+✓ show the plan on the act bar | deck show plan | 8
+✓ jump to a planned effect | deck plan list | 9.60
+✓ moment replay: the helix lifts | deck Moment replays | the helix lifts @11.6
+✓ moment replay: the letters settle on the line | deck Moment replays | the letters settle on the line @5.2
+✓ moment replay: the plate of … | deck Moment replays | the plate of Յ @36.3
+✓ moment replay: k-means finds the vowels | deck Moment replays | k-means finds the vowels @218.5
+✓ moment replay: the letters settle into tokenizer space | deck Moment replays | the letters settle into tokenizer space @116.2
+✓ moment replay: the first hop from Ճ | deck Moment replays | the first hop from Ճ @133.7
+✓ moment replay: the Fiedler cut | deck Moment replays | the Fiedler cut @143.1
+✓ moment replay: the vowels lift out of the ring | deck Moment replays | the vowels lift out of the ring @147.6
+✓ moment replay: rank flows | deck Moment replays | rank flows @158.8
+✓ moment replay: the epicycles redraw the curve | deck Moment replays | the epicycles redraw the curve @190.8
+✓ moment replay: chords become geodesics | deck Moment replays | chords become geodesics @200.7
+✓ moment replay: k-means settles | deck Moment replays | k-means settles @210.5
+✓ moment replay: the collapse | deck Moment replays | the collapse @225.7
+✓ moment replay: into the drop | deck Moment replays | into the drop @244.7
+✓ moment replay: the letters fall home | deck Moment replays | the letters fall home @267.4
+✓ calm on | deck calm |
+✓ calm off | deck calm |
+✓ captions | deck captions |
+✓ graded panels off | deck graded panels |
+✓ graded panels on | deck graded panels |
+✓ title cards toggle | deck title cards |
+✓ hide controls | deck hide controls |
+✓ key help | deck key help |
+✓ show the start card | deck start card |
+✓ full screen | deck full screen + pill | present (not clickable without a real gesture)
+✓ sound (live score) | deck sound | running
+✓ tape effects off | deck tape effects |
+✓ tape effects on | deck tape effects |
+✓ effects level | deck slider | 0.800000011920929
+✓ try effect: tape-stop | deck try | fired
+✓ try effect: rewind | deck try | fired
+✓ try effect: riser | deck try | fired
+✓ try effect: sink | deck try | fired
+✓ try effect: tick | deck try | fired
+✓ score seed 0 | deck score seed | 5278 events
+✓ score seed 1 | deck score seed | 5242 events
+✓ score seed 2 | deck score seed | 5257 events
+✓ score layer off: styles | deck layers | 5257 -> 5091 events
+✓ score layer off: composed | deck layers | 5257 -> 5050 events
+✓ score layer off: saws | deck layers | 5257 -> 4825 events
+✓ score layer off: fx | deck layers | 5257 -> 5216 events
+✓ score layer off: sonif | deck layers | 5257 -> 4673 events
+✓ score layer off: measured | deck layers | 5257 -> 4629 events
+✓ sound off | deck sound |
+✓ link to this moment | deck link here | /stage.html?gate=0&info=1&t=25.26&seed=600941&dazzle=dazzle
+✓ other piece: the approved cut | deck link | 200 index.html?standalone=1
+✓ other piece: slide 1 | deck link | 200 index.html?slide1&nav&standalone=1
+✓ other piece: slide 1, classic | deck link | 200 index.html?classic&standalone=1
+✓ other piece: score lab | deck link | 200 score/index.html
+✓ other piece: effects lab | deck link | 200 fx_measure.html
+✓ info tab: this act | info panel | 966 chars
+✓ info tab: sections | info panel | 2417 chars
+✓ info tab: acts | info panel | 3391 chars
+✓ info tab: grades | info panel | 710 chars
+✓ info tab: keys & URL | info panel | 1310 chars
+✓ info tab: credits | info panel | 1308 chars
+✓ info tab: limits | info panel | 969 chars
+✓ key space | keyboard |
+✓ key → | keyboard |
+✓ key ← | keyboard |
+✓ key D | keyboard | dazzle -> wild
+✓ key R | keyboard |
+✓ key P | keyboard |
+✓ key C | keyboard |
+✓ key M | keyboard |
+✓ key G | keyboard |
+✓ key H | keyboard |
+✓ key X | keyboard |
+✓ key 2 | keyboard |
+✓ key 1 | keyboard |
+✓ key O | keyboard |
+✓ key ] | keyboard |
+✓ key [ | keyboard |
+✓ key . | keyboard |
+✓ key ? | keyboard |
+✓ key Esc | keyboard |
+✓ key I | keyboard |
+✓ key K | keyboard |
+✓ key S | keyboard |
+
+Note: the two links added after this run (director's page, score v1 lab) were loaded separately: console clean.

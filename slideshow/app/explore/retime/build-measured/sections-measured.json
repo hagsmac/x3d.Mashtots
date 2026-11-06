@@ -1,0 +1,331 @@
+{
+ "cycle": 271.92282608695655,
+ "bpm": 128.0,
+ "sections": [
+  {
+   "id": "stone",
+   "hy": "Քար",
+   "en": "The stone",
+   "t": 0.0
+  },
+  {
+   "id": "helix",
+   "hy": "Աստղագետի պարույրը",
+   "en": "The astronomer's helix",
+   "t": 9.15
+  },
+  {
+   "id": "tour",
+   "hy": "Տառ առ տառ",
+   "en": "The tour of 36",
+   "t": 12.55
+  },
+  {
+   "id": "writing",
+   "hy": "Գրությունը",
+   "en": "Writing 405",
+   "t": 53.35
+  },
+  {
+   "id": "prayer",
+   "hy": "Հայր մեր",
+   "en": "The Lord's Prayer",
+   "t": 65.098
+  },
+  {
+   "id": "numbers",
+   "hy": "Թվեր",
+   "en": "Letters are numbers",
+   "t": 82.098
+  },
+  {
+   "id": "embedding",
+   "hy": "Տարածություն",
+   "en": "Embedding space",
+   "t": 104.098
+  },
+  {
+   "id": "graph",
+   "hy": "Գրաֆ",
+   "en": "The alphabet as a graph",
+   "t": 122.848
+  },
+  {
+   "id": "pretraining",
+   "hy": "Նախաուսուցում",
+   "en": "Pre-training in Armenian",
+   "t": 225.973
+  },
+  {
+   "id": "return",
+   "hy": "Տուն",
+   "en": "Return",
+   "t": 263.473
+  }
+ ],
+ "shaders": [
+  "ArcShader",
+  "ArmillaryShader",
+  "BackdropShader",
+  "BallShader",
+  "BowlShader",
+  "CentroidShader",
+  "ChartFrameShader",
+  "ChartMShader",
+  "ChordMShader",
+  "ChordShader",
+  "ClusterShader",
+  "DashShader",
+  "DiskShader",
+  "EpiShader",
+  "FloorExtShader",
+  "FloorFitShader",
+  "FloorPointsShader",
+  "FlowMShader",
+  "FlowShader",
+  "GeodesicMShader",
+  "GeodesicShader",
+  "GlobeLineShader",
+  "GridShader",
+  "HelixStrandShader",
+  "HullShader",
+  "KinShader",
+  "LabelShader",
+  "LawCurveShader",
+  "LawDotShader",
+  "LawPointsShader",
+  "LawProjShader",
+  "LetterShader",
+  "MapShader",
+  "MergeShader",
+  "MoteShader",
+  "NodeMShader",
+  "NodeShader",
+  "OccMShader",
+  "OccShader",
+  "PenMShader",
+  "PenShader",
+  "PlateShader",
+  "PulseShader",
+  "RingShader",
+  "RippleShader",
+  "SparkShader",
+  "SpecBarShader",
+  "SpectrumMShader",
+  "SpectrumShader",
+  "StarRingShader",
+  "StarShader",
+  "TensorShader",
+  "TrajShader",
+  "WalkerMShader",
+  "WalkerShader",
+  "WriteArcShader",
+  "WriteLineShader",
+  "WritePArcShader",
+  "WritePLineShader",
+  "WritePShader",
+  "WriteShader"
+ ],
+ "segments": [
+  {
+   "name": "flight",
+   "t": 0.0,
+   "dur": 6.15
+  },
+  {
+   "name": "line",
+   "t": 6.15,
+   "dur": 3.0
+  },
+  {
+   "name": "lift",
+   "t": 9.15,
+   "dur": 1.7
+  },
+  {
+   "name": "lift",
+   "t": 10.85,
+   "dur": 1.7
+  },
+  {
+   "name": "tour",
+   "t": 12.55,
+   "dur": 40.8
+  },
+  {
+   "name": "write",
+   "t": 53.35,
+   "dur": 11.748
+  },
+  {
+   "name": "prayer",
+   "t": 65.098,
+   "dur": 17.0
+  },
+  {
+   "name": "numerals",
+   "t": 82.098,
+   "dur": 12.0
+  },
+  {
+   "name": "shirakatsi",
+   "t": 94.098,
+   "dur": 10.0
+  },
+  {
+   "name": "space",
+   "t": 104.098,
+   "dur": 7.5
+  },
+  {
+   "name": "tokens",
+   "t": 111.598,
+   "dur": 7.5
+  },
+  {
+   "name": "space2",
+   "t": 119.098,
+   "dur": 3.75
+  },
+  {
+   "name": "web",
+   "t": 122.848,
+   "dur": 3.75
+  },
+  {
+   "name": "web",
+   "t": 126.598,
+   "dur": 5.625
+  },
+  {
+   "name": "msg",
+   "t": 132.223,
+   "dur": 2.25
+  },
+  {
+   "name": "msg",
+   "t": 134.473,
+   "dur": 5.25
+  },
+  {
+   "name": "spectral",
+   "t": 139.723,
+   "dur": 1.688
+  },
+  {
+   "name": "spectral",
+   "t": 141.41,
+   "dur": 2.062
+  },
+  {
+   "name": "vowels",
+   "t": 143.473,
+   "dur": 7.5
+  },
+  {
+   "name": "spectral2",
+   "t": 150.973,
+   "dur": 3.75
+  },
+  {
+   "name": "pagerank",
+   "t": 154.723,
+   "dur": 2.625
+  },
+  {
+   "name": "pagerank",
+   "t": 157.348,
+   "dur": 3.375
+  },
+  {
+   "name": "pagerank",
+   "t": 160.723,
+   "dur": 1.5
+  },
+  {
+   "name": "anneal",
+   "t": 162.223,
+   "dur": 3.75
+  },
+  {
+   "name": "anneal",
+   "t": 165.973,
+   "dur": 3.75
+  },
+  {
+   "name": "descent",
+   "t": 169.723,
+   "dur": 3.375
+  },
+  {
+   "name": "descent",
+   "t": 173.098,
+   "dur": 4.125
+  },
+  {
+   "name": "walk",
+   "t": 177.223,
+   "dur": 5.625
+  },
+  {
+   "name": "walk",
+   "t": 182.848,
+   "dur": 3.75
+  },
+  {
+   "name": "fourier",
+   "t": 186.598,
+   "dur": 4.688
+  },
+  {
+   "name": "fourier",
+   "t": 191.285,
+   "dur": 4.688
+  },
+  {
+   "name": "poincare",
+   "t": 195.973,
+   "dur": 9.375
+  },
+  {
+   "name": "svd",
+   "t": 205.348,
+   "dur": 9.375
+  },
+  {
+   "name": "svdm",
+   "t": 214.723,
+   "dur": 7.5
+  },
+  {
+   "name": "svd2",
+   "t": 222.223,
+   "dur": 1.875
+  },
+  {
+   "name": "collapse",
+   "t": 224.098,
+   "dur": 1.875
+  },
+  {
+   "name": "finale",
+   "t": 225.973,
+   "dur": 37.5
+  },
+  {
+   "name": "line2",
+   "t": 263.473,
+   "dur": 2.0
+  },
+  {
+   "name": "return",
+   "t": 265.473,
+   "dur": 4.85
+  },
+  {
+   "name": "rest",
+   "t": 270.323,
+   "dur": 1.6
+  }
+ ]
+}

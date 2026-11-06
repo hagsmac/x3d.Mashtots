@@ -50,3 +50,12 @@ cd landing && python3 serve.py 8794
 - X_ITE: vendored in `landing/vendor/`, under its own licence.
 - Noto Serif Armenian and Lora fonts: SIL Open Font License.
 - The mural: Van Khachatur, the staircase fresco of the Matenadaran, 1959–60, a photograph via Wikimedia Commons. It is credited in the page and the colophon.
+
+## The slide show (standalone)
+
+`slideshow/`: the expanded measured Landing in X3D (X_ITE 16.5.1) with the dazzle conductor, the live score, graded panels and the control deck; the approved cut and slide 1 as modes. Run it locally with `cd slideshow && ./run.sh`, or watch it live:
+
+- The show: https://hagsmac.github.io/x3d.Mashtots/stage.html
+- The approved cut: https://hagsmac.github.io/x3d.Mashtots/
+
+From the standalone repository at commit eae4235 (the frame-callback guard from the Loom's Mashtots2 review included). Headphones recommended; a visible tab with a real GPU.

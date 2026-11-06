@@ -1,0 +1,398 @@
+<!doctype html><meta charset="utf-8"><title>Մաշտոց Համակարգ 2 · Mashtots System 2 · the slide show (standalone)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" href="data:,">
+<!--
+  Mashtots System 2, the expanded cut, with the DAZZLE layer and a viewer skin.  Built from explore/director/index.html (the director's clock owner), explore/retime's
+  graph-expanded build (graph acts on whole bars with speed ramps, camera sweeps, spectral colours, flow particles, the helix fix), the measured layers in
+  explore/retime/build-measured (see README.md) and the live score (explore/live-score).
+
+  What the viewer sees (the default skin):  a start card (begin with sound / begin silently) -> the piece full-bleed -> a control pill that hides itself after 3 s without a
+  pointer, key or touch and returns on any of them.  Tap the picture on a phone to show or hide it; double-tap pauses.  `?ui=bar` brings back the old director's bar underneath
+  (speed, frame steps, readouts); `?ui=0` hides every control.
+
+  Sound:  the score is synthesised live from the timeline.  fx.js adds the sound of time dilation on top: a master low-pass that follows the playback rate, a tape-stop for a
+  freeze, a rewind scrub for a replay, a riser for a surge, a sink for a dip, a tick for a cut.  Key X switches the effects off.  Nothing here has been listened to by its builder.
+
+  URL:   ?dazzle=off|subtle|dazzle|wild (default dazzle)   &seed=N (fix the plan)   &t=SEC   &paused=1   &calm=1   &gate=0 (no start card, start silently)   &ui=0|bar
+         &panels=0 (hide the authored-beside-measured panels)   &scene=expanded (without the in-scene measured layers)   &fx=0 (no time-dilation effects)
+  Keys:  space play/pause · ← → sections · D dazzle level · R new plan · P show this loop's plan · S sound · X effects · C captions · M calm · G graded panels · H hide controls
+         F full screen · ? help · , . frame · [ ] speed · 1-4 cameras · O orbit
+-->
+<style>
+@font-face{font-family:"Lora";src:url("fonts/lora/Lora.ttf");font-weight:400 700;font-display:swap}
+@font-face{font-family:"Noto Serif Armenian";src:url("fonts/notoserifarmenian/NotoSerifArmenian.ttf");font-weight:100 900;font-display:swap}
+:root{--gold:#cd9646;--gold2:#e8b86a;--paper:#f3f2f2;--ink:#0b0a0a;--mint:#7fe3d0;--glass:rgba(16,14,13,.72);--line:rgba(205,150,70,.4)}
+html,body{margin:0;height:100%;background:var(--ink);color:#b9b3ad;font-family:Lora,Georgia,serif;-webkit-text-size-adjust:100%}
+#wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%}
+#stage{container-type:inline-size;position:relative;width:min(100vw,177.78vh);aspect-ratio:16/9;overflow:hidden;background:#0d0c0c}
+body.legacy #wrap{justify-content:flex-start}
+body.legacy #stage{width:min(100vw,177.78vh - 150px)}
+body.skin.idle #stage{cursor:none}
+x3d-canvas{width:100%;height:100%;display:block}
+button{font-family:inherit}
+:focus-visible{outline:2px solid #f0cd96;outline-offset:2px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+/* ---- section tabs, progress, plan ticks ---- */
+#nav{position:absolute;left:0;right:0;top:0;display:flex;justify-content:center;gap:.2vmin;padding:.6vmin 1vmin 0;background:linear-gradient(rgba(11,10,10,.88),rgba(11,10,10,0));z-index:3;transition:opacity .5s}
+#nav button{all:unset;cursor:pointer;display:flex;flex-direction:column;align-items:center;padding:.5vmin 1vmin;border-bottom:2px solid transparent;color:#8b8784;font:clamp(8px,1.2vmin,16px)/1.15 Lora,Georgia,serif;white-space:nowrap}
+#nav button .hy{font-size:1.15em;color:#b9b3ad;font-family:"Noto Serif Armenian",Lora,serif}
+#nav button.on{border-bottom-color:var(--gold);color:var(--gold)} #nav button.on .hy{color:var(--gold2)}
+#nav button:focus-visible{outline:2px solid #f0cd96;outline-offset:2px}
+#prog{position:absolute;left:0;top:0;height:2px;background:var(--gold);z-index:4}
+#acts{position:absolute;left:0;right:0;bottom:0;height:6px;display:flex;z-index:3;opacity:.85;transition:opacity .5s}
+#acts div{height:100%;border-right:1px solid #0b0a0a;box-sizing:border-box;cursor:pointer;position:relative}
+#acts i{position:absolute;top:-3px;width:3px;height:12px;margin-left:-1px;background:var(--mint);opacity:0;transition:opacity .4s}
+body.ticks #acts i{opacity:.8}
+body.skin.idle #nav,body.skin.idle #acts{opacity:0;pointer-events:none}
+/* ---- loading, start card ---- */
+#loading{position:absolute;inset:0;display:flex;flex-direction:column;gap:1.2vmin;align-items:center;justify-content:center;color:var(--gold);font:clamp(14px,2.4vmin,30px) "Noto Serif Armenian",Lora,serif;background:var(--ink);z-index:9;transition:opacity .8s}
+#loading small{font:clamp(10px,1.5vmin,18px) Lora,serif;color:#8b8784;letter-spacing:.08em}
+#loading.done{opacity:0;pointer-events:none}
+#gate{position:fixed;inset:0;z-index:20;display:none;align-items:center;justify-content:center;background:radial-gradient(ellipse at center,rgba(11,10,10,.55),rgba(11,10,10,.9));backdrop-filter:blur(5px)}
+#gate.show{display:flex}
+#gate .card{max-width:min(92vw,760px);text-align:center;color:#d8d2cc}
+#gate h1{margin:0 0 .3em;font:600 clamp(26px,5.4vw,64px)/1.1 "Noto Serif Armenian",Lora,serif;color:var(--gold2)}
+#gate h2{margin:0 0 1.2em;font:italic 400 clamp(14px,1.9vw,24px)/1.35 Lora,serif;color:#d8d2cc}
+#gate .go{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:1.4em}
+#gate button{cursor:pointer;padding:.7em 1.3em;border-radius:999px;border:1px solid var(--line);background:rgba(20,18,18,.8);color:var(--gold2);font:600 clamp(13px,1.6vw,19px) Lora,serif}
+#gate button.primary{background:linear-gradient(#e0b062,#b98334);color:#1a1209;border-color:#e8b86a}
+#gate p{margin:.3em 0;font-size:clamp(12px,1.25vw,15px);line-height:1.5;color:#9d9792}
+#gate kbd,#help kbd{font:600 .9em Lora,serif;padding:.05em .4em;border:1px solid rgba(205,150,70,.45);border-radius:.3em;color:var(--gold2)}
+/* ---- the control pill ---- */
+#hud{position:fixed;left:50%;bottom:max(16px,env(safe-area-inset-bottom));transform:translateX(-50%);z-index:15;display:flex;align-items:center;gap:2px;padding:5px 8px;border-radius:999px;background:var(--glass);border:1px solid var(--line);backdrop-filter:blur(8px);transition:opacity .5s,transform .5s;max-width:96%}
+#hud button{all:unset;box-sizing:border-box;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:.4em;min-width:40px;height:40px;padding:0 8px;border-radius:999px;color:var(--gold2);font:600 12px Lora,serif;letter-spacing:.03em}
+#hud button:hover{background:rgba(205,150,70,.18)}
+#hud button:focus-visible{outline:2px solid #f0cd96;outline-offset:1px}
+#hud button[aria-pressed=true]{background:rgba(205,150,70,.28);color:#fff2d4}
+#hud svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+#hud .fill{fill:currentColor;stroke:none}
+#hud .t{font:600 12px Lora,serif;color:#b9b3ad;padding:0 8px;min-width:6.4em;text-align:center;font-variant-numeric:tabular-nums}
+#hud .sep{width:1px;height:22px;background:var(--line);margin:0 4px}
+body.skin.idle #hud{opacity:0;transform:translate(-50%,10px);pointer-events:none}
+body.skin:not(.idle) #hud{opacity:1}
+body.nobar #hud,body.legacy #hud{display:none}
+body.gated #hud{opacity:0;pointer-events:none}
+@media (max-width:640px){#hud{padding:4px 5px;bottom:max(14px,env(safe-area-inset-bottom))}#hud button{min-width:44px;height:44px;padding:0 6px}#hud .lab,#hud .t,#hud .sep{display:none}}
+/* ---- captions overlay, help, rotate hint, chip, flash ---- */
+#subs{position:absolute;left:3cqw;bottom:9cqw;max-width:56cqw;z-index:6;font:clamp(10px,1.4cqw,17px)/1.4 Lora,serif;color:#e8e2dc;text-shadow:0 0 6px #000,0 0 2px #000;pointer-events:none;opacity:0;transition:opacity .4s}
+#subs .hy{color:var(--gold2);margin-right:.5em;font-family:"Noto Serif Armenian",Lora,serif}
+body.subs #subs{opacity:1}
+#help{position:fixed;inset:0;z-index:20;display:none;align-items:center;justify-content:center;background:rgba(11,10,10,.82);backdrop-filter:blur(4px)}
+#help.show{display:flex}
+#help .card{max-width:min(92vw,720px);max-height:90vh;overflow:auto;color:#d8d2cc;font-size:clamp(13px,1.45vw,17px);line-height:1.7}
+#help h3{margin:0 0 .5em;font:600 1.5em Lora,serif;color:var(--gold2)}
+#help .cols{display:grid;grid-template-columns:auto 1fr;gap:.2em 1em}
+#help p{color:#9d9792;font-size:.85em;margin:.8em 0 0}
+#rotate{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:21;display:none;padding:10px 14px;border-radius:12px;background:var(--glass);border:1px solid var(--line);color:var(--gold2);font:600 13px Lora,serif;text-align:center}
+#rotate.show{display:block}
+#chip{position:absolute;right:1.2cqw;top:6cqw;z-index:6;font:clamp(10px,1.4cqw,18px) Lora,serif;color:var(--mint);letter-spacing:.06em;text-transform:lowercase;opacity:0;transition:opacity .3s;text-shadow:0 0 8px #000;pointer-events:none}
+#chip.on{opacity:.95}
+body.skin.idle #chip{top:1.4cqw}
+#flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:4;mix-blend-mode:overlay}
+/* ---- the old director's bar (?ui=bar) ---- */
+#bar,#cap,.note{display:none}
+body.legacy #bar{display:flex;flex-wrap:wrap;align-items:center;gap:.6em;padding:.5em 1em;font-size:14px}
+body.legacy #bar button,body.legacy #bar select{cursor:pointer;color:var(--gold);background:#141212;border:1px solid rgba(205,150,70,.5);padding:.3em .7em;font:14px Lora,Georgia,serif}
+body.legacy #bar button[aria-pressed=true]{background:#3a2a14;color:#f0cd96}
+body.legacy #read{font-variant-numeric:tabular-nums;color:#8b8784;min-width:30em}
+body.legacy #cap{display:block;min-height:3em;max-width:min(100vw,177.78vh - 150px);padding:.2em 1em;font-size:15px;line-height:1.45;color:#d8d2cc}
+body.legacy .note{display:block;color:#6b6865;font-size:12px;padding:0 1em .6em;max-width:min(100vw,177.78vh - 150px)}
+body.legacy #cap .hy{color:var(--gold2);margin-right:.5em}
+#cap[hidden]{display:block;visibility:hidden}
+#cap{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}      /* the skin keeps the live caption for screen readers */
+body.legacy #cap{position:static;width:auto;height:auto;overflow:visible;clip:auto}
+@media (prefers-reduced-motion:reduce){#hud,#nav,#acts,#subs,#chip,#loading{transition:none}}
+</style>
+<link rel="stylesheet" href="deck.css">
+<script src="vendor/x_ite/x_ite.min.js"></script>
+<script>/* X_ITE registers "X_ITE PT Sans" (its UI font) from vendor/x_ite/assets/fonts, which this copy does not ship: use the local Lora instead (no 404) */
+for (const f of [...document.fonts]) if (f.family.replace(/["']/g, "") === "X_ITE PT Sans") document.fonts.delete(f);
+document.fonts.add(new FontFace("X_ITE PT Sans", "url(fonts/lora/Lora.ttf)"));</script>
+<div id="wrap">
+<div id="stage">
+  <x3d-canvas splashScreen="false" contextMenu="false" notifications="false"></x3d-canvas>
+  <div id="flash"></div><div id="panels" aria-hidden="true"></div><div id="prog"></div><div id="nav" role="toolbar" aria-label="sections"></div><div id="acts" aria-hidden="true"></div><div id="chip" aria-hidden="true"></div>
+  <div id="subs" aria-hidden="true"></div>
+  <div id="loading"><span lang="hy">Բեռնվում է</span><small>loading · the scene compiles about sixty shaders</small></div>
+</div>
+<div id="bar" role="toolbar" aria-label="transport">
+  <button id="play" aria-label="play or pause (space)">❚❚</button>
+  <button id="stepb" aria-label="one frame back (comma)">‹</button><button id="stepf" aria-label="one frame forward (period)">›</button>
+  <label>speed <select id="speed" aria-label="speed ([ and ])"><option>0.25</option><option>0.5</option><option>0.75</option><option selected>1</option><option>1.5</option><option>2</option></select></label>
+  <label>dazzle <select id="dz" aria-label="dazzle level (D)"><option>off</option><option>subtle</option><option selected>dazzle</option><option>wild</option></select></label>
+  <button id="reroll" aria-label="draw a new plan now (R)">reroll</button>
+  <button id="ticks" aria-pressed="false" aria-label="show where this loop's effects fall">show plan</button>
+  <button id="calm" aria-pressed="false" aria-label="calm: half speed, no drifting particles, no dazzle (M)">calm</button>
+  <button id="capb" aria-pressed="true" aria-label="captions (C)">captions</button>
+  <button id="listen" aria-pressed="false" aria-label="the live score">listen</button>
+  <span id="read" aria-hidden="true"></span>
+</div>
+<div id="cap" aria-live="polite"></div>
+<div class="note" id="mode"></div>
+</div>
+<div id="hud" role="toolbar" aria-label="controls">
+  <button id="h-play" type="button" aria-label="Pause (space)"><svg id="i-play" viewBox="0 0 24 24"><path class="fill" d="M8 5v14l11-7z"/></svg><svg id="i-pause" viewBox="0 0 24 24" style="display:none"><path class="fill" d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg></button>
+  <button id="h-sound" type="button" aria-pressed="false" aria-label="Sound (S)"><svg viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9z"/><path id="i-waves" d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg><span class="lab">sound</span></button>
+  <button id="h-dz" type="button" aria-label="Dazzle level (D)"><svg viewBox="0 0 24 24"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8zM19 16l.8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8z"/></svg><span class="lab" id="dz-lab">dazzle</span></button>
+  <button id="h-plan" type="button" aria-pressed="false" aria-label="Show this loop's plan (P)"><svg viewBox="0 0 24 24"><path d="M5 7h14M5 12h14M5 17h9"/></svg><span class="lab">plan</span></button>
+  <span class="sep"></span>
+  <span class="t" id="h-time" aria-hidden="true">0:00 / 0:00</span>
+  <span class="sep"></span>
+  <button id="h-subs" type="button" aria-pressed="false" aria-label="Captions (C)"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M8 11h2.5M8 14.5h4M14 11h2M14 14.5h2"/></svg></button>
+  <button id="h-full" type="button" aria-label="Full screen (F)"><svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
+  <button id="h-help" type="button" aria-label="Help (?)"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.6 2.2c-.7.4-1.1 1-1.1 1.8M12 17h.01"/></svg></button>
+</div>
+<div id="gate" role="dialog" aria-labelledby="g-h">
+  <div class="card">
+    <h1 id="g-h">Մաշտոց Համակարգ 2</h1>
+    <h2>Mashtots System 2 · the alphabet was the first system, this is the second</h2>
+    <div class="go"><button id="g-sound" class="primary" type="button">Լսել և սկսել · Begin with sound</button><button id="g-silent" type="button">Begin silently</button></div>
+    <p>A loop of about 4½ minutes, different every time round: the clock slows, jumps back and cuts to other cameras on a plan drawn at random.</p>
+    <p>Headphones recommended. <kbd>space</kbd> pauses · <kbd>D</kbd> changes the dazzle · <kbd>?</kbd> help</p>
+    <p id="g-note"></p>
+  </div>
+</div>
+<div id="help" role="dialog" aria-label="Help"><div class="card">
+  <h3>Keys</h3>
+  <div class="cols"><span><kbd>space</kbd></span><span>play or pause</span><span><kbd>←</kbd> <kbd>→</kbd></span><span>previous or next section</span>
+    <span><kbd>D</kbd></span><span>dazzle: off, subtle, dazzle, wild</span><span><kbd>R</kbd></span><span>draw a new plan now</span><span><kbd>P</kbd></span><span>show where this loop's effects fall</span>
+    <span><kbd>S</kbd> / <kbd>X</kbd></span><span>sound on or off / time-dilation effects on or off</span><span><kbd>C</kbd></span><span>captions</span><span><kbd>M</kbd></span><span>calm: half speed, no dazzle</span>
+    <span><kbd>G</kbd></span><span>graded panels: the deck's authored numbers beside the measured ones</span><span><kbd>H</kbd></span><span>hide the controls</span><span><kbd>F</kbd></span><span>full screen</span><span><kbd>1</kbd>–<kbd>4</kbd> <kbd>O</kbd></span><span>cameras, orbit</span><span><kbd>I</kbd> / <kbd>K</kbd></span><span>info panel / control deck (every feature has a button there)</span></div>
+  <p>On a phone: tap the picture to show or hide the controls, double-tap to pause. Press <kbd>?</kbd> or Esc to close.</p>
+</div></div>
+<div id="rotate" role="status">Turn your phone sideways for a larger picture <span aria-hidden="true">↻</span></div>
+<script type="module">
+import { Conductor } from "./conductor.js";
+import { TapeFx } from "./fx.js";
+import { buildPanels, updatePanels, PANEL_CSS } from "./measured.js";
+import { initDeck } from "./deck.js";
+const q = new URLSearchParams(location.search), canvas = document.querySelector("x3d-canvas");
+const SCENE = q.get("scene") === "expanded" ? "expanded" : "measured";             // measured (default): the expanded cut plus the in-scene measured layers; expanded: without them
+const BASE = SCENE === "measured" ? "explore/retime/build-measured/" : "explore/retime/build/", PRESET = SCENE === "measured" ? "measured" : "graph-expanded";
+canvas.setAttribute("src", BASE + (SCENE === "measured" ? "mashtots-landing-measured.x3d" : "mashtots-landing-graph-expanded.x3d"));
+const $ = id => document.getElementById(id);
+function el(tag, cls, text) { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+const UI = q.get("ui"); document.body.classList.add(UI === "bar" ? "legacy" : "skin"); if (UI === "0") document.body.classList.add("nobar");
+const USE_GATE = !q.has("t") && !q.has("paused") && q.get("gate") !== "0" && UI !== "0" && UI !== "bar" && !q.has("autoplay");
+let SEC, TL, CAPS, segs, cyc, clock, seekNode, scene, ready = false, cond = null, panels = [], gateOpen = false, helpOpen = false, deck = null;
+let V = +(q.get("t") || 0), speed = +(q.get("speed") || 1), paused = q.has("paused"), calm = false, ePrev = null, step = 0, mult = 1, multS = 1;
+let frames = 0, fps = 0, fpsT = performance.now(), lastSeg = null, fixedSeed = q.has("seed") ? +q.get("seed") : null, loops = 0, chipT = 0, view = "", lastAct = performance.now(), hover = false;
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const LEVEL0 = q.get("dazzle") || (reduce ? "off" : "dazzle");
+
+function segAt(S, tr) { for (const s of S) if (tr < s.r0 + s.dur || s === S[S.length - 1]) return s; }
+function actAt(S, tr) { const s = segAt(S, tr), tau = tr - s.r0; return s.a0 + tau * (s.rate + 0.5 * (s.rate_end - s.rate) * tau / Math.max(s.dur, 1e-9)); }
+function span(S, name) { const p = S.filter(s => s.name === name); return p.length ? [p[0].r0, p[p.length - 1].r0 + p[p.length - 1].dur] : null; }
+const baseName = n => n.replace(/2$/, "");
+const wrap = t => ((t % cyc) + cyc) % cyc;
+const mmss = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, "0")}`;
+
+function flash(a = 0.5) { const f = $("flash"); f.style.transition = "none"; f.style.opacity = a; requestAnimationFrame(() => { f.style.transition = "opacity .6s"; f.style.opacity = 0; }); }
+function chip(text) { const c = $("chip"); c.textContent = "◈ " + text; c.classList.add("on"); chipT = 1.6; }
+function setView(name) { try { scene.getNamedNode(name || "Cam").set_bind = true; view = name || ""; } catch (_) {} }
+let tapHidden = false;
+function poke() { lastAct = performance.now(); tapHidden = false; }
+
+// ---- every frame: own the scene's time, scaled by the conductor ----
+let toff = 0, fxOn = q.get("fx") !== "0";
+function onFrame(e) { try {   // guard: one exception escaping an X_ITE field callback freezes every route in the scene (X_ITE 16.5.1; Loom failure mode 88)
+  frames++;
+  const dt = ePrev === null ? 0 : Math.min(0.25, Math.max(0, e - ePrev)); ePrev = e;
+  if (chipT > 0) { chipT -= dt; if (chipT <= 0) $("chip").classList.remove("on"); }
+  if (cond && !paused && !calm && cond.level !== "off") {
+    const o = cond.step(V, dt);
+    if (o.note) { chip(o.note); if (/^(freeze|echo|replay)/.test(o.note)) flash(0.35); }
+    if (o.fx && listening && live && live.fx && fxOn) live.fx.trigger(o.fx.kind, o.fx);
+    if (o.jump != null) V = o.jump;
+    if (o.view != null) setView(o.view);
+    mult = o.mult;
+    if (cond.loopEnded) { cond.loopEnded = false; loops++; fixedSeed == null ? cond.reseed() : cond.plan(cond.seed); cond.rearm(V); drawTicks(); }
+  } else mult = 1;
+  multS += (mult - multS) * Math.min(1, dt / 0.05);                              // a hair of smoothing so the score is never asked for a step
+  if (!paused) V += dt * speed * (calm ? 0.5 : 1) * multS;
+  if (step) { V += step; step = 0; }
+  V = wrap(V);
+  toff = wrap(V - e); seekNode.cycleInterval = toff + 0.001;                    // ROUTEd to every shader's toff
+} catch (err) { console.error(err); } }
+
+// ---- UI state ----
+function secIndex(t) { let k = 0; SEC.sections.forEach((s, i) => { if (t >= s.t - 0.05) k = i; }); return k; }
+function goto(t) { V = wrap(t); if (cond) cond.rearm(V); syncAudio(true); }
+function act(d) { const i = Math.max(0, Math.min(SEC.sections.length - 1, secIndex(V) + d)); goto(SEC.sections[i].t); }
+function setPaused(p) {
+  paused = p; $("play").textContent = paused ? "▶" : "❚❚";
+  $("i-play").style.display = paused ? "" : "none"; $("i-pause").style.display = paused ? "none" : ""; $("h-play").setAttribute("aria-label", paused ? "Play (space)" : "Pause (space)");
+  syncAudio(true);
+}
+function setSpeed(x) { speed = x; $("speed").value = String(x); syncAudio(true); }
+function toggle(id, v) { $(id).setAttribute("aria-pressed", String(v)); }
+function setCalm(v) {
+  calm = v; toggle("calm", v); if (v && cond) cond.rearm(V);
+  for (const n of scene.rootNodes) { try { if (n && n.getNodeTypeName() === "Shape") { const nm = n.appearance.shaders[0].getNodeName(); if (["MoteShader", "SparkShader", "RippleShader"].includes(nm)) n.visible = !v; } } catch (_) {} }
+  syncAudio(true);
+}
+function drawTicks() {
+  $("acts").querySelectorAll("i").forEach(i => i.remove());
+  if (!cond) return;
+  for (const ev of cond.events) { const i = el("i"); i.style.left = (100 * ev.at / cyc) + "%"; i.title = `${ev.kind} · ${ev.label} (${ev.at.toFixed(1)} s)`; $("acts").appendChild(i); }
+}
+function setLevel(n) { cond.setLevel(n); cond.rearm(V); $("dz").value = n; $("dz-lab").textContent = n; drawTicks(); chip("dazzle " + n); }
+function setPlan(on) { document.body.classList.toggle("ticks", on); toggle("ticks", on); toggle("h-plan", on); }
+function setSubs(on) { document.body.classList.toggle("subs", on); toggle("capb", on); toggle("h-subs", on); }
+function setHelp(on) { helpOpen = on; $("help").classList.toggle("show", on); poke(); }
+function setHidden(on) { document.body.classList.toggle("nobar", on); }
+function setFx(on) { fxOn = on; chip("effects " + (fxOn ? "on" : "off")); $("mode").textContent = $("mode").textContent.replace(/time-dilation effects (on|off)/, "time-dilation effects " + (fxOn ? "on" : "off")); syncAudio(true); }
+function setPanels(on) { document.body.classList.toggle("nopanels", !on); }
+function setOrbit(on) { const n = scene.getNamedNode("Nav"); n.type = on ? ["EXAMINE", "ANY"] : ["NONE"]; }
+function fullscreen() { const d = document, r = d.documentElement; if (d.fullscreenElement) d.exitFullscreen(); else if (r.requestFullscreen) r.requestFullscreen().catch(() => {}); }
+function readout() {
+  const s = segAt(segs, V), a = actAt(segs, V), i = secIndex(V);
+  [...$("nav").children].forEach((b, j) => b.classList.toggle("on", j === i));
+  $("prog").style.width = (100 * V / cyc).toFixed(2) + "%"; $("h-time").textContent = `${mmss(V)} / ${mmss(cyc)}`;
+  const dz = cond && cond.level !== "off" ? ` · dazzle ${cond.level} #${cond.seed} (${cond.events.length} effects${loops ? `, loop ${loops + 1}` : ""})` : "";
+  $("read").textContent = `${V.toFixed(2)} / ${cyc.toFixed(1)} s · act ${a.toFixed(2)} s · ${s.name}${s.rate === 0 && s.rate_end === 0 ? " (hold)" : ""} · ${paused ? "paused" : (speed * (calm ? 0.5 : 1) * multS).toFixed(2) + "×"} · ${fps} fps${dz}`;
+  if (!lastSeg || s.name !== lastSeg.name) {
+    lastSeg = s; const sec = SEC.sections[i], txt = CAPS[s.name] || CAPS[baseName(s.name)] || "";
+    dispatchEvent(new CustomEvent("stage:seg", { detail: { seg: s.name, sec, index: i } }));
+    $("cap").replaceChildren(el("span", "hy", sec.hy), document.createTextNode(txt)); $("subs").replaceChildren(el("span", "hy", sec.hy), document.createTextNode(txt));
+  }
+  // the pill hides itself after 3 s without a pointer, key or touch, while the piece plays and nothing is open
+  const idle = tapHidden || !paused && !hover && !gateOpen && !helpOpen && performance.now() - lastAct > 3000 && !$("hud").querySelector(":focus-visible");
+  document.body.classList.toggle("idle", idle);
+}
+
+// ---- the live score (explore/live-score) with the sound of time dilation (fx.js) ----
+let listening = false, live = null;
+const SCORE = { seed: q.has("scoreseed") ? Math.max(0, Math.min(2, +q.get("scoreseed") | 0)) : Math.floor(Math.random() * 3), layers: {} };   // standalone: the score's seed and layers can be set (?scoreseed=, ?layers=-saws,-fx, or the deck)
+for (const t of (q.get("layers") || "").split(",").filter(Boolean)) SCORE.layers[t.replace(/^[-+]/, "")] = !t.startsWith("-");
+async function restartScore() {                                                    // rebuild the live score with the current seed and layers (the deck calls this)
+  const was = listening; if (live) { try { live.player.stop(); await live.ctx.close(); } catch (_) {} live = null; }
+  if (was) { await startLive(); syncAudio(true); }
+}
+async function startLive() {
+  const v1 = q.get("score") === "v1", base = v1 ? "./explore/live-score/" : "./score/";                  // v2 (default): everything make_music.py has, stem-balanced; ?score=v1: the first, simplified live score
+  const m = await import(base + "score.js"), data = await (await fetch(base + "score_data.json")).json();
+  let mix = null;                                                                                          // the stem weights and the level plan, calibrated offline for this timeline (score/score_mix.json)
+  if (!v1 && q.get("mix") !== "0") try { const j = await (await fetch("score/score_mix.json")).json(); if (j.mixes[PRESET]) mix = { ...j.mixes[PRESET], norm: j.norm }; } catch (_) {}
+  const ctx = new AudioContext(); await ctx.resume();
+  const fx = new TapeFx(ctx, { level: 0.5 });
+  const score = m.buildScore(data, new m.Timeline(segs, cyc), SCORE.seed, v1 ? {} : SCORE.layers);
+  live = { ctx, fx, player: new m.Player(ctx, score, new m.Voices(ctx, fx.musicDest, v1 ? undefined : { mix, data })), score };
+  $("mode").textContent = `Live score${v1 ? " (first version, simplified)" : mix ? " v2, stem-balanced" : " v2, not level-calibrated for this timeline"}: ${score.events.length} events from this timeline (seed ${SCORE.seed}) · harmony audit ${score.audit.outside} of ${score.audit.checked} notes outside the table · time-dilation effects ${fxOn ? "on" : "off"}. Not listened to by the builder: check it by ear.`;
+}
+function syncAudio(force) {
+  if (!listening || !live) return;
+  const rate = Math.max(0.05, speed * (calm ? 0.5 : 1) * multS);
+  if (live.fx) live.fx.setRate(paused ? 1 : (fxOn ? rate : 1));
+  if (paused) { if (live.player.on) live.player.stop(); } else live.player.follow(V, rate);
+}
+async function setSound(on) {
+  listening = on; toggle("listen", on); toggle("h-sound", on); $("i-waves").style.display = on ? "" : "none";
+  if (on) { if (!live) await startLive(); syncAudio(true); } else if (live) live.player.stop();
+}
+function begin(withSound) {
+  gateOpen = false; document.body.classList.remove("gated"); $("gate").classList.remove("show"); poke();
+  if (withSound) setSound(true);
+  setPaused(false);
+}
+
+$("listen").onclick = () => setSound(!listening);
+$("h-sound").onclick = () => setSound(!listening);
+$("play").onclick = () => setPaused(!paused); $("h-play").onclick = () => setPaused(!paused);
+$("stepb").onclick = () => { setPaused(true); step = -1 / 30; };
+$("stepf").onclick = () => { setPaused(true); step = 1 / 30; };
+$("speed").onchange = e => setSpeed(+e.target.value);
+$("calm").onclick = () => setCalm(!calm);
+$("capb").onclick = () => { const h = !$("cap").hidden; $("cap").hidden = h; toggle("capb", !h); setSubs(!h); };
+$("h-subs").onclick = () => setSubs(!document.body.classList.contains("subs"));
+$("dz").onchange = e => setLevel(e.target.value);
+$("h-dz").onclick = () => setLevel(LV[(LV.indexOf(cond.level) + 1) % LV.length]);
+$("reroll").onclick = () => { cond.reseed(fixedSeed); cond.rearm(V); drawTicks(); chip(`new plan #${cond.seed}`); };
+$("ticks").onclick = () => setPlan(!document.body.classList.contains("ticks"));
+$("h-plan").onclick = () => setPlan(!document.body.classList.contains("ticks"));
+$("h-full").onclick = fullscreen; if (!document.documentElement.requestFullscreen) $("h-full").style.display = "none";
+$("h-help").onclick = () => setHelp(!helpOpen);
+$("g-sound").onclick = () => begin(true); $("g-silent").onclick = () => begin(false);
+$("help").onclick = e => { if (e.target === $("help")) setHelp(false); };
+const SPEEDS = [0.25, 0.5, 0.75, 1, 1.5, 2], LV = ["off", "subtle", "dazzle", "wild"];
+for (const ev of ["pointermove", "pointerdown", "keydown", "wheel"]) addEventListener(ev, e => { if (e.pointerType !== "touch") poke(); }, { passive: true });
+$("hud").addEventListener("pointerenter", () => { hover = true; }); $("hud").addEventListener("pointerleave", () => { hover = false; });
+let lastTap = 0;
+$("stage").addEventListener("pointerdown", e => {                                  // touch: tap shows or hides the pill, double-tap pauses
+  if (e.pointerType !== "touch" || e.target.closest("#hud,#gate,#help,#nav,#acts")) return;
+  const now = performance.now();
+  if (now - lastTap < 350) { setPaused(!paused); lastTap = 0; return; }
+  lastTap = now; const visible = !document.body.classList.contains("idle"); lastAct = now; tapHidden = visible; document.body.classList.toggle("idle", visible);
+});
+addEventListener("keydown", e => {
+  if (e.target.tagName === "SELECT" || e.metaKey || e.ctrlKey || e.altKey) return;
+  const k = e.key;
+  if (k === "Escape" && helpOpen) { setHelp(false); return; }
+  if (k === "Escape" && deck && deck.closeAll()) return;
+  if (k === "?" || k === "/") { setHelp(!helpOpen); return; }
+  if (!ready) return;
+  if (gateOpen) return;
+  if (k === " ") { if (e.target.tagName === "BUTTON") return; e.preventDefault(); setPaused(!paused); }
+  else if (k === "ArrowRight") act(1); else if (k === "ArrowLeft") act(-1);
+  else if (k === ".") { setPaused(true); step = 1 / 30; } else if (k === ",") { setPaused(true); step = -1 / 30; }
+  else if (k === "]" || k === "[") { const i = SPEEDS.indexOf(speed); setSpeed(SPEEDS[Math.max(0, Math.min(SPEEDS.length - 1, (i < 0 ? 3 : i) + (k === "]" ? 1 : -1)))]); }
+  else if (k === "d" || k === "D") setLevel(LV[(LV.indexOf(cond.level) + 1) % LV.length]);
+  else if (k === "r" || k === "R") $("reroll").click();
+  else if (k === "p" || k === "P") setPlan(!document.body.classList.contains("ticks"));
+  else if (k === "s" || k === "S") setSound(!listening);
+  else if (k === "x" || k === "X") setFx(!fxOn);
+  else if (k === "i" || k === "I") deck && deck.toggle("info");
+  else if (k === "k" || k === "K") deck && deck.toggle("deck");
+  else if (k === "c" || k === "C") setSubs(!document.body.classList.contains("subs"));
+  else if (k === "m" || k === "M") $("calm").click();
+  else if (k === "h" || k === "H") setHidden(!document.body.classList.contains("nobar"));
+  else if (k === "g" || k === "G") document.body.classList.toggle("nopanels");
+  else if (k === "f" || k === "F") fullscreen();
+  else if (k === "o" || k === "O") setOrbit(scene.getNamedNode("Nav").type[0] === "NONE");
+  else { const vp = { 1: "Cam", 2: "CamHelix", 3: "CamRing", 4: "CamStone" }[k]; if (vp) { scene.getNamedNode(vp).set_bind = true; view = vp === "Cam" ? "" : vp; } }
+});
+
+async function boot() {
+  [SEC, TL, CAPS] = await Promise.all([BASE + (SCENE === "measured" ? "sections-measured.json" : "sections-graph-expanded.json"), "explore/retime/timelines.json", "explore/director/captions.json"].map(u => fetch(u).then(r => r.json())));
+  const PRE = PRESET; segs = TL[PRE].segs; cyc = TL[PRE].cycle;
+  cond = new Conductor(segs, cyc, { level: LEVEL0, seed: fixedSeed });
+  try {                                                               // authored beside measured (measured.json is built from the source files by build_measured.py)
+    const M = await (await fetch("measured.json")).json(), st = document.createElement("style"); st.textContent = PANEL_CSS; document.head.append(st);
+    panels = buildPanels($("panels"), M, { span: n => span(segs, n) });
+  } catch (e) { console.warn("measured panels", e); }
+  if (q.get("panels") === "0") document.body.classList.add("nopanels");
+  $("dz").value = cond.level; $("dz-lab").textContent = cond.level;
+  for (const s of SEC.sections) { const b = document.createElement("button"); b.append(el("span", "hy", s.hy), el("span", null, s.en)); b.onclick = () => goto(s.t); $("nav").appendChild(b); }
+  const names = []; for (const s of segs) if (!names.includes(s.name)) names.push(s.name);
+  for (const nm of names) { const sp = span(segs, nm), d = el("div"); d.style.width = (100 * (sp[1] - sp[0]) / cyc) + "%"; const hold = segs.find(s => s.name === nm).rate === 0;
+    d.style.background = hold ? "#4a3b26" : nm === "vowels" ? "#c9efe8" : "#2c2723"; d.title = nm; d.onclick = () => goto(sp[0]); $("acts").appendChild(d); }
+  drawTicks();
+  $("mode").textContent = `Expanded cut (${cyc.toFixed(0)} s loop) with the dazzle layer. Space play/pause · ← → sections · D dazzle level · R new plan · P plan · X effects · H hide controls · ? help. ` +
+    (reduce ? "Your system asks for reduced motion: the piece starts paused, calm, without dazzle." : "A new plan is drawn each loop unless ?seed=N is set.");
+  if (!q.has("t") && location.hash) { const s = SEC.sections.find(x => x.id === location.hash.slice(1)); if (s) V = s.t; }
+  if (cond) cond.rearm(V);
+  const wait = setInterval(() => {
+    try { scene = canvas.browser.currentScene; clock = scene.rootNodes.length > 10 && scene.getNamedNode("Clock"); } catch (_) { clock = null; }
+    if (!clock) return;
+    clearInterval(wait); seekNode = scene.getNamedNode("Seek");
+    clock.addFieldCallback("stage", "elapsedTime", onFrame);                    // (X_ITE 16: getField() is deprecated)
+    setTimeout(() => $("loading").classList.add("done"), 400); ready = true;
+    setSpeed(speed); $("i-waves").style.display = "none";
+    if (USE_GATE) {                                                    // the viewer's first click both starts the piece and unlocks the audio
+      gateOpen = true; document.body.classList.add("gated"); setPaused(true); $("gate").classList.add("show"); $("g-sound").focus({ preventScroll: true });
+      if (reduce) $("g-note").textContent = "Your system asks for reduced motion: the piece starts calm, without the dazzle effects.";
+    } else setPaused(paused || reduce);
+    if (q.has("calm") || reduce) setCalm(true);
+    if (innerHeight > innerWidth && innerWidth < 700 && UI !== "0") { $("rotate").classList.add("show"); setTimeout(() => $("rotate").classList.remove("show"), 6000); }
+    window.__stage = { get V() { return V; }, get mult() { return multS; }, get live() { return live; }, cond, goto, setPaused, setSound, begin, get paused() { return paused; },           // for testing, and the deck's API
+      get speed() { return speed; }, get calm() { return calm; }, get fps() { return fps; }, get listening() { return listening; }, get fxOn() { return fxOn; }, get view() { return view; }, get loops() { return loops; },
+      get fixedSeed() { return fixedSeed; }, set fixedSeed(v) { fixedSeed = v; }, get act() { return actAt(segs, V); }, get seg() { return segAt(segs, V); }, get helpOpen() { return helpOpen; },
+      SEC, segs, cyc, scene, SCENE, PRESET, SCORE, q, actStep: act, setSpeed, setLevel, setPlan, setSubs, setHelp, setHidden, setCalm, setFx, setPanels, setOrbit, setView: v => { setView(v); },
+      step: d => { setPaused(true); step = d; }, reroll: () => $("reroll").click(), fullscreen, restartScore, span: n => span(segs, n), flash, chip, drawTicks, showGate: () => { gateOpen = true; document.body.classList.add("gated"); setPaused(true); $("gate").classList.add("show"); } };
+    deck = initDeck(window.__stage);
+    setInterval(() => { const now = performance.now(); fps = Math.round(frames * 1000 / (now - fpsT)); frames = 0; fpsT = now; }, 1000);
+    setInterval(() => { readout(); syncAudio(false); updatePanels(panels, V); }, 100);
+  }, 300);
+}
+boot();
+</script>
