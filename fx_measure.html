@@ -1,0 +1,56 @@
+<!doctype html><meta charset="utf-8"><title>fx.js, measured offline</title><link rel="icon" href="data:,">
+<pre id="out">running…</pre>
+<script type="module">
+// Renders each effect voice in an OfflineAudioContext and measures it: peak and RMS (dBFS), time until the envelope falls 60 dB under its peak, spectral centroid in
+// four equal slices (does the sweep go the way the name says?), and the master low-pass's -3 dB point at several playback rates. Result in window.__fx and above.
+import { TapeFx } from "./fx.js";
+const SR = 44100;
+function fft(re, im) {                                    // in-place radix-2
+  const n = re.length; for (let i = 1, j = 0; i < n; i++) { let b = n >> 1; for (; j & b; b >>= 1) j ^= b; j ^= b; if (i < j) { [re[i], re[j]] = [re[j], re[i]]; [im[i], im[j]] = [im[j], im[i]]; } }
+  for (let len = 2; len <= n; len <<= 1) { const a = -2 * Math.PI / len, wr = Math.cos(a), wi = Math.sin(a); for (let i = 0; i < n; i += len) { let cr = 1, ci = 0; for (let k = 0; k < len / 2; k++) { const u = i + k, v = i + k + len / 2, tr = re[v] * cr - im[v] * ci, ti = re[v] * ci + im[v] * cr; re[v] = re[u] - tr; im[v] = im[u] - ti; re[u] += tr; im[u] += ti; const nr = cr * wr - ci * wi; ci = cr * wi + ci * wr; cr = nr; } } }
+}
+function centroid(x, a, b) {                              // spectral centroid (Hz) of x[a..b)
+  const n = 4096, re = new Float32Array(n), im = new Float32Array(n); const len = Math.min(n, b - a);
+  for (let i = 0; i < len; i++) re[i] = x[a + i] * (0.5 - 0.5 * Math.cos(2 * Math.PI * i / len));
+  fft(re, im); let num = 0, den = 0; for (let k = 1; k < n / 2; k++) { const m = Math.hypot(re[k], im[k]); num += k * SR / n * m; den += m; } return den > 0 ? num / den : 0;
+}
+const db = v => 20 * Math.log10(Math.max(v, 1e-9));
+async function render(kind, secs = 2.0) {
+  const ctx = new OfflineAudioContext(2, Math.round(SR * secs), SR), fx = new TapeFx(ctx, { level: 0.5 });
+  fx.trigger(kind, { dur: 1.6 }, 0.0); const buf = await ctx.startRendering();
+  const L = buf.getChannelData(0), R = buf.getChannelData(1), x = new Float32Array(L.length); let pk = 0, ss = 0, last = 0;
+  for (let i = 0; i < x.length; i++) { x[i] = (L[i] + R[i]) / 2; pk = Math.max(pk, Math.abs(L[i]), Math.abs(R[i])); }
+  const hop = 441, env = []; for (let i = 0; i + hop <= x.length; i += hop) { let s = 0; for (let j = 0; j < hop; j++) s += x[i + j] ** 2; env.push(Math.sqrt(s / hop)); }
+  const emax = Math.max(...env); env.forEach((e, i) => { if (e > emax * 1e-3) last = i; });
+  const active = env.map((e, i) => (e > emax * 0.05 ? i : -1)).filter(i => i >= 0), a0 = active[0] * hop, a1 = (active[active.length - 1] + 1) * hop;
+  const q = Math.floor((a1 - a0) / 4), cents = [0, 1, 2, 3].map(k => Math.round(centroid(x, a0 + k * q, a0 + (k + 1) * q)));
+  for (let i = a0; i < a1; i++) ss += x[i] ** 2;
+  return { kind, peak_dBFS: +db(pk).toFixed(1), rms_active_dBFS: +db(Math.sqrt(ss / (a1 - a0))).toFixed(1), audible_s: +((a1 - a0) / SR).toFixed(2), to_minus60dB_s: +((last + 1) * hop / SR).toFixed(2), centroid_Hz_by_quarter: cents,
+           sweep: cents[3] > cents[0] * 1.3 ? "rising" : cents[3] < cents[0] * 0.7 ? "falling" : "flat" };
+}
+async function lowpass(rate) {                            // white noise through the rate-following master low-pass: the -3 dB point from a Welch power spectrum (20 segments)
+  const ctx = new OfflineAudioContext(1, SR * 3, SR), fx = new TapeFx(ctx), src = ctx.createBufferSource(), nb = ctx.createBuffer(1, SR * 3, SR), y = nb.getChannelData(0); let a = 99;
+  for (let i = 0; i < y.length; i++) { a = (a * 1664525 + 1013904223) >>> 0; y[i] = (a / 4294967296) * 2 - 1; }
+  src.buffer = nb; src.connect(fx.musicDest); fx.setRate(rate, 0); src.start(0); const out = (await ctx.startRendering()).getChannelData(0).subarray(SR, SR * 3);
+  const n = 4096, P = new Float64Array(n / 2); let segs = 0;
+  for (let s = 0; s + n <= out.length && segs < 20; s += n, segs++) { const re = new Float32Array(n), im = new Float32Array(n); for (let i = 0; i < n; i++) re[i] = out[s + i] * (0.5 - 0.5 * Math.cos(2 * Math.PI * i / n)); fft(re, im); for (let k = 0; k < n / 2; k++) P[k] += re[k] ** 2 + im[k] ** 2; }
+  let ref = 0; for (let k = 20; k < 60; k++) ref += P[k]; ref /= 40;                    // 0.2 to 0.6 kHz
+  let f3 = SR / 2; for (let k = 60; k < n / 2 - 8; k++) { let m = 0; for (let j = 0; j < 9; j++) m += P[k + j]; if (m / 9 < ref * 0.5) { f3 = Math.round(k * SR / n); break; } }
+  const g = 10 * Math.log10(ref / (segs * n * 0.375 / 3));                              // level of the pass band against unit white noise (rough)
+  return { rate, minus3dB_Hz: f3 };
+}
+async function mix(withFx, t0 = 214, secs = 12, rateAt = null) {   // the live score (measured timeline) rendered offline from t0, with effects fired at 3, 6 and 9 s: does the sum clip?
+  const sc = await import("./explore/live-score/score.js"), data = await (await fetch("explore/live-score/score_data.json")).json(), TL = await (await fetch("explore/retime/timelines.json")).json();
+  const segs = TL.measured.segs, cyc = TL.measured.cycle, score = sc.buildScore(data, new sc.Timeline(segs, cyc), 0);
+  const ctx = new OfflineAudioContext(2, SR * secs, SR), fx = new TapeFx(ctx), v = new sc.Voices(ctx, fx.musicDest); v.drone(0);
+  for (const e of score.events) if (e.t >= t0 && e.t < t0 + secs) v.play(e, e.t - t0, 1);
+  if (withFx) { fx.trigger("freeze", {}, 3); fx.trigger("echo", {}, 6); fx.trigger("surge", { dur: 1.6 }, 9); }
+  const buf = await ctx.startRendering(); let pk = 0; for (const c of [0, 1]) { const y = buf.getChannelData(c); for (let i = 0; i < y.length; i++) pk = Math.max(pk, Math.abs(y[i])); }
+  return +db(pk).toFixed(2);
+}
+const res = { voices: [], lowpass: [], mix: {} };
+res.mix = { music_only_peak_dBFS: await mix(false), music_plus_effects_peak_dBFS: await mix(true), window: "214 to 226 s of the measured timeline (the SVD hold, its end and the collapse), effects at +3, +6, +9 s" };
+for (const k of ["freeze", "echo", "surge", "dip", "cut"]) res.voices.push(await render(k));
+for (const r of [1, 0.55, 0.3, 0.1, 0.04]) res.lowpass.push(await lowpass(r));
+window.__fx = res; document.getElementById("out").textContent = JSON.stringify(res, null, 1);
+</script>

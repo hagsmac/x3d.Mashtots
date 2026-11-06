@@ -1,0 +1,397 @@
+{
+ "about": "numbers for the overlay panels; built by integrated/build_measured.py from the files named in its docstring",
+ "pagerank": {
+  "grade_authored": "authored: the deck's three hand-made attention heads through a softmax",
+  "grade_measured": "Measured: UD Classical Armenian CAVaL, 342,533 letters",
+  "authored_top": [
+   [
+    "Լ",
+    0.03240530130062807
+   ],
+   [
+    "Ն",
+    0.032295458534897147
+   ],
+   [
+    "Յ",
+    0.03167273478671001
+   ],
+   [
+    "Շ",
+    0.03129431081273511
+   ],
+   [
+    "Ձ",
+    0.031060605879659964
+   ]
+  ],
+  "measured_top": [
+   [
+    "Ա",
+    0.1454
+   ],
+   [
+    "Ն",
+    0.09235
+   ],
+   [
+    "Ե",
+    0.07059
+   ],
+   [
+    "Ո",
+    0.0693
+   ],
+   [
+    "Ր",
+    0.06706
+   ]
+  ],
+  "spearman_authored_vs_measured": 0.016,
+  "spearman_measured_vs_frequency": 0.953,
+  "freq_top5": "ԱՆԵԻՈ"
+ },
+ "cut": {
+  "order": "ԱԲԳԴԵԶԷԸԹԺԻԼԽԾԿՀՁՂՃՄՅՆՇՈՉՊՋՌՍՎՏՐՑՒՓՔ",
+  "vowel": [
+   true,
+   false,
+   false,
+   false,
+   true,
+   false,
+   true,
+   true,
+   false,
+   false,
+   true,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   true,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   true,
+   false,
+   false
+  ],
+  "authored": {
+   "v": [
+    -0.81,
+    -0.651,
+    -0.59,
+    -0.488,
+    -0.611,
+    -0.349,
+    -0.467,
+    -0.391,
+    0.151,
+    -0.376,
+    -0.525,
+    -0.271,
+    -0.116,
+    0.0,
+    0.032,
+    0.088,
+    0.057,
+    0.092,
+    -0.046,
+    -0.146,
+    -0.093,
+    -0.028,
+    0.151,
+    0.012,
+    0.49,
+    0.424,
+    0.298,
+    0.059,
+    0.218,
+    0.151,
+    0.353,
+    0.312,
+    0.714,
+    0.415,
+    0.938,
+    1
+   ],
+   "separates": 0.639,
+   "lam2": 0.488
+  },
+  "measured": {
+   "v": [
+    0.057,
+    0.103,
+    0.009,
+    0.007,
+    0.016,
+    -0.023,
+    -0.024,
+    -1.0,
+    0.029,
+    0.19,
+    -0.021,
+    -0.006,
+    0.104,
+    -0.02,
+    0.022,
+    0.11,
+    -0.014,
+    0.046,
+    0.316,
+    -0.013,
+    -0.05,
+    -0.229,
+    0.209,
+    0.032,
+    -0.005,
+    0.087,
+    -0.05,
+    -0.121,
+    -0.047,
+    0.068,
+    0.047,
+    0.034,
+    -0.051,
+    -0.006,
+    0.222,
+    -0.027
+   ],
+   "separates": 0.556,
+   "lam2": 0.405
+  },
+  "fast_mode": {
+   "v": [
+    0.883,
+    -0.514,
+    -0.607,
+    -0.019,
+    0.772,
+    -0.478,
+    0.835,
+    0.751,
+    -0.498,
+    -0.443,
+    0.839,
+    -0.971,
+    -0.564,
+    -0.721,
+    -0.657,
+    -0.755,
+    -0.218,
+    -0.866,
+    -0.717,
+    -0.76,
+    -0.719,
+    -0.459,
+    -0.38,
+    1.0,
+    -0.736,
+    -0.824,
+    -0.726,
+    -0.924,
+    -0.442,
+    -0.916,
+    -0.636,
+    -0.592,
+    -0.792,
+    -0.728,
+    -0.965,
+    -0.355
+   ],
+   "separates": 0.972,
+   "eigenvalue": -0.644,
+   "vowel_side": "ԱԵԷԸԻՈ",
+   "disagrees_on": "Ւ"
+  },
+  "grade_authored": "authored",
+  "grade_measured": "Measured"
+ },
+ "chords": {
+  "edge_weight_correlation": -0.1148,
+  "pairs": 630,
+  "order_vs_cooccurrence_spearman": -0.109,
+  "order_null_mean": -0.0,
+  "order_null_sd": 0.058,
+  "order_p": 0.9665,
+  "order_z": -1.88,
+  "grade": "Measured (CAVaL); the deck's weights are authored"
+ },
+ "census": {
+  "title": "Tokens per word, Eastern Armenian",
+  "corpus": "UD ArmTDP, 82,056 words",
+  "bars": [
+   [
+    "o200k",
+    2.64
+   ],
+   [
+    "Tekken (= Nemotron Nano 9B v2)",
+    2.99
+   ],
+   [
+    "Gemma 3",
+    4.13
+   ],
+   [
+    "DeepSeek V3",
+    4.36
+   ],
+   [
+    "Qwen 2.5",
+    7.58
+   ],
+   [
+    "Llama 3.1/3.2",
+    12.22
+   ],
+   [
+    "cl100k (GPT-4)",
+    13.93
+   ]
+  ],
+  "grade": "Measured",
+  "nemotron_is_tekken": "Nemotron Nano 9B v2 uses Mistral Nemo's Tekken tokenizer (its 269,443 merges are identical and in the same order); Nemotron 3 Nano 30B gives identical counts and shares Tekken's vocabulary",
+  "caveat": "Fertility is not competence: Armenian is not in Nemotron's listed languages and no model was run.",
+  "tekken_pairs": [
+   {
+    "rank": 1986,
+    "pair": "ու"
+   },
+   {
+    "rank": 2247,
+    "pair": "ան"
+   },
+   {
+    "rank": 4608,
+    "pair": "ակ"
+   },
+   {
+    "rank": 5194,
+    "pair": "եր"
+   },
+   {
+    "rank": 5941,
+    "pair": "ին"
+   },
+   {
+    "rank": 6294,
+    "pair": "այ"
+   }
+  ],
+  "tekken_armenian_pair_merges": 198
+ },
+ "tokens": {
+  "title": "Tokenizer space",
+  "grade": "Measured (the merge list); the layout is a picture of it",
+  "tokenizer": "Mistral Nemo Tekken (tokenizer.json on disk); the same merges as Nemotron Nano 9B v2",
+  "top": [
+   [
+    "ու",
+    1986,
+    1.0
+   ],
+   [
+    "ան",
+    2247,
+    0.979
+   ],
+   [
+    "ակ",
+    4608,
+    0.854
+   ],
+   [
+    "եր",
+    5194,
+    0.833
+   ],
+   [
+    "ին",
+    5941,
+    0.81
+   ],
+   [
+    "այ",
+    6294,
+    0.8
+   ],
+   [
+    "ար",
+    7325,
+    0.773
+   ],
+   [
+    "ել",
+    8141,
+    0.755
+   ]
+  ],
+  "n_merges": 198,
+  "vc": 141,
+  "vc_share": 0.712,
+  "vc_chance": 0.313,
+  "vowel_median_rank": 5194.0,
+  "consonant_median_rank": 26476.0,
+  "layout": "radius = log earliest merge rank (early = centre), angle = spectral embedding of the merge graph, relaxed to avoid overlaps"
+ },
+ "svd": {
+  "title": "SVD + k-means on the measured graph",
+  "grade": "Measured (UD CAVaL); the deck's procedure, ported and checked against landing.json",
+  "clusters": [
+   [
+    "ԱԵԷԸԻՅՈՌՒՔ",
+    7
+   ],
+   [
+    "ԳԶԼԾԿՁՆՋՍՐՑ",
+    0
+   ],
+   [
+    "ԴԹՂՄՉՎՏ",
+    0
+   ],
+   [
+    "ԲԺԽՀՃՇՊՓ",
+    0
+   ]
+  ],
+  "vowel_cluster": "ԱԵԷԸԻՅՈՌՒՔ",
+  "settle_measured": 2,
+  "settle_authored": 5,
+  "sigma_measured": [
+   2.258,
+   1.042,
+   0.827
+  ],
+  "sigma_authored": [
+   1.007,
+   0.48,
+   0.407
+  ],
+  "poincare": {
+   "chords": 630,
+   "heavy_gt_0_5": 38,
+   "median_w": 0.012032107066450045,
+   "vc_weight_share": 0.8407101108981551,
+   "vc_chord_share": 0.32222222222222224
+  },
+  "pagerank_top3": "ԱՆԵ",
+  "note": "raw plane: one letter dominates each axis; shown rank-spread and relaxed; the vowel cluster is identical on the raw, rank and relaxed planes (asserted)"
+ }
+}
